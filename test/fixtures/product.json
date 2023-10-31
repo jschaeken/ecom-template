@@ -1,0 +1,15 @@
+{
+    "id": "1",
+    "title": "Test Product",
+    "productType": "Test Type",
+    "vendor": "Test Vendor",
+    "tags": ["tag1', 'tag2"],
+    "option": [],
+    "images": [],
+    "productVariants": [],
+    "availableForSale": true,
+    "createdAt": "",
+    "updatedAt": "",
+    "publishedAt": "",
+    "metafields": []
+}
