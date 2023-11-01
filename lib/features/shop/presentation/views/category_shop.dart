@@ -1,3 +1,4 @@
+import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/presentation/widgets/featured_brand_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/multi_image_banner.dart';
 import 'package:ecom_template/core/presentation/widgets/product_tile.dart';
@@ -5,7 +6,7 @@ import 'package:ecom_template/core/presentation/widgets/slim_text_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/pages/product_page.dart';
-import 'package:ecom_template/features/shop/presentation/widgets/state_placeholders.dart';
+import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
 import 'package:ecom_template/injection_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +56,6 @@ class _CategoryShopState extends State<CategoryShop> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc.add(const GetAllProductsEvent());
   }
@@ -92,8 +92,7 @@ class _CategoryShopState extends State<CategoryShop> {
                       SizedBox(
                         height: 240,
                         width: MediaQuery.of(context).size.width,
-                        child: PageView.builder(
-                          padEnds: false,
+                        child: ListView.builder(
                           controller: pageController,
                           itemCount: state.products.length,
                           scrollDirection: Axis.horizontal,
@@ -120,7 +119,23 @@ class _CategoryShopState extends State<CategoryShop> {
                     height: 240,
                   );
                 } else if (state is ShoppingError) {
-                  return const Center(child: Text('Error'));
+                  switch (state.failure.runtimeType) {
+                    case ServerFailure:
+                      return const IconTextError(
+                        icon: CupertinoIcons.exclamationmark_triangle,
+                        text: 'A Sever Error Has Occured',
+                      );
+                    case InternetConnectionFailure:
+                      return const IconTextError(
+                        icon: CupertinoIcons.wifi_slash,
+                        text: 'No Internet Conection',
+                      );
+                    default:
+                      return const IconTextError(
+                        icon: CupertinoIcons.question,
+                        text: 'An Unknown Error Has Occured',
+                      );
+                  }
                 } else if (state is ShoppingInitial) {
                   return const SizedBox(
                     height: 240,
@@ -139,21 +154,33 @@ class _CategoryShopState extends State<CategoryShop> {
               child: TextHeadline(text: 'Featured ${widget.id} Brands'),
             ),
             // Featured Brands Grid View
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: Constants.padding.copyWith(top: 0),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.7,
-                crossAxisSpacing: Constants.padding.right.abs(),
-                mainAxisSpacing: Constants.padding.bottom.abs(),
-              ),
-              itemCount: featuredBrandImages.length,
-              itemBuilder: (context, index) {
-                return FeaturedBrandTile(brand: featuredBrandImages[index]);
-              },
-            ),
+            BlocBuilder<ShoppingBloc, ShoppingState>(builder: (context, state) {
+              if (state is ShoppingLoaded) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: Constants.padding.copyWith(top: 0),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.7,
+                    crossAxisSpacing: Constants.padding.right.abs(),
+                    mainAxisSpacing: Constants.padding.bottom.abs(),
+                  ),
+                  itemCount: featuredBrandImages.length,
+                  itemBuilder: (context, index) {
+                    return FeaturedBrandTile(brand: featuredBrandImages[index]);
+                  },
+                );
+              } else if (state is ShoppingLoading) {
+                return const SizedBox();
+              } else if (state is ShoppingError) {
+                return const SizedBox();
+              } else if (state is ShoppingInitial) {
+                return const SizedBox();
+              } else {
+                return const SizedBox();
+              }
+            }),
             //List of Product Categories Title
             Padding(
               padding: Constants.padding,

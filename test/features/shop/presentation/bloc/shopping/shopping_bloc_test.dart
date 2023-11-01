@@ -26,7 +26,7 @@ void main() {
     );
   });
 
-  test('Initial state should be empty', () {
+  test('Initial state should be ShoppingInitial', () {
     // assert
     expect(bloc.state, equals(ShoppingInitial()));
   });
@@ -61,7 +61,7 @@ void main() {
     });
 
     test(
-        'Should emit states: [Loading, Error] when getting data fails from the getProductById usecase',
+        'Should emit states: [Loading, Error (with server failure message)] when getting data fails from the getProductById due to sever failure',
         () async {
       // arrange
       when(() => mockGetProductById(const Params(id: tId)))
@@ -69,7 +69,26 @@ void main() {
       // assert later
       final expected = [
         ShoppingLoading(),
-        const ShoppingError(message: SERVER_FAILURE_MESSAGE),
+        ShoppingError(
+            message: SERVER_FAILURE_MESSAGE, failure: ServerFailure()),
+      ];
+      expectLater(bloc.stream, emitsInOrder(expected));
+      // act
+      bloc.add(const GetProductByIdEvent(id: tId));
+    });
+
+    test(
+        'Should emit states: [Loading, Error (with internet connection failure message)] when getting data fails from the getProductById due to internet connection issues',
+        () async {
+      // arrange
+      when(() => mockGetProductById(const Params(id: tId)))
+          .thenAnswer((_) async => Left(InternetConnectionFailure()));
+      // assert later
+      final expected = [
+        ShoppingLoading(),
+        ShoppingError(
+            message: INTERNET_CONNECTION_FAILURE_MESSAGE,
+            failure: InternetConnectionFailure()),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
       // act
@@ -139,7 +158,7 @@ void main() {
     });
 
     test(
-        'Should emit states: [Loading, Error] when getting data fails from the getAllProducts usecase',
+        'Should emit states: [Loading, Error (with server failure message)] when getting data fails from the getProductById due to sever failure',
         () async {
       // arrange
       when(() => mockGetAllProducts(NoParams()))
@@ -147,7 +166,28 @@ void main() {
       // assert later
       final expected = [
         ShoppingLoading(),
-        const ShoppingError(message: SERVER_FAILURE_MESSAGE),
+        ShoppingError(
+          message: SERVER_FAILURE_MESSAGE,
+          failure: ServerFailure(),
+        ),
+      ];
+      expectLater(bloc.stream, emitsInOrder(expected));
+      // act
+      bloc.add(const GetAllProductsEvent());
+    });
+
+    test(
+        'Should emit states: [Loading, Error (with internet connection failure message)] when getting data fails from the getProductById due to internet connection issues',
+        () async {
+      // arrange
+      when(() => mockGetAllProducts(NoParams()))
+          .thenAnswer((_) async => Left(InternetConnectionFailure()));
+      // assert later
+      final expected = [
+        ShoppingLoading(),
+        ShoppingError(
+            message: INTERNET_CONNECTION_FAILURE_MESSAGE,
+            failure: InternetConnectionFailure()),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
       // act

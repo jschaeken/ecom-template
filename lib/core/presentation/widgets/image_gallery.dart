@@ -10,7 +10,7 @@ class ImageGallery extends StatefulWidget {
   });
 
   final List<ShopProductImage> images;
-  final Function(int) onTap;
+  final Function(String imageUrl) onTap;
 
   @override
   State<ImageGallery> createState() => _ImageGalleryState();
@@ -63,7 +63,7 @@ class _ImageGalleryState extends State<ImageGallery> {
     return SizedBox(
       height: 468,
       child: GestureDetector(
-        onTap: () => widget.onTap(imageIndex),
+        onTap: () => widget.onTap(widget.images[imageIndex].originalSrc),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -113,7 +113,8 @@ class _ImageGalleryState extends State<ImageGallery> {
               child: Padding(
                 padding: Constants.padding.copyWith(bottom: 40),
                 child: GestureDetector(
-                  onTap: () => widget.onTap(imageIndex),
+                  onTap: () =>
+                      widget.onTap(widget.images[imageIndex].originalSrc),
                   child: Container(
                     height: 30,
                     width: 30,

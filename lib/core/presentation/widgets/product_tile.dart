@@ -31,7 +31,7 @@ class LargeProductTile extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: Constants.borderRadius,
                 child: SizedBox(
                   width: 150,
                   child: Stack(
@@ -39,21 +39,22 @@ class LargeProductTile extends StatelessWidget {
                     children: [
                       // Product Image
                       Padding(
-                          padding: Constants.padding,
-                          child: product.images.isNotEmpty
-                              ? Image.network(
-                                  product.images[0].originalSrc!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.asset(
-                                  'assets/images/placeholder-image.png',
-                                  fit: BoxFit.cover,
-                                )),
+                        padding: Constants.padding,
+                        child: product.images.isNotEmpty
+                            ? Image.network(
+                                product.images[0].originalSrc,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/images/placeholder-image.png',
+                                fit: BoxFit.cover,
+                              ),
+                      ),
 
                       // Gradient Overlay
                       Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: Constants.borderRadius,
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ecom_template/core/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class MultiImageBanner extends StatefulWidget {
   const MultiImageBanner({
@@ -65,15 +66,15 @@ class _MultiImageBannerState extends State<MultiImageBanner>
         scrollDirection: Axis.vertical,
         children: [
           for (int i = 0; i < widget.images.length; i++)
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: Constants.borderRadius,
-                image: DecorationImage(
-                  image: NetworkImage(widget.images[i]),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            ClipRRect(
+              borderRadius: Constants.borderRadius,
+              child: Image.network(widget.images[i], fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                return Image.asset('assets/images/placeholder-image.png')
+                    .animate()
+                    .fadeIn();
+              }),
+            )
         ],
       ),
     );

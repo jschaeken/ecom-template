@@ -1,5 +1,7 @@
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class FeaturedBrandTile extends StatelessWidget {
   const FeaturedBrandTile({
@@ -12,19 +14,25 @@ class FeaturedBrandTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.expand,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-              image: NetworkImage(brand[1]),
-              fit: BoxFit.cover,
-            ),
+        ClipRRect(
+          borderRadius: Constants.borderRadius,
+          child: Image.network(
+            brand[1],
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/images/placeholder-image.png',
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+              ).animate().fadeIn();
+            },
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: Constants.borderRadius,
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,

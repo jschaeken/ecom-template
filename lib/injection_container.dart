@@ -4,6 +4,7 @@ import 'package:ecom_template/features/shop/data/repositories/product_repositoty
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/images/images_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -12,12 +13,16 @@ import 'package:shopify_flutter/shopify/src/shopify_store.dart';
 final GetIt sl = GetIt.instance;
 
 Future<void> init() async {
-  /// Features - Shop
+  /// Features - Shop - Shopping Bloc
   sl.registerFactory(
     () => ShoppingBloc(
       getAllProducts: sl(),
       getProductById: sl(),
     ),
+  );
+  // Product Page - Images Bloc
+  sl.registerFactory(
+    () => ImagesBloc(),
   );
 
   sl.registerLazySingleton(() => GetAllProducts(sl()));

@@ -1,6 +1,6 @@
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
-import 'package:ecom_template/features/shop/presentation/widgets/category_shop.dart';
+import 'package:ecom_template/features/shop/presentation/views/category_shop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';

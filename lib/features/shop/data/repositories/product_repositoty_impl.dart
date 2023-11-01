@@ -25,7 +25,7 @@ class ProductRepositoryImplementation implements ProductRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(ServerFailure());
+      return Left(InternetConnectionFailure());
     }
   }
 
@@ -38,7 +38,7 @@ class ProductRepositoryImplementation implements ProductRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(ServerFailure());
+      return Left(InternetConnectionFailure());
     }
   }
 

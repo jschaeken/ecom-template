@@ -13,8 +13,9 @@ final class ShoppingLoading extends ShoppingState {}
 
 final class ShoppingError extends ShoppingState {
   final String message;
+  final Failure failure;
 
-  const ShoppingError({required this.message});
+  const ShoppingError({required this.message, required this.failure});
 
   @override
   List<Object> get props => [message];

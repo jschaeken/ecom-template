@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
@@ -9,6 +10,8 @@ part 'shopping_event.dart';
 part 'shopping_state.dart';
 
 const String SERVER_FAILURE_MESSAGE = 'Server Failure';
+const String INTERNET_CONNECTION_FAILURE_MESSAGE =
+    'Internet Connection Failure';
 const String UNEXPECTED_FAILURE_MESSAGE = 'Unexpected Error';
 
 class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
@@ -25,7 +28,12 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
               Params(id: (event as GetProductByIdEvent).id));
           productOrFailure.fold(
             (failure) {
-              emit(const ShoppingError(message: SERVER_FAILURE_MESSAGE));
+              emit(
+                ShoppingError(
+                  message: _mapFailureToErrorMessage(failure),
+                  failure: failure,
+                ),
+              );
             },
             (product) {
               emit(ShoppingLoadedById(product: product));
@@ -37,7 +45,12 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
           final productsOrFailure = await getAllProducts(NoParams());
           productsOrFailure.fold(
             (failure) {
-              emit(const ShoppingError(message: SERVER_FAILURE_MESSAGE));
+              emit(
+                ShoppingError(
+                  message: _mapFailureToErrorMessage(failure),
+                  failure: failure,
+                ),
+              );
             },
             (products) {
               emit(ShoppingLoaded(products: products));
@@ -45,8 +58,20 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
           );
           break;
         default:
-          emit(const ShoppingError(message: UNEXPECTED_FAILURE_MESSAGE));
+          emit(ShoppingError(
+              message: UNEXPECTED_FAILURE_MESSAGE, failure: UnknownFailure()));
       }
     });
+  }
+}
+
+String _mapFailureToErrorMessage(Failure failure) {
+  switch (failure.runtimeType) {
+    case ServerFailure:
+      return SERVER_FAILURE_MESSAGE;
+    case InternetConnectionFailure:
+      return INTERNET_CONNECTION_FAILURE_MESSAGE;
+    default:
+      return UNEXPECTED_FAILURE_MESSAGE;
   }
 }

@@ -1,4 +1,6 @@
 import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
+import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -39,5 +41,27 @@ class InitialStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox();
+  }
+}
+
+class IconTextError extends StatelessWidget {
+  const IconTextError({
+    super.key,
+    required this.icon,
+    required this.text,
+  });
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(width: double.infinity),
+        CustomIcon(icon),
+        TextBody(text: text)
+      ],
+    );
   }
 }

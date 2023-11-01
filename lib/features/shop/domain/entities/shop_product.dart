@@ -27,6 +27,7 @@ class ShopProduct extends Equatable {
   final String? description;
   final String? descriptionHtml;
   final String? handle;
+  final String? isPopular;
 
   const ShopProduct({
     required this.title,
@@ -48,6 +49,7 @@ class ShopProduct extends Equatable {
     this.description,
     this.descriptionHtml,
     this.handle,
+    this.isPopular,
   });
 
   @override
