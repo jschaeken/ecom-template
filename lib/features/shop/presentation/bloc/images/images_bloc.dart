@@ -7,7 +7,7 @@ part 'images_state.dart';
 
 class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
   ImagesBloc() : super(const ImagesInitial(variantIndexSelected: 0)) {
-    on<ImagesEvent>((event, emit) async {
+    on<ImagesEvent>((event, emit) {
       switch (event.runtimeType) {
         case VariantImageSelected:
           emit(VariantSelectionUpdate(

@@ -2,8 +2,10 @@ import 'package:ecom_template/core/network/network_info.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
+import 'package:ecom_template/features/shop/domain/usecases/get_all_collections.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/images/images_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -21,12 +23,18 @@ Future<void> init() async {
     ),
   );
   // Product Page - Images Bloc
+  sl.registerFactory(() => ImagesBloc());
+
+  /// Features - Shop - Collections Bloc
   sl.registerFactory(
-    () => ImagesBloc(),
+    () => CollectionsViewBloc(
+      getAllCollections: sl(),
+    ),
   );
 
   sl.registerLazySingleton(() => GetAllProducts(sl()));
   sl.registerLazySingleton(() => GetProductById(sl()));
+  sl.registerLazySingleton(() => GetAllCollections(sl()));
 
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImplementation(

@@ -3,8 +3,10 @@ import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/network/network_info.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
+import 'package:ecom_template/features/shop/data/models/shop_collection_model.dart';
 import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_collection.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,6 +19,37 @@ void main() {
   late MockRemoteDataSource mockRemoteDataSource;
   late MockNetworkInfo mockNetworkInfo;
   late ProductRepositoryImplementation repository;
+
+  const testId = 'test_id';
+  const testProductModel = ShopProductModel(
+    title: 'title',
+    id: 'id',
+    availableForSale: true,
+    createdAt: 'createdAt',
+    productVariants: [
+      ShopProductProductVariant(
+        availableForSale: true,
+        id: '',
+        price: Price(amount: '200', currencyCode: 'USD'),
+        quantityAvailable: 10,
+        requiresShipping: true,
+        sku: '',
+        title: '',
+        weight: '200kg',
+        weightUnit: '',
+      )
+    ],
+    productType: 'productType',
+    publishedAt: 'publishedAt',
+    tags: ['tags'],
+    updatedAt: 'updatedAt',
+    images: [],
+    vendor: 'vendor',
+    metafields: [],
+    options: [],
+    isPopular: true,
+  );
+  ShopProduct testProduct = testProductModel;
 
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
@@ -62,22 +95,21 @@ void main() {
     });
 
     runTestsOnline(() {
-      final testResponseModel = <ShopProductModel>[];
-      final List<ShopProduct> testResponseEntity = testResponseModel;
-
       test(
           'should return remote data list of products when the call to remote data source is successful',
           () async {
+        final List<ShopProductModel> testProductModels = [testProductModel];
+        final List<ShopProduct> testProducts = testProductModels;
         //arrange
         when(() => mockRemoteDataSource.getAllProducts())
-            .thenAnswer((invocation) async => testResponseModel);
+            .thenAnswer((invocation) async => testProductModels);
 
         //act
         final result = await repository.getFullProducts();
 
         //assert
         verify(() => mockRemoteDataSource.getAllProducts());
-        expect(result, Right(testResponseEntity));
+        expect(result, Right(testProducts));
       });
 
       test(
@@ -110,37 +142,6 @@ void main() {
   });
 
   group('getProductById', () {
-    const testId = 'test_id';
-    const testProductModel = ShopProductModel(
-      title: 'title',
-      id: 'id',
-      availableForSale: true,
-      createdAt: 'createdAt',
-      productVariants: [
-        ShopProductProductVariant(
-          availableForSale: true,
-          id: '',
-          price: '\$200',
-          quantityAvailable: 10,
-          requiresShipping: true,
-          sku: '',
-          title: '',
-          weight: '200kg',
-          weightUnit: '',
-        )
-      ],
-      productType: 'productType',
-      publishedAt: 'publishedAt',
-      tags: ['tags'],
-      updatedAt: 'updatedAt',
-      images: [],
-      vendor: 'vendor',
-      metafields: [],
-      options: [],
-      isPopular: true,
-    );
-    const ShopProduct testResponseEntity = testProductModel;
-
     test('should check if the device is online', () async {
       //arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -168,7 +169,7 @@ void main() {
 
         //assert
         verify(() => mockRemoteDataSource.getProductById(testId));
-        expect(result, const Right(testResponseEntity));
+        expect(result, Right(testProduct));
       });
     });
 
@@ -178,6 +179,132 @@ void main() {
         () async {
           //act
           final result = await repository.getProductById(testId);
+
+          //assert
+          expect(result, Left(InternetConnectionFailure()));
+        },
+      );
+    });
+  });
+
+  group('getAllProductsFromCollectionById', () {
+    test('should check if the device is online', () async {
+      //arrange
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemoteDataSource.getAllProductsByCollectionId(testId))
+          .thenAnswer((invocation) async => [testProductModel]);
+
+      //act
+      await repository.getAllProductsByCollectionId(testId);
+
+      //assert
+      verify(() => mockNetworkInfo.isConnected);
+    });
+
+    runTestsOnline(() {
+      test(
+          'Should return list of products when call to remote datsource for list of products is successful',
+          () async {
+        final List<ShopProductModel> testProductModels = [testProductModel];
+        final List<ShopProduct> testProducts = testProductModels;
+        //arrange
+        when(() => mockRemoteDataSource.getAllProductsByCollectionId(testId))
+            .thenAnswer((_) async => testProductModels);
+
+        //act
+        final result = await repository.getAllProductsByCollectionId(testId);
+
+        //assert
+        verify(() => mockRemoteDataSource.getAllProductsByCollectionId(testId));
+        expect(result, Right(testProducts));
+      });
+
+      test(
+          'Should return a sever failure when the call to the remote datasource is unsuccesful',
+          () async {
+        //arrange
+
+        when(() => mockRemoteDataSource.getAllProductsByCollectionId(testId))
+            .thenThrow(ServerException());
+
+        //act
+
+        final result = await repository.getAllProductsByCollectionId(testId);
+
+        //assert
+        verify(() => mockRemoteDataSource.getAllProductsByCollectionId(testId));
+        expect(result, Left(ServerFailure()));
+      });
+    });
+
+    runTestsOffline(() {
+      test(
+        'Should return internet connection failure when device is offline',
+        () async {
+          //act
+          final result = await repository.getAllProductsByCollectionId(testId);
+
+          //assert
+          expect(result, Left(InternetConnectionFailure()));
+        },
+      );
+    });
+  });
+
+  group('getAllCollections', () {
+    ShopCollectionModel testCollectionModel = const ShopCollectionModel(
+      id: 'id',
+      title: 'title',
+      products: ShopProducts(hasNextPage: false, products: []),
+      description: 'test description',
+      descriptionHtml: 'test description html',
+      handle: 'test handle',
+      image: ShopCollectionImage(
+        originalSrc: 'test image url',
+        altText: 'test alt text',
+        id: 'test id',
+      ),
+      updatedAt: 'test updated at',
+    );
+
+    ShopCollection testCollection = testCollectionModel;
+
+    test('should check if the device is online', () async {
+      //arrange
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+
+      //act
+      await repository.getAllCollections();
+
+      //assert
+      verify(() => mockNetworkInfo.isConnected);
+    });
+
+    runTestsOnline(() {
+      final List<ShopCollectionModel> testCollectionModels = [
+        testCollectionModel
+      ];
+      final List<ShopCollection> testCollections = testCollectionModels;
+      test('Should get all collections from remote data source', () async {
+        //arrange
+        when(() => mockRemoteDataSource.getAllCollections())
+            .thenAnswer((_) async => testCollectionModels);
+
+        //act
+        final result = await repository.getAllCollections();
+
+        //assert
+        verify(() => mockRemoteDataSource.getAllCollections());
+        expect(result, Right(testCollections));
+      });
+    });
+
+    runTestsOffline(() {
+      test(
+        'Should return internet connection failure when device is offline',
+        () async {
+          //act
+          final result = await repository.getAllCollections();
 
           //assert
           expect(result, Left(InternetConnectionFailure()));

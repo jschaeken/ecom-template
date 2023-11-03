@@ -41,33 +41,29 @@ class ShopProductModel extends ShopProduct {
     /// ShopifyProduct option field to ShopProduct option field
     List<ShopProductOption> shopifyOptionsToShopProductOptions(
         List<Option> options) {
-      final shopProductOptions = <ShopProductOption>[];
-      for (Option option in options) {
-        shopProductOptions.add(
-          ShopProductOption(
-            id: option.id,
-            name: option.name,
-            values: option.values,
-          ),
-        );
+      try {
+        return options.map((e) {
+          return ShopProductOption(id: e.id, name: e.name, values: e.values);
+        }).toList();
+      } catch (e) {
+        return [];
       }
-      return shopProductOptions;
     }
 
     /// ShopifyProduct images field to ShopProduct images fiel
     List<ShopProductImage> shopifyImagesToShopProductImages(
         List<ShopifyImage> images) {
-      final shopProductImages = <ShopProductImage>[];
-      for (ShopifyImage image in images) {
-        shopProductImages.add(
-          ShopProductImage(
-            id: image.id,
-            altText: image.altText,
-            originalSrc: image.originalSrc,
-          ),
-        );
+      try {
+        return images.map((e) {
+          return ShopProductImage(
+            id: e.id,
+            altText: e.altText,
+            originalSrc: e.originalSrc,
+          );
+        }).toList();
+      } catch (e) {
+        return [];
       }
-      return shopProductImages;
     }
 
     /// ShopifyProduct productVariants field to ShopProduct productVariants field

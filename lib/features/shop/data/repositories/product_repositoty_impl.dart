@@ -3,7 +3,7 @@ import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/network/network_info.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
-import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_collection.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
 
@@ -17,7 +17,7 @@ class ProductRepositoryImplementation implements ProductRepository {
   });
 
   @override
-  Future<Either<Failure, List<ShopProductModel>>> getFullProducts() async {
+  Future<Either<Failure, List<ShopProduct>>> getFullProducts() async {
     if (await networkInfo.isConnected) {
       try {
         return Right(await remoteDataSource.getAllProducts());
@@ -30,7 +30,7 @@ class ProductRepositoryImplementation implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, ShopProductModel>> getProductById(String id) async {
+  Future<Either<Failure, ShopProduct>> getProductById(String id) async {
     if (await networkInfo.isConnected) {
       try {
         return Right(await remoteDataSource.getProductById(id));
@@ -43,8 +43,29 @@ class ProductRepositoryImplementation implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, List<ShopProduct>>> getReviewsForProductid(String id) {
-    // TODO: implement getReviewsForProductid
-    throw UnimplementedError();
+  Future<Either<Failure, List<ShopProduct>>> getAllProductsByCollectionId(
+      String id) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return Right(await remoteDataSource.getAllProductsByCollectionId(id));
+      } catch (e) {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ShopCollection>>> getAllCollections() async {
+    if (await networkInfo.isConnected) {
+      try {
+        return Right(await remoteDataSource.getAllCollections());
+      } catch (e) {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
   }
 }

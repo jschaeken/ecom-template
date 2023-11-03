@@ -1,6 +1,8 @@
 import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -45,23 +47,38 @@ class InitialStateWidget extends StatelessWidget {
 }
 
 class IconTextError extends StatelessWidget {
+  final Failure failure;
+
   const IconTextError({
     super.key,
-    required this.icon,
-    required this.text,
+    required this.failure,
   });
 
-  final IconData icon;
-  final String text;
+  // Map failure to (IconData, String) through a switch statement
+  dynamic mapFailure(failure) {
+    switch (failure.runtimeType) {
+      case ServerFailure:
+        return (CupertinoIcons.exclamationmark_triangle, 'Server Error');
+      case InternetConnectionFailure:
+        return (CupertinoIcons.wifi_slash, 'No Internet Connection');
+      default:
+        return (Icons.error_outline, 'Unknown Error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(width: double.infinity),
-        CustomIcon(icon),
-        TextBody(text: text)
-      ],
+    final (icon, text) = mapFailure(failure);
+    return Padding(
+      padding: Constants.padding,
+      child: Column(
+        children: [
+          const SizedBox(width: double.infinity),
+          CustomIcon(icon),
+          const SizedBox(height: 20),
+          TextBody(text: text)
+        ],
+      ),
     );
   }
 }

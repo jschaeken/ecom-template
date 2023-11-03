@@ -27,7 +27,7 @@ class ShopProduct extends Equatable {
   final String? description;
   final String? descriptionHtml;
   final String? handle;
-  final String? isPopular;
+  final bool? isPopular;
 
   const ShopProduct({
     required this.title,
@@ -77,7 +77,7 @@ class ShopProduct extends Equatable {
 }
 
 class ShopProductProductVariant extends Equatable {
-  final String price;
+  final Price price;
   final String title;
   final String weight;
   final String weightUnit;
@@ -89,7 +89,7 @@ class ShopProductProductVariant extends Equatable {
   final Price? unitPrice;
   final ShopProductUnitPriceMeasurement? unitPriceMeasurement;
   final List<ShopProductSelectedOptions>? selectedOptions;
-  final String? compareAtPrice;
+  final Price? compareAtPrice;
   final ShopProductImage? image;
 
   const ShopProductProductVariant({
@@ -130,7 +130,10 @@ class ShopProductProductVariant extends Equatable {
   static productVariantToShopProductProductVariant(
       ProductVariant productVariant) {
     return ShopProductProductVariant(
-      price: productVariant.price.formattedPrice,
+      price: Price(
+        amount: productVariant.price.amount.toString(),
+        currencyCode: productVariant.price.currencyCode,
+      ),
       title: productVariant.title,
       weight: productVariant.weight.toString(),
       weightUnit: productVariant.weightUnit,
@@ -166,7 +169,10 @@ class ShopProductProductVariant extends Equatable {
               .toList()
           : null,
       compareAtPrice: productVariant.compareAtPrice != null
-          ? productVariant.compareAtPrice!.formattedPrice
+          ? Price(
+              amount: productVariant.compareAtPrice!.amount.toString(),
+              currencyCode: productVariant.compareAtPrice!.currencyCode,
+            )
           : null,
       image: productVariant.image != null
           ? ShopProductImage(

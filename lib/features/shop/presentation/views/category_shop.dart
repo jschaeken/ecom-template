@@ -1,6 +1,4 @@
-import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/presentation/widgets/featured_brand_tile.dart';
-import 'package:ecom_template/core/presentation/widgets/multi_image_banner.dart';
 import 'package:ecom_template/core/presentation/widgets/product_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/slim_text_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
@@ -70,11 +68,9 @@ class _CategoryShopState extends State<CategoryShop> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Promo PageView Header
-            MultiImageBanner(images: promoImages),
+            /* MultiImageBanner(images: promoImages), */
 
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
 
             BlocBuilder<ShoppingBloc, ShoppingState>(
               builder: (context, state) {
@@ -99,11 +95,13 @@ class _CategoryShopState extends State<CategoryShop> {
                           itemBuilder: (context, index) {
                             return LargeProductTile(
                               product: state.products[index],
+                              isLast: index == state.products.length - 1,
                               onTap: () {
                                 Navigator.push(context, CupertinoPageRoute(
                                   builder: (context) {
                                     return ProductPage(
-                                        id: state.products[index].id);
+                                      id: state.products[index].id,
+                                    );
                                   },
                                 ));
                               },
@@ -119,23 +117,9 @@ class _CategoryShopState extends State<CategoryShop> {
                     height: 240,
                   );
                 } else if (state is ShoppingError) {
-                  switch (state.failure.runtimeType) {
-                    case ServerFailure:
-                      return const IconTextError(
-                        icon: CupertinoIcons.exclamationmark_triangle,
-                        text: 'A Sever Error Has Occured',
-                      );
-                    case InternetConnectionFailure:
-                      return const IconTextError(
-                        icon: CupertinoIcons.wifi_slash,
-                        text: 'No Internet Conection',
-                      );
-                    default:
-                      return const IconTextError(
-                        icon: CupertinoIcons.question,
-                        text: 'An Unknown Error Has Occured',
-                      );
-                  }
+                  return IconTextError(
+                    failure: state.failure,
+                  );
                 } else if (state is ShoppingInitial) {
                   return const SizedBox(
                     height: 240,

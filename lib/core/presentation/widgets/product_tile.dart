@@ -10,18 +10,20 @@ class LargeProductTile extends StatelessWidget {
     required this.product,
     required this.onFavoriteTap,
     required this.onTap,
+    required this.isLast,
   });
 
   final ShopProduct product;
   final VoidCallback onFavoriteTap;
   final VoidCallback onTap;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: Constants.padding,
+        margin: Constants.padding.copyWith(right: isLast ? null : 0),
         decoration: BoxDecoration(
           borderRadius: Constants.borderRadius,
           color: Theme.of(context).canvasColor,
@@ -33,23 +35,20 @@ class LargeProductTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: Constants.borderRadius,
                 child: SizedBox(
-                  width: 150,
+                  width: 120,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
                       // Product Image
-                      Padding(
-                        padding: Constants.padding,
-                        child: product.images.isNotEmpty
-                            ? Image.network(
-                                product.images[0].originalSrc,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.asset(
-                                'assets/images/placeholder-image.png',
-                                fit: BoxFit.cover,
-                              ),
-                      ),
+                      product.images.isNotEmpty
+                          ? Image.network(
+                              product.images[0].originalSrc,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/images/placeholder-image.png',
+                              fit: BoxFit.cover,
+                            ),
 
                       // Gradient Overlay
                       Container(
@@ -98,7 +97,7 @@ class LargeProductTile extends StatelessWidget {
                               ),
                               const SizedBox(height: 5),
                               TextBody(
-                                text: product.productVariants[0].price,
+                                text: product.productVariants[0].price.amount,
                                 color: Colors.white,
                               ),
                             ],

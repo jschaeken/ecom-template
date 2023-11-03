@@ -33,7 +33,7 @@ void main() {
     productType: '',
     productVariants: [
       ShopProductProductVariant(
-        price: 'price',
+        price: Price(amount: '200', currencyCode: 'USD'),
         title: 'title',
         weight: 'weight',
         weightUnit: 'weightUnit',

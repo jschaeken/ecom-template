@@ -21,4 +21,6 @@ class Constants {
     'Nov',
     'Dec'
   ];
+
+  static String placeholderImagePath = 'assets/images/placeholder-image.png';
 }

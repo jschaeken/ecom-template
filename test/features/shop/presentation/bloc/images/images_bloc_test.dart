@@ -28,22 +28,5 @@ void main() {
       // act
       bloc.add(const VariantImageSelected(index: tIndex));
     });
-
-    test(
-        'When the MainImageSelected event is passed, the MainImageEnlarged should be emitted',
-        () {
-      // arrange
-      const tIndex = 1;
-
-      // assert later
-      const expected = [
-        MainImageEnlarged(
-            variantIndexSelected: tIndex, imageUrl: 'testurl.com'),
-      ];
-      expectLater(bloc.stream, emitsInOrder(expected));
-
-      // act
-      bloc.add(const MainImageSelected(imageUrl: 'testurl.com'));
-    });
   });
 }

@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/util/themes.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ void main() async {
   );
   await di.init();
   runApp(
-    const MyApp(),
+    DevicePreview(builder: (context) => const MyApp()),
   );
 }
 
@@ -41,6 +42,9 @@ class MyApp extends StatelessWidget {
         theme: CustomTheme.lightTheme,
         darkTheme: ThemeData.dark(),
         themeMode: ThemeMode.light,
+        useInheritedMediaQuery: true,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
         home: const MainView(),
       ),
     );
