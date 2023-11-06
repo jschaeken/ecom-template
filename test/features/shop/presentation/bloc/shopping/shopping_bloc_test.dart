@@ -3,6 +3,7 @@ import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
+import 'package:ecom_template/features/shop/domain/usecases/get_all_products_by_collection_id.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,17 +13,23 @@ class MockGetAllProducts extends Mock implements GetAllProducts {}
 
 class MockGetProductById extends Mock implements GetProductById {}
 
+class MockGetAllProductsByCollectionId extends Mock
+    implements GetAllProductsByCollectionId {}
+
 void main() {
   late ShoppingBloc bloc;
   late MockGetAllProducts mockGetAllProducts;
   late MockGetProductById mockGetProductById;
+  late MockGetAllProductsByCollectionId mockGetAllProductsByCollectionId;
 
   setUp(() {
     mockGetAllProducts = MockGetAllProducts();
     mockGetProductById = MockGetProductById();
+    mockGetAllProductsByCollectionId = MockGetAllProductsByCollectionId();
     bloc = ShoppingBloc(
       getAllProducts: mockGetAllProducts,
       getProductById: mockGetProductById,
+      getAllProductsByCollectionId: mockGetAllProductsByCollectionId,
     );
   });
 

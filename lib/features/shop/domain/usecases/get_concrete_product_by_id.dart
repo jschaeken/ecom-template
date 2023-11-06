@@ -7,7 +7,7 @@ import 'package:ecom_template/features/shop/domain/repositories/product_reposito
 class GetProductById implements UseCase<Type, Params> {
   final ProductRepository repository;
 
-  GetProductById(this.repository);
+  GetProductById({required this.repository});
 
   @override
   Future<Either<Failure, ShopProduct>> call(Params params) {

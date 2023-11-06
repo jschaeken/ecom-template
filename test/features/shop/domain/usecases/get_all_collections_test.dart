@@ -1,8 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/shop/data/models/shop_collection_model.dart';
+import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_collection.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_collections.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +19,7 @@ void main() {
 
   setUp(() {
     mockProductRepository = MockProductRepository();
-    usecase = GetAllCollections(mockProductRepository);
+    usecase = GetAllCollections(repository: mockProductRepository);
   });
 
   final testProducts = <ShopProduct>[

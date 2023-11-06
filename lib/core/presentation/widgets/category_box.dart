@@ -12,6 +12,7 @@ class CategoryImageBox extends StatelessWidget {
     this.subtitle,
     required this.onTap,
     this.height = 400,
+    this.isLoading = false,
     super.key,
   });
 
@@ -20,6 +21,7 @@ class CategoryImageBox extends StatelessWidget {
   final String? subtitle;
   final Function onTap;
   final double height;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +53,16 @@ class CategoryImageBox extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: Constants.borderRadius,
                 gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.center,
-                  colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.9),
-                    Theme.of(context).primaryColor.withOpacity(0.0),
-                  ],
-                ),
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.center,
+                    colors: [
+                      isLoading
+                          ? Theme.of(context).primaryColor.withOpacity(0.5)
+                          : Theme.of(context).primaryColor.withOpacity(0.8),
+                      isLoading
+                          ? Theme.of(context).primaryColor.withOpacity(0.5)
+                          : Theme.of(context).primaryColor.withOpacity(0.2),
+                    ]),
               ),
               child: Padding(
                 padding: Constants.padding,

@@ -7,7 +7,7 @@ import 'package:ecom_template/features/shop/domain/repositories/product_reposito
 class GetAllProductsByCollectionId extends UseCase<List<ShopProduct>, Params> {
   ProductRepository repository;
 
-  GetAllProductsByCollectionId(this.repository);
+  GetAllProductsByCollectionId({required this.repository});
 
   @override
   Future<Either<Failure, dynamic>> call(Params params) async {

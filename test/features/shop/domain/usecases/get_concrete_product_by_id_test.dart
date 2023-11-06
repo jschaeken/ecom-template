@@ -2,6 +2,7 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
+import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
@@ -18,7 +19,7 @@ void main() {
 
   setUp(() {
     mockProductRepository = MockProductRepository();
-    usecase = GetProductById(mockProductRepository);
+    usecase = GetProductById(repository: mockProductRepository);
   });
 
   const testId = 'a1b2c3';

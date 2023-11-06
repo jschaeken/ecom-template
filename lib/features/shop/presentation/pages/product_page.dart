@@ -5,6 +5,9 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/core/presentation/widgets/buttons.dart'
     as buttons;
 import 'package:ecom_template/core/presentation/widgets/variant_scrollable.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/images/images_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
@@ -20,6 +23,7 @@ class ProductPage extends StatelessWidget {
   final String id;
   final ShoppingBloc shopBloc = sl<ShoppingBloc>();
   final ImagesBloc imagesBloc = sl<ImagesBloc>();
+  // final bagBloc = sl<BagBloc>();
 
   void changeSelectedVariantIndex(int index) {
     imagesBloc.add(VariantImageSelected(index: index));
@@ -27,6 +31,15 @@ class ProductPage extends StatelessWidget {
 
   void getProduct() {
     shopBloc.add(GetProductByIdEvent(id: id));
+  }
+
+  void _addToBag(ShopProductProductVariant productVariant, int quantity,
+      BuildContext context) {
+    final BagItem bagItem = BagItem.fromShopProductVariant(
+      product: productVariant,
+      quantity: quantity,
+    );
+    BlocProvider.of<BagBloc>(context).add(AddBagItemEvent(bagItem: bagItem));
   }
 
   @override
@@ -100,7 +113,8 @@ class ProductPage extends StatelessWidget {
                                         onTap: (imageUrl) {
                                           imagesBloc.add(
                                             MainImageSelected(
-                                                imageUrl: imageUrl),
+                                              imageUrl: imageUrl,
+                                            ),
                                           );
                                         },
                                       );
@@ -196,12 +210,8 @@ class ProductPage extends StatelessWidget {
                                               ),
                                             ),
                                             TextSubHeadline(
-                                              text: state
-                                                  .product
-                                                  .productVariants[imagesState
-                                                      .variantIndexSelected]
-                                                  .price
-                                                  .amount,
+                                              text:
+                                                  '${state.product.productVariants[imagesState.variantIndexSelected].price.currencyCode} ${state.product.productVariants[imagesState.variantIndexSelected].price.amount}',
                                             ),
                                           ],
                                         );
@@ -397,23 +407,47 @@ class ProductPage extends StatelessWidget {
                                 ),
 
                                 // Accent Add to bag button
-                                buttons.CtaButton(
-                                  onTap: () {},
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CustomIcon(
-                                        CupertinoIcons.bag_fill,
+                                BlocBuilder<ShoppingBloc, ShoppingState>(
+                                    builder: (context, shopState) {
+                                  if (shopState is ShoppingInitial) {
+                                    return const InitialStateWidget();
+                                  }
+                                  if (shopState is ShoppingLoading) {
+                                    return const LoadingStateWidget(
+                                      height: 50,
+                                    );
+                                  }
+                                  if (shopState is ShoppingLoadedById) {
+                                    return buttons.CtaButton(
+                                      onTap: () {
+                                        _addToBag(
+                                          shopState.product.productVariants[
+                                              imagesBloc
+                                                  .state.variantIndexSelected],
+                                          1,
+                                          context,
+                                        );
+                                      },
+                                      child: const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          CustomIcon(
+                                            CupertinoIcons.bag_fill,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          TextSubHeadline(
+                                            text: 'Add to Bag',
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      TextSubHeadline(
-                                        text: 'Add to Bag',
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                    );
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                }),
 
                                 const StandardSpacing(),
 
@@ -465,6 +499,8 @@ class ProductPage extends StatelessWidget {
                                   ),
                                 ),
 
+                                const StandardSpacing(multiplier: 4),
+
                                 // Description
                                 BlocBuilder<ShoppingBloc, ShoppingState>(
                                     builder: (context, state) {
@@ -477,7 +513,7 @@ class ProductPage extends StatelessWidget {
                                     );
                                   }
                                   if (state is ShoppingLoadedById) {
-                                    return state.product.description == null
+                                    return state.product.descriptionHtml == null
                                         ? const SizedBox()
                                         : Column(
                                             crossAxisAlignment:

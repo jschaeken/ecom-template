@@ -1,27 +1,31 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/shop/domain/entities/price.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_options.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:ecom_template/util/themes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shopify_flutter/shopify_config.dart';
-import 'package:ecom_template/injection_container.dart' as di;
+import 'package:ecom_template/injection_container.dart' as injection;
 
 import 'core/presentation/main_view.dart';
 import 'core/presentation/state_managment/navigation_provider.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
-  WidgetsFlutterBinding.ensureInitialized();
-  ShopifyConfig.setConfig(
-    storefrontAccessToken: dotenv.env['STOREFRONT_ACCESS_TOKEN']!,
-    storeUrl: dotenv.env['STORE_URL']!,
-    adminAccessToken: dotenv.env['ADMIN_ACCESS_TOKEN']!,
-    storefrontApiVersion: dotenv.env['STOREFRONT_API_VERSION']!,
-  );
-  await di.init();
+  await initialConfig();
   runApp(
-    DevicePreview(builder: (context) => const MyApp()),
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const MyApp(),
+    ),
   );
 }
 
@@ -35,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<PageNavigationProvider>(
           create: (_) => PageNavigationProvider(),
         ),
+        BlocProvider(create: (_) => injection.sl<BagBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -51,6 +56,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Config
+
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
@@ -59,4 +66,23 @@ class NoThumbScrollBehavior extends ScrollBehavior {
         PointerDeviceKind.stylus,
         PointerDeviceKind.trackpad,
       };
+}
+
+Future<void> initialConfig() async {
+  await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+  ShopifyConfig.setConfig(
+    storefrontAccessToken: dotenv.env['STOREFRONT_ACCESS_TOKEN']!,
+    storeUrl: dotenv.env['STORE_URL']!,
+    adminAccessToken: dotenv.env['ADMIN_ACCESS_TOKEN']!,
+    storefrontApiVersion: dotenv.env['STOREFRONT_API_VERSION']!,
+  );
+  await Hive.initFlutter();
+  Hive.registerAdapter(BagItemAdapter());
+  Hive.registerAdapter(PriceAdapter());
+  Hive.registerAdapter(ShopProductImageAdapter());
+  Hive.registerAdapter(ShopProductSelectedOptionsAdapter());
+  Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
+
+  await injection.init();
 }

@@ -1,4 +1,5 @@
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:shopify_flutter/models/src/product/metafield/metafield.dart';
 import 'package:shopify_flutter/models/src/product/option/option.dart';
 import 'package:shopify_flutter/models/src/product/product.dart';

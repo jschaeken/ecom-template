@@ -11,6 +11,8 @@ class ServerFailure extends Failure {}
 
 class InternetConnectionFailure extends Failure {}
 
+class CacheFailure extends Failure {}
+
 class UnknownFailure extends Failure {}
 
 const String SERVER_FAILURE_MESSAGE = 'Server Failure';

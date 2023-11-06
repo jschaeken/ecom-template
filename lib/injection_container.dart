@@ -1,14 +1,23 @@
 import 'package:ecom_template/core/network/network_info.dart';
+import 'package:ecom_template/features/bag/data/datasources/bag_items_local_datasource.dart';
+import 'package:ecom_template/features/bag/data/repositories/bag_items_repository_impl.dart';
+import 'package:ecom_template/features/bag/domain/repositories/bag_items_repository.dart';
+import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
+import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_collections.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
+import 'package:ecom_template/features/shop/domain/usecases/get_all_products_by_collection_id.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/images/images_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shopify_flutter/shopify/src/shopify_store.dart';
 
@@ -20,6 +29,7 @@ Future<void> init() async {
     () => ShoppingBloc(
       getAllProducts: sl(),
       getProductById: sl(),
+      getAllProductsByCollectionId: sl(),
     ),
   );
   // Product Page - Images Bloc
@@ -32,9 +42,21 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton(() => GetAllProducts(sl()));
-  sl.registerLazySingleton(() => GetProductById(sl()));
-  sl.registerLazySingleton(() => GetAllCollections(sl()));
+  /// Features - Bag - Bag Bloc
+  sl.registerFactory(
+    () => BagBloc(
+      addBagItem: sl(),
+      removeBagItem: sl(),
+      getAllBagItems: sl(),
+    ),
+  );
+
+  /// Features - Shop - Use Cases
+  sl.registerLazySingleton(() => GetAllProducts(repository: sl()));
+  sl.registerLazySingleton(() => GetProductById(repository: sl()));
+  sl.registerLazySingleton(() => GetAllCollections(repository: sl()));
+  sl.registerLazySingleton(
+      () => GetAllProductsByCollectionId(repository: sl()));
 
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImplementation(
@@ -43,9 +65,25 @@ Future<void> init() async {
     ),
   );
 
-  // Data Sources
+  /// Features - Bag - Use Cases
+  sl.registerLazySingleton(() => AddBagItem(repository: sl()));
+  sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
+  sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
+
+  sl.registerLazySingleton<BagItemsRepository>(
+    () => BagItemsRepositoryImpl(
+      dataSource: sl(),
+    ),
+  );
+
+  /// Features - Shop - Data Sources
   sl.registerLazySingleton<ProductRemoteDataSource>(
     () => ProductRemoteDataSourceImpl(shopifyStore: sl()),
+  );
+
+  /// Features - Bag - Data Sources
+  sl.registerLazySingleton<BagItemsLocalDataSource>(
+    () => BagItemsLocalDataSourceImpl(interface: sl()),
   );
 
   /// Core
@@ -54,4 +92,5 @@ Future<void> init() async {
   /// External
   sl.registerLazySingleton(() => InternetConnectionChecker());
   sl.registerLazySingleton(() => ShopifyStore.instance);
+  sl.registerLazySingleton(() => Hive);
 }

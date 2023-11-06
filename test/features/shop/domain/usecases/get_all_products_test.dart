@@ -20,7 +20,7 @@ void main() {
 
   setUp(() {
     mockProductRepository = MockProductRepository();
-    usecase = GetAllProducts(mockProductRepository);
+    usecase = GetAllProducts(repository: mockProductRepository);
   });
 
   test('should get all products from the repository', () async {

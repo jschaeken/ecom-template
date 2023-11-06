@@ -7,7 +7,7 @@ import 'package:ecom_template/features/shop/domain/repositories/product_reposito
 class GetAllCollections extends UseCase<ShopCollection, NoParams> {
   final ProductRepository repository;
 
-  GetAllCollections(this.repository);
+  GetAllCollections({required this.repository});
 
   @override
   Future<Either<Failure, dynamic>> call(NoParams params) async {

@@ -5,7 +5,7 @@ class Constants {
 
   static BorderRadius borderRadius = BorderRadius.circular(8);
 
-  static EdgeInsets innerPadding = const EdgeInsets.all(2);
+  static EdgeInsets innerPadding = const EdgeInsets.all(3);
 
   static List<String> months = [
     'Jan',

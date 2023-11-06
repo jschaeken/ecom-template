@@ -3,6 +3,7 @@ import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
+import 'package:ecom_template/features/shop/domain/usecases/get_all_products_by_collection_id.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
 import 'package:equatable/equatable.dart';
 
@@ -12,9 +13,13 @@ part 'shopping_state.dart';
 class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
   final GetAllProducts getAllProducts;
   final GetProductById getProductById;
+  final GetAllProductsByCollectionId getAllProductsByCollectionId;
 
-  ShoppingBloc({required this.getAllProducts, required this.getProductById})
-      : super(ShoppingInitial()) {
+  ShoppingBloc({
+    required this.getAllProducts,
+    required this.getProductById,
+    required this.getAllProductsByCollectionId,
+  }) : super(ShoppingInitial()) {
     on<ShoppingEvent>((event, emit) async {
       switch (event.runtimeType) {
         case GetProductByIdEvent:
@@ -23,12 +28,9 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
               Params(id: (event as GetProductByIdEvent).id));
           productOrFailure.fold(
             (failure) {
-              emit(
-                ShoppingError(
+              emit(ShoppingError(
                   message: mapFailureToErrorMessage(failure),
-                  failure: failure,
-                ),
-              );
+                  failure: failure));
             },
             (product) {
               emit(ShoppingLoadedById(product: product));
@@ -52,6 +54,28 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
             },
           );
           break;
+        case GetProductsByCollectionIdEvent:
+          emit(ShoppingLoading());
+          final productsOrFailure = await getAllProductsByCollectionId(
+            Params(id: (event as GetProductsByCollectionIdEvent).id),
+          );
+          productsOrFailure.fold(
+            (failure) {
+              emit(
+                ShoppingError(
+                  message: mapFailureToErrorMessage(failure),
+                  failure: failure,
+                ),
+              );
+            },
+            (products) {
+              emit(
+                ShoppingLoaded(products: products),
+              );
+            },
+          );
+          break;
+
         default:
           emit(ShoppingError(
               message: UNEXPECTED_FAILURE_MESSAGE, failure: UnknownFailure()));

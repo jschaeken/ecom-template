@@ -1,10 +1,15 @@
 import 'package:ecom_template/core/config.dart';
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
-import 'package:ecom_template/features/shop/presentation/pages/bag_page.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/explore_page.dart';
+import 'package:ecom_template/features/shop/presentation/pages/favorites_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -18,13 +23,10 @@ class _MainViewState extends State<MainView> {
   late List<GlobalKey<NavigatorState>> keys;
 
   final List<Widget> tabBarPages = [
-    const ExplorePage(pageTitle: 'EXPLORE'),
+    ExplorePage(pageTitle: 'EXPLORE'),
     const ShopPage(pageTitle: 'SHOP'),
     const BagPage(pageTitle: 'BAG'),
-    // const FavoritesPage(pageTitle: 'FAVORITES'),
-    const Center(
-      child: Text('Favorites Page'),
-    ),
+    const FavoritesPage(pageTitle: 'FAVORITES'),
     // const AccountPage(pageTitle: 'ACCOUNT'),
     const Center(
       child: Text('Account Page'),
@@ -39,9 +41,6 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    // double screenHeight = MediaQuery.of(context).size.height;
-    // double correspondingWidth = MediaQuery.of(context).size.width;
-    // log('screenHeight: $screenHeight, correspondingWidth: $correspondingWidth');
     return Scaffold(
       body: SafeArea(
         child: IndexedStack(
@@ -59,10 +58,15 @@ class _MainViewState extends State<MainView> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: tabBarItems
-            .map((item) => BottomNavigationBarItem(
-                icon: Icon(item.icon[0]),
+            .map(
+              (item) => BottomNavigationBarItem(
+                icon: item.title == 'Bag'
+                    ? NotiIcon(icon: item.icon[0])
+                    : Icon(item.icon[0]),
                 activeIcon: Icon(item.icon[1]),
-                label: item.title))
+                label: item.title,
+              ),
+            )
             .toList(),
         currentIndex: context.watch<PageNavigationProvider>().currentIndex,
         selectedItemColor: Theme.of(context).primaryColor,
@@ -74,6 +78,48 @@ class _MainViewState extends State<MainView> {
           context.read<PageNavigationProvider>().changeIndex(value);
         },
       ),
+    );
+  }
+}
+
+class NotiIcon extends StatelessWidget {
+  final IconData icon;
+
+  const NotiIcon({required this.icon, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Icon(
+          icon,
+          size: 24,
+        ),
+        BlocBuilder<BagBloc, BagState>(
+          builder: (context, state) {
+            if (state is BagLoadedState && state.bagItems.isNotEmpty) {
+              return Positioned(
+                right: 0,
+                child: Container(
+                  padding: Constants.innerPadding,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 12,
+                    minHeight: 12,
+                  ),
+                ).animate().scaleXY(
+                      curve: Curves.bounceOut,
+                    ),
+              );
+            } else {
+              return const SizedBox();
+            }
+          },
+        )
+      ],
     );
   }
 }
@@ -96,7 +142,7 @@ class OffstageNavigator extends StatelessWidget {
       child: Navigator(
         key: navKey,
         onGenerateRoute: (routeSettings) {
-          return MaterialPageRoute(
+          return CupertinoPageRoute(
             builder: (context) => child,
           );
         },

@@ -39,10 +39,11 @@ class VariantScrollable extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
+                          border: Border.all(
                         color: index == selectedVariantIndex
-                            ? Colors.black
+                            ? Theme.of(context).primaryColor
                             : Colors.transparent,
-                      ),
+                      )),
                       child: Padding(
                         padding: Constants.innerPadding,
                         child: Image.network(

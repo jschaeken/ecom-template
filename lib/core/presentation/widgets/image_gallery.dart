@@ -1,5 +1,5 @@
 import 'package:ecom_template/core/constants.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageGallery extends StatefulWidget {

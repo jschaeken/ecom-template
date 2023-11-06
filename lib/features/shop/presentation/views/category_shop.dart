@@ -2,7 +2,9 @@ import 'package:ecom_template/core/presentation/widgets/featured_brand_tile.dart
 import 'package:ecom_template/core/presentation/widgets/product_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/slim_text_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
+import 'package:ecom_template/features/shop/presentation/pages/collection_view.dart';
 import 'package:ecom_template/features/shop/presentation/pages/product_page.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
 import 'package:ecom_template/injection_container.dart';
@@ -20,7 +22,8 @@ class CategoryShop extends StatefulWidget {
 }
 
 class _CategoryShopState extends State<CategoryShop> {
-  final bloc = sl<ShoppingBloc>();
+  final shopBloc = sl<ShoppingBloc>();
+  final collectionsBloc = sl<CollectionsViewBloc>();
 
   List<String> promoImages = [
     'https://www.hereshealth.ie/cdn/shop/files/viridian2_614x350.jpg?v=1696405958',
@@ -55,136 +58,187 @@ class _CategoryShopState extends State<CategoryShop> {
   @override
   void initState() {
     super.initState();
-    bloc.add(const GetAllProductsEvent());
+    refresh();
+  }
+
+  void refresh() {
+    shopBloc.add(const GetAllProductsEvent());
+    collectionsBloc.add(LoadCollections());
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: BlocProvider(
-        create: (_) => bloc,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Promo PageView Header
-            /* MultiImageBanner(images: promoImages), */
+    return BlocProvider(
+      create: (context) => collectionsBloc,
+      child: SingleChildScrollView(
+        child: BlocProvider(
+          create: (_) => shopBloc,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Promo PageView Header
+              /* MultiImageBanner(images: promoImages), */
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            BlocBuilder<ShoppingBloc, ShoppingState>(
-              builder: (context, state) {
-                if (state is ShoppingLoaded) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Featured Products
-                      Padding(
-                        padding: Constants.padding.copyWith(bottom: 0),
-                        child: TextHeadline(
-                            text: 'Featured ${widget.id} Products'),
-                      ),
-
-                      SizedBox(
-                        height: 240,
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.builder(
-                          controller: pageController,
-                          itemCount: state.products.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return LargeProductTile(
-                              product: state.products[index],
-                              isLast: index == state.products.length - 1,
-                              onTap: () {
-                                Navigator.push(context, CupertinoPageRoute(
-                                  builder: (context) {
-                                    return ProductPage(
-                                      id: state.products[index].id,
-                                    );
-                                  },
-                                ));
-                              },
-                              onFavoriteTap: () {},
-                            );
-                          },
+              BlocBuilder<ShoppingBloc, ShoppingState>(
+                builder: (context, state) {
+                  if (state is ShoppingLoaded) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Featured Products
+                        Padding(
+                          padding: Constants.padding.copyWith(bottom: 0),
+                          child: TextHeadline(
+                              text: 'Featured ${widget.id} Products'),
                         ),
-                      ),
-                    ],
+
+                        SizedBox(
+                          height: 240,
+                          width: MediaQuery.of(context).size.width,
+                          child: ListView.builder(
+                            controller: pageController,
+                            itemCount: state.products.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return LargeProductTile(
+                                product: state.products[index],
+                                isLast: index == state.products.length - 1,
+                                onTap: () {
+                                  Navigator.push(context, CupertinoPageRoute(
+                                    builder: (context) {
+                                      return ProductPage(
+                                        id: state.products[index].id,
+                                      );
+                                    },
+                                  ));
+                                },
+                                onFavoriteTap: () {},
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (state is ShoppingLoading) {
+                    return const LoadingStateWidget(
+                      height: 240,
+                    );
+                  } else if (state is ShoppingError) {
+                    return IconTextError(
+                      failure: state.failure,
+                    );
+                  } else if (state is ShoppingInitial) {
+                    return const SizedBox(
+                      height: 240,
+                    );
+                  } else {
+                    return const SizedBox(
+                      height: 240,
+                    );
+                  }
+                },
+              ),
+
+              // Featured Brands Grid View Title
+              Padding(
+                padding: Constants.padding,
+                child: TextHeadline(text: 'Featured ${widget.id} Brands'),
+              ),
+
+              // Featured Brands Grid View
+              BlocBuilder<ShoppingBloc, ShoppingState>(
+                  builder: (context, state) {
+                if (state is ShoppingLoaded) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: Constants.padding.copyWith(top: 0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.7,
+                      crossAxisSpacing: Constants.padding.right.abs(),
+                      mainAxisSpacing: Constants.padding.bottom.abs(),
+                    ),
+                    itemCount: featuredBrandImages.length,
+                    itemBuilder: (context, index) {
+                      return FeaturedBrandTile(
+                          brand: featuredBrandImages[index]);
+                    },
                   );
                 } else if (state is ShoppingLoading) {
-                  return const LoadingStateWidget(
-                    height: 240,
-                  );
+                  return const SizedBox();
                 } else if (state is ShoppingError) {
-                  return IconTextError(
-                    failure: state.failure,
-                  );
+                  return const SizedBox();
                 } else if (state is ShoppingInitial) {
-                  return const SizedBox(
-                    height: 240,
-                  );
+                  return const SizedBox();
                 } else {
-                  return const SizedBox(
-                    height: 240,
-                  );
+                  return const SizedBox();
                 }
-              },
-            ),
+              }),
 
-            // Featured Brands Grid View Title
-            Padding(
-              padding: Constants.padding,
-              child: TextHeadline(text: 'Featured ${widget.id} Brands'),
-            ),
-            // Featured Brands Grid View
-            BlocBuilder<ShoppingBloc, ShoppingState>(builder: (context, state) {
-              if (state is ShoppingLoaded) {
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: Constants.padding.copyWith(top: 0),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.7,
-                    crossAxisSpacing: Constants.padding.right.abs(),
-                    mainAxisSpacing: Constants.padding.bottom.abs(),
-                  ),
-                  itemCount: featuredBrandImages.length,
-                  itemBuilder: (context, index) {
-                    return FeaturedBrandTile(brand: featuredBrandImages[index]);
-                  },
-                );
-              } else if (state is ShoppingLoading) {
-                return const SizedBox();
-              } else if (state is ShoppingError) {
-                return const SizedBox();
-              } else if (state is ShoppingInitial) {
-                return const SizedBox();
-              } else {
-                return const SizedBox();
-              }
-            }),
-            //List of Product Categories Title
-            Padding(
-              padding: Constants.padding,
-              child: const TextHeadline(text: 'Trending Categories'),
-            ),
+              //List of Product Categories Title
+              Padding(
+                padding: Constants.padding,
+                child: const TextHeadline(text: 'Trending Collections'),
+              ),
 
-            // ListView of Product Categories
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return SlimTextTile(
-                  key: UniqueKey(),
-                  text: 'Category ${index + 1}',
-                  onTap: () {},
-                );
-              },
-            )
-          ],
+              // ListView of Product Categories
+              BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
+                builder: (context, state) {
+                  return BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
+                      builder: (context, state) {
+                    if (state is CollectionsViewLoaded) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.collections.length,
+                        itemBuilder: (context, index) {
+                          return SlimTextTile(
+                            key: UniqueKey(),
+                            text: state.collections[index].title,
+                            onTap: () {
+                              Navigator.push(context, CupertinoPageRoute(
+                                builder: (context) {
+                                  return CollectionView(
+                                    id: state.collections[index].id,
+                                    collectionName:
+                                        state.collections[index].title,
+                                  );
+                                },
+                              ));
+                            },
+                          );
+                        },
+                      );
+                    } else if (state is CollectionsViewLoading) {
+                      return const LoadingStateWidget();
+                    } else if (state is CollectionsViewError) {
+                      return IconTextError(failure: state.failure);
+                    } else if (state is CollectionsViewInitial) {
+                      return const LoadingStateWidget();
+                    } else if (state is CollectionsViewEmpty) {
+                      return const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          Text(
+                            'No Collections',
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  });
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

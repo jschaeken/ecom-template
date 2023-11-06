@@ -1,11 +1,12 @@
+import 'package:ecom_template/features/shop/domain/entities/price.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_options.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopify_flutter/models/src/product/associated_collections/associated_collections.dart';
 import 'package:shopify_flutter/models/src/product/metafield/metafield.dart';
 import 'package:shopify_flutter/models/src/product/option/option.dart';
-import 'package:shopify_flutter/models/src/product/price_v_2/price_v_2.dart';
 import 'package:shopify_flutter/models/src/product/product_variant/product_variant.dart';
-import 'package:shopify_flutter/models/src/product/selected_option/selected_option.dart';
-import 'package:shopify_flutter/models/src/product/unit_price_measurement/unit_price_measurement.dart';
 
 class ShopProduct extends Equatable {
   final String title;
@@ -233,57 +234,5 @@ class ShopProductOption {
     this.id,
     this.name,
     this.values,
-  });
-}
-
-/// Copy of [SelectedOption] from shopify_flutter package
-class ShopProductSelectedOptions {
-  final String name;
-  final String value;
-
-  const ShopProductSelectedOptions({
-    required this.name,
-    required this.value,
-  });
-}
-
-/// Copy of [UnitPriceMeasurement] from shopify_flutter package
-class ShopProductUnitPriceMeasurement {
-  final String measuredType;
-  final String quantityUnit;
-  final double quantityValue;
-  final String referenceUnit;
-  final double referenceValue;
-
-  const ShopProductUnitPriceMeasurement({
-    required this.measuredType,
-    required this.quantityUnit,
-    required this.quantityValue,
-    required this.referenceUnit,
-    required this.referenceValue,
-  });
-}
-
-/// Copy of [PriceV2] from shopify_flutter package
-class Price {
-  final String amount;
-  final String currencyCode;
-
-  const Price({
-    required this.amount,
-    required this.currencyCode,
-  });
-}
-
-/// Copy of [ShopifyImage] from shopify_flutter package
-class ShopProductImage {
-  final String? altText;
-  final String? id;
-  final String originalSrc;
-
-  const ShopProductImage({
-    this.altText,
-    this.id,
-    required this.originalSrc,
   });
 }

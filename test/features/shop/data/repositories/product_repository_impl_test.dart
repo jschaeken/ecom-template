@@ -6,6 +6,7 @@ import 'package:ecom_template/features/shop/data/datasources/product_remote_data
 import 'package:ecom_template/features/shop/data/models/shop_collection_model.dart';
 import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
+import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_collection.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:flutter_test/flutter_test.dart';

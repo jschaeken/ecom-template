@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
 import 'package:shopify_flutter/models/src/product/product.dart';
@@ -75,7 +73,6 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         .map((collection) =>
             ShopCollectionModel.fromShopifyCollection(collection))
         .toList();
-    log('model: $models');
     return models;
   }
 }

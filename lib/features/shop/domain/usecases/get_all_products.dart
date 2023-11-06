@@ -7,7 +7,7 @@ import 'package:ecom_template/features/shop/domain/repositories/product_reposito
 class GetAllProducts implements UseCase<List<ShopProduct>, NoParams> {
   final ProductRepository repository;
 
-  GetAllProducts(this.repository);
+  GetAllProducts({required this.repository});
 
   @override
   Future<Either<Failure, List<ShopProduct>>> call(NoParams params) async {
