@@ -10,5 +10,6 @@ abstract class BagItemsRepository {
 
   Future<Either<Failure, WriteSuccess>> removeBagItem(String id);
 
-  Future<Either<Failure, Stream<List<BagItem>>>> watchBagItems();
+  Future<Either<Failure, WriteSuccess>> updateBagItem(
+      int quantity, BagItem bagItem);
 }

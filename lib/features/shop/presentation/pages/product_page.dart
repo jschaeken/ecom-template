@@ -23,7 +23,6 @@ class ProductPage extends StatelessWidget {
   final String id;
   final ShoppingBloc shopBloc = sl<ShoppingBloc>();
   final ImagesBloc imagesBloc = sl<ImagesBloc>();
-  // final bagBloc = sl<BagBloc>();
 
   void changeSelectedVariantIndex(int index) {
     imagesBloc.add(VariantImageSelected(index: index));
@@ -33,11 +32,16 @@ class ProductPage extends StatelessWidget {
     shopBloc.add(GetProductByIdEvent(id: id));
   }
 
-  void _addToBag(ShopProductProductVariant productVariant, int quantity,
-      BuildContext context) {
+  void _addToBag({
+    required ShopProduct product,
+    required ShopProductProductVariant productVariant,
+    required int quantity,
+    required BuildContext context,
+  }) {
     final BagItem bagItem = BagItem.fromShopProductVariant(
       product: productVariant,
       quantity: quantity,
+      parentProductId: product.id,
     );
     BlocProvider.of<BagBloc>(context).add(AddBagItemEvent(bagItem: bagItem));
   }
@@ -129,7 +133,12 @@ class ProductPage extends StatelessWidget {
                                   },
                                 );
                               } else if (state is ShoppingError) {
-                                return IconTextError(failure: state.failure);
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 100),
+                                    IconTextError(failure: state.failure),
+                                  ],
+                                );
                               } else {
                                 return const SizedBox();
                               }
@@ -310,40 +319,90 @@ class ProductPage extends StatelessWidget {
 
                                 const StandardSpacing(multiplier: 2),
 
-                                // Select Size Title and Size Guide
-                                Row(
-                                  children: [
-                                    const Expanded(
-                                      child: TextSubHeadline(
-                                        text: 'Select Size',
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          CustomIcon(
-                                            CupertinoIcons.info_circle,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            size: 18,
+                                BlocBuilder<ShoppingBloc, ShoppingState>(
+                                    builder: (context, state) {
+                                  if (state is ShoppingInitial) {
+                                    return // Select Size Title and Size Guide
+                                        Row(
+                                      children: [
+                                        const Expanded(
+                                          child: TextSubHeadline(
+                                            text: 'Select Size',
                                           ),
-                                          const SizedBox(
-                                            width: 5,
+                                        ),
+                                        Flexible(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              CustomIcon(
+                                                CupertinoIcons.info_circle,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                size: 18,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              const TextBody(
+                                                text: 'Size Guide',
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ],
                                           ),
-                                          const TextBody(
-                                            text: 'Size Guide',
-                                            decoration:
-                                                TextDecoration.underline,
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                  if (state is ShoppingLoading) {
+                                    return const LoadingStateWidget(
+                                      height: 50,
+                                    );
+                                  }
+                                  if (state is ShoppingLoadedById) {
+                                    // Select Size Title and Size Guide
+                                    return Row(
+                                      children: [
+                                        const Expanded(
+                                          child: TextSubHeadline(
+                                            text: 'Select Size',
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                        ),
+                                        Flexible(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              CustomIcon(
+                                                CupertinoIcons.info_circle,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                size: 18,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              const TextBody(
+                                                text: 'Size Guide',
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  } else if (shopBloc.state is ShoppingError) {
+                                    return const SizedBox();
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                }),
 
                                 const StandardSpacing(),
 
@@ -406,7 +465,7 @@ class ProductPage extends StatelessWidget {
                                   multiplier: 2,
                                 ),
 
-                                // Accent Add to bag button
+                                // Accent Add to Bag, Apple Pay, Share buttons
                                 BlocBuilder<ShoppingBloc, ShoppingState>(
                                     builder: (context, shopState) {
                                   if (shopState is ShoppingInitial) {
@@ -418,88 +477,95 @@ class ProductPage extends StatelessWidget {
                                     );
                                   }
                                   if (shopState is ShoppingLoadedById) {
-                                    return buttons.CtaButton(
-                                      onTap: () {
-                                        _addToBag(
-                                          shopState.product.productVariants[
-                                              imagesBloc
-                                                  .state.variantIndexSelected],
-                                          1,
-                                          context,
-                                        );
-                                      },
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          CustomIcon(
-                                            CupertinoIcons.bag_fill,
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        buttons.CtaButton(
+                                          onTap: () {
+                                            _addToBag(
+                                              product: shopState.product,
+                                              productVariant: shopState
+                                                      .product.productVariants[
+                                                  imagesBloc.state
+                                                      .variantIndexSelected],
+                                              quantity: 1,
+                                              context: context,
+                                            );
+                                          },
+                                          child: const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CustomIcon(
+                                                CupertinoIcons.bag_fill,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              TextSubHeadline(
+                                                text: 'Add to Bag',
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            width: 5,
+                                        ),
+
+                                        const StandardSpacing(),
+
+                                        // Apple Pay / Google Pay Button
+                                        buttons.CtaButton(
+                                          color: Colors.black,
+                                          onTap: () {},
+                                          child: const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CustomIcon(
+                                                Icons.apple,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              TextSubHeadline(
+                                                text: 'Pay',
+                                                color: Colors.white,
+                                              ),
+                                            ],
                                           ),
-                                          TextSubHeadline(
-                                            text: 'Add to Bag',
+                                        ),
+
+                                        const StandardSpacing(multiplier: 4),
+
+                                        // Share button
+                                        Center(
+                                          child: buttons.CtaButton(
+                                            width: 120,
+                                            color: Theme.of(context).cardColor,
+                                            onTap: () {},
+                                            child: const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Center(
+                                                  child: CustomIcon(
+                                                    CupertinoIcons.share,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                TextBody(text: 'Share'),
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     );
                                   } else {
                                     return const SizedBox();
                                   }
                                 }),
-
-                                const StandardSpacing(),
-
-                                // Apple Pay / Google Pay Button
-                                buttons.CtaButton(
-                                  color: Colors.black,
-                                  onTap: () {},
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CustomIcon(
-                                        Icons.apple,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      TextSubHeadline(
-                                        text: 'Pay',
-                                        color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const StandardSpacing(multiplier: 4),
-
-                                // Share button
-                                Center(
-                                  child: buttons.CtaButton(
-                                    width: 120,
-                                    color: Theme.of(context).cardColor,
-                                    onTap: () {},
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: CustomIcon(
-                                            CupertinoIcons.share,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        TextBody(text: 'Share'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                const StandardSpacing(multiplier: 4),
 
                                 // Description
                                 BlocBuilder<ShoppingBloc, ShoppingState>(

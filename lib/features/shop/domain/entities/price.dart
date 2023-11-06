@@ -15,4 +15,9 @@ class Price {
     required this.amount,
     required this.currencyCode,
   });
+
+  @override
+  String toString() {
+    return '$currencyCode $amount';
+  }
 }

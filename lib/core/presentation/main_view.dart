@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:ecom_template/core/config.dart';
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
+import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/explore_page.dart';
@@ -8,6 +11,7 @@ import 'package:ecom_template/features/shop/presentation/pages/favorites_page.da
 import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,6 +25,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   final List<TabBarItem> tabBarItems = Config.tabBarItems;
   late List<GlobalKey<NavigatorState>> keys;
+  StreamSubscription<BagState>? bagStreamSubscription;
 
   final List<Widget> tabBarPages = [
     ExplorePage(pageTitle: 'EXPLORE'),
@@ -33,10 +38,24 @@ class _MainViewState extends State<MainView> {
     )
   ];
 
+  void setBagListerForHapticFeedback(Stream<BagState> stream) {
+    bagStreamSubscription = stream.listen((event) {
+      HapticFeedback.selectionClick();
+      debugPrint('Click!');
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     keys = tabBarPages.map((page) => GlobalKey<NavigatorState>()).toList();
+    setBagListerForHapticFeedback(BlocProvider.of<BagBloc>(context).stream);
+  }
+
+  @override
+  dispose() {
+    bagStreamSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -104,11 +123,17 @@ class NotiIcon extends StatelessWidget {
                   padding: Constants.innerPadding,
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(6),
+                    shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(
-                    minWidth: 12,
-                    minHeight: 12,
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Center(
+                    child: TextBody(
+                      text: state.bagItems.length.toString(),
+                      color: Theme.of(context).canvasColor,
+                    ),
                   ),
                 ).animate().scaleXY(
                       curve: Curves.bounceOut,

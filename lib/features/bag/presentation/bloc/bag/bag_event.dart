@@ -28,3 +28,14 @@ class RemoveBagItemEvent extends BagEvent {
 class ClearBagEvent extends BagEvent {}
 
 class GetAllBagItemsEvent extends BagEvent {}
+
+class UpdateBagItemQuantityEvent extends BagEvent {
+  final int quantity;
+  final BagItem bagItem;
+
+  const UpdateBagItemQuantityEvent(
+      {required this.quantity, required this.bagItem});
+
+  @override
+  List<Object> get props => [bagItem, quantity];
+}

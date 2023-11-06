@@ -43,10 +43,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<ShopProductModel> getProductById(String id) async {
-    List<Product>? response = await shopifyStore.getProductsByIds([id]);
-    if ((response ?? []).isNotEmpty) {
-      return ShopProductModel.fromShopifyProduct(response!.first);
-    } else {
+    try {
+      List<Product>? response = await shopifyStore.getProductsByIds([id]);
+      if ((response ?? []).isNotEmpty) {
+        return ShopProductModel.fromShopifyProduct(response!.first);
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
       throw ServerException();
     }
   }
@@ -68,11 +72,15 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<List<ShopCollectionModel>> getAllCollections() async {
-    final response = await shopifyStore.getAllCollections();
-    final models = response
-        .map((collection) =>
-            ShopCollectionModel.fromShopifyCollection(collection))
-        .toList();
-    return models;
+    try {
+      final response = await shopifyStore.getAllCollections();
+      final models = response
+          .map((collection) =>
+              ShopCollectionModel.fromShopifyCollection(collection))
+          .toList();
+      return models;
+    } catch (e) {
+      throw ServerException();
+    }
   }
 }

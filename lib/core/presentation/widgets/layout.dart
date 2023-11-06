@@ -11,12 +11,14 @@ class HeaderRow extends StatelessWidget {
     required this.accountInitials,
     this.child,
     this.shadow = true,
+    this.centerTitle = false,
   });
 
   final String pageTitle;
   final String accountInitials;
   final Widget? child;
   final bool shadow;
+  final bool centerTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +38,27 @@ class HeaderRow extends StatelessWidget {
         padding: Constants.padding,
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                TextHeadline(text: pageTitle),
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: TextBody(
-                    text: accountInitials,
-                    color: Theme.of(context).canvasColor,
+            centerTitle
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextHeadline(text: pageTitle),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextHeadline(text: pageTitle),
+                      CircleAvatar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: TextBody(
+                          text: accountInitials,
+                          color: Theme.of(context).canvasColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
             Visibility(
                 visible: child != null,
                 child: Column(
@@ -107,18 +116,25 @@ class StandardSpacing extends StatelessWidget {
   const StandardSpacing({
     super.key,
     this.multiplier = 1,
+    this.horizontalAxis = false,
   });
 
   final double multiplier;
+  final bool horizontalAxis;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: Padding(
-        padding: Constants.padding.copyWith(
-          top: 0,
-          bottom: Constants.padding.bottom * multiplier,
-        ),
+        padding: horizontalAxis
+            ? Constants.padding.copyWith(
+                left: 0,
+                right: Constants.padding.right * multiplier,
+              )
+            : Constants.padding.copyWith(
+                top: 0,
+                bottom: Constants.padding.bottom * multiplier,
+              ),
       ),
     );
   }

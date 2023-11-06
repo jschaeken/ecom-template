@@ -33,13 +33,15 @@ class BagItemAdapter extends TypeAdapter<BagItem> {
       unitPrice: fields[9] as Price?,
       unitPriceMeasurement: fields[10] as ShopProductUnitPriceMeasurement?,
       quantity: fields[14] as int,
+      parentProductId: fields[15] as String,
+      uniqueKey: fields[16] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, BagItem obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.price)
       ..writeByte(1)
@@ -69,7 +71,11 @@ class BagItemAdapter extends TypeAdapter<BagItem> {
       ..writeByte(13)
       ..write(obj.image)
       ..writeByte(14)
-      ..write(obj.quantity);
+      ..write(obj.quantity)
+      ..writeByte(15)
+      ..write(obj.parentProductId)
+      ..writeByte(16)
+      ..write(obj.uniqueKey);
   }
 
   @override

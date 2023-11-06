@@ -13,15 +13,21 @@ class AddBagItem extends UseCase<BagItem, BagItemParams> {
 
   @override
   Future<Either<Failure, WriteSuccess>> call(BagItemParams params) async {
-    return await repository.addBagItem(params.bagItem);
+    String uniqueKey = params.bagItem.parentProductId + params.bagItem.id;
+    for (int i = 0; i < (params.bagItem.selectedOptions?.length ?? 0); i++) {
+      uniqueKey += params.bagItem.selectedOptions![i].value;
+    }
+    final updatedWithKey = params.bagItem.copyWith(uniqueKey: uniqueKey);
+    return await repository.addBagItem(updatedWithKey);
   }
 }
 
 class BagItemParams extends Equatable {
   final BagItem bagItem;
+  final int quantity;
 
-  const BagItemParams({required this.bagItem});
+  const BagItemParams({required this.bagItem, this.quantity = 1});
 
   @override
-  List<Object?> get props => [bagItem];
+  List<Object?> get props => [bagItem, quantity];
 }

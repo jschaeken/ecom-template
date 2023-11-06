@@ -23,19 +23,19 @@ void main() async {
   });
 
   const testBagItem = BagItem(
-    id: '1',
-    title: 'test',
-    image: null,
-    price: Price(amount: '100', currencyCode: 'USD'),
-    quantity: 0,
-    availableForSale: true,
-    quantityAvailable: 1,
-    requiresShipping: true,
-    selectedOptions: [],
-    sku: '',
-    weight: '',
-    weightUnit: '',
-  );
+      id: '1',
+      title: 'test',
+      image: null,
+      price: Price(amount: '100', currencyCode: 'USD'),
+      quantity: 0,
+      availableForSale: true,
+      quantityAvailable: 1,
+      requiresShipping: true,
+      selectedOptions: [],
+      sku: '',
+      weight: '',
+      weightUnit: '',
+      parentProductId: 'testParentId');
 
   group('getAllBagItems', () {
     test('Should return all entries from HiveBox', () async {

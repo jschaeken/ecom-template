@@ -21,19 +21,19 @@ void main() {
 
   const testBagItemParams = BagItemParams(
     bagItem: BagItem(
-      id: '1',
-      title: 'test',
-      image: null,
-      price: Price(amount: '100', currencyCode: 'USD'),
-      quantity: 0,
-      availableForSale: true,
-      quantityAvailable: 1,
-      requiresShipping: true,
-      selectedOptions: [],
-      sku: '',
-      weight: '',
-      weightUnit: '',
-    ),
+        id: '1',
+        title: 'test',
+        image: null,
+        price: Price(amount: '100', currencyCode: 'USD'),
+        quantity: 0,
+        availableForSale: true,
+        quantityAvailable: 1,
+        requiresShipping: true,
+        selectedOptions: [],
+        sku: '',
+        weight: '',
+        weightUnit: '',
+        parentProductId: 'testParentId'),
   );
 
   test('should remove a bag item from the repository', () async {

@@ -5,6 +5,7 @@ import 'package:ecom_template/features/bag/domain/repositories/bag_items_reposit
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
@@ -48,6 +49,7 @@ Future<void> init() async {
       addBagItem: sl(),
       removeBagItem: sl(),
       getAllBagItems: sl(),
+      updateBagItem: sl(),
     ),
   );
 
@@ -69,6 +71,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddBagItem(repository: sl()));
   sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
   sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
+  sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
 
   sl.registerLazySingleton<BagItemsRepository>(
     () => BagItemsRepositoryImpl(

@@ -85,4 +85,7 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
 
   await injection.init();
+
+  // Delete box from disk
+  // Hive.deleteBoxFromDisk('bag');
 }

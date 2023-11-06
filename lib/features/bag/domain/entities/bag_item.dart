@@ -70,6 +70,12 @@ class BagItem extends ShopProductProductVariant {
   @HiveField(14)
   final int quantity;
 
+  @HiveField(15)
+  final String parentProductId;
+
+  @HiveField(16)
+  final String uniqueKey;
+
   const BagItem({
     required this.title,
     required this.id,
@@ -86,6 +92,8 @@ class BagItem extends ShopProductProductVariant {
     this.unitPrice,
     this.unitPriceMeasurement,
     required this.quantity,
+    required this.parentProductId,
+    this.uniqueKey = 'none',
   }) : super(
           price: price,
           title: title,
@@ -104,7 +112,9 @@ class BagItem extends ShopProductProductVariant {
         );
 
   static BagItem fromShopProductVariant(
-      {required ShopProductProductVariant product, required int quantity}) {
+      {required ShopProductProductVariant product,
+      required int quantity,
+      required String parentProductId}) {
     return BagItem(
       title: product.title,
       id: product.id,
@@ -121,6 +131,47 @@ class BagItem extends ShopProductProductVariant {
       unitPrice: product.unitPrice,
       unitPriceMeasurement: product.unitPriceMeasurement,
       quantity: quantity,
+      parentProductId: parentProductId,
+    );
+  }
+
+  BagItem copyWith({
+    Price? price,
+    String? title,
+    String? weight,
+    String? weightUnit,
+    bool? availableForSale,
+    String? sku,
+    bool? requiresShipping,
+    String? id,
+    int? quantityAvailable,
+    Price? unitPrice,
+    ShopProductUnitPriceMeasurement? unitPriceMeasurement,
+    List<ShopProductSelectedOptions>? selectedOptions,
+    Price? compareAtPrice,
+    ShopProductImage? image,
+    int? quantity,
+    String? parentProductId,
+    String? uniqueKey,
+  }) {
+    return BagItem(
+      title: title ?? this.title,
+      id: id ?? this.id,
+      availableForSale: availableForSale ?? this.availableForSale,
+      price: price ?? this.price,
+      sku: sku ?? this.sku,
+      weight: weight ?? this.weight,
+      weightUnit: weightUnit ?? this.weightUnit,
+      image: image ?? this.image,
+      selectedOptions: selectedOptions ?? this.selectedOptions,
+      requiresShipping: requiresShipping ?? this.requiresShipping,
+      quantityAvailable: quantityAvailable ?? this.quantityAvailable,
+      compareAtPrice: compareAtPrice ?? this.compareAtPrice,
+      unitPrice: unitPrice ?? this.unitPrice,
+      unitPriceMeasurement: unitPriceMeasurement ?? this.unitPriceMeasurement,
+      quantity: quantity ?? this.quantity,
+      parentProductId: parentProductId ?? this.parentProductId,
+      uniqueKey: uniqueKey ?? this.uniqueKey,
     );
   }
 }

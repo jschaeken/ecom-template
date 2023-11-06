@@ -145,7 +145,7 @@ class ShopProductProductVariant extends Equatable {
       quantityAvailable: productVariant.quantityAvailable,
       unitPrice: productVariant.unitPrice != null
           ? Price(
-              amount: productVariant.unitPrice!.amount.toString(),
+              amount: productVariant.unitPrice!.amount.toStringAsFixed(2),
               currencyCode: productVariant.unitPrice!.currencyCode,
             )
           : null,

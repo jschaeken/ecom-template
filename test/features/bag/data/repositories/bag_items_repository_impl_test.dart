@@ -27,22 +27,22 @@ void main() {
 
   final testBagItems = [
     const BagItem(
-      title: 'title',
-      id: '',
-      availableForSale: true,
-      price: Price(amount: '', currencyCode: 'String'),
-      sku: 'sku',
-      weight: 'weight',
-      weightUnit: 'weightUnit',
-      image: ShopProductImage(
-        originalSrc: '',
-        altText: '',
-      ),
-      selectedOptions: [],
-      requiresShipping: true,
-      quantityAvailable: 1,
-      quantity: 1,
-    ),
+        title: 'title',
+        id: '',
+        availableForSale: true,
+        price: Price(amount: '', currencyCode: 'String'),
+        sku: 'sku',
+        weight: 'weight',
+        weightUnit: 'weightUnit',
+        image: ShopProductImage(
+          originalSrc: '',
+          altText: '',
+        ),
+        selectedOptions: [],
+        requiresShipping: true,
+        quantityAvailable: 1,
+        quantity: 1,
+        parentProductId: 'testParentId'),
   ];
 
   group('GetAllBagItems', () {
@@ -138,23 +138,6 @@ void main() {
       verify(
           () => mockBagItemsLocalDataSource.removeBagItem(testBagItems[0].id));
       expect(result, equals(Left(CacheFailure())));
-    });
-  });
-
-  group('watchBagItems', () {
-    final testStream = Stream.value(testBagItems);
-
-    test('Should return a stream of bag items from the data source', () async {
-      // arrange
-      when(() => mockBagItemsLocalDataSource.watchBagItems())
-          .thenAnswer((_) async => testStream);
-
-      // act
-      final result = await repository.watchBagItems();
-
-      // assert
-      verify(() => mockBagItemsLocalDataSource.watchBagItems());
-      expect(result, equals(testStream));
     });
   });
 }

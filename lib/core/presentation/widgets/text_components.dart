@@ -76,7 +76,7 @@ class TextSubHeadline extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .headlineMedium!
-            .copyWith(color: color, fontWeight: fontWeight, fontSize: 17));
+            .copyWith(color: color, fontWeight: fontWeight, fontSize: 15));
   }
 }
 

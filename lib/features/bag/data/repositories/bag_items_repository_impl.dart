@@ -20,6 +20,7 @@ class BagItemsRepositoryImpl implements BagItemsRepository {
     }
   }
 
+  /// Unique key for each bag item is the parentProductId + id + selectedOptions, as the same product can be added multiple times with different options
   @override
   Future<Either<Failure, WriteSuccess>> addBagItem(BagItem bagItem) async {
     try {
@@ -41,12 +42,13 @@ class BagItemsRepositoryImpl implements BagItemsRepository {
   }
 
   @override
-  Future<Either<Failure, Stream<List<BagItem>>>> watchBagItems() async {
+  Future<Either<Failure, WriteSuccess>> updateBagItem(
+      int quantity, BagItem bagItem) async {
     try {
-      final reponse = await dataSource.watchBagItems();
-      return Right(reponse);
+      final response = await dataSource.setBagItemQuantity(quantity, bagItem);
+      return Right(response);
     } catch (e) {
-      throw CacheFailure();
+      return Left(CacheFailure());
     }
   }
 }
