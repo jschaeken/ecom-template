@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ecom_template/core/config.dart';
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
+import 'package:ecom_template/core/presentation/widgets/noti_icon.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
@@ -12,7 +13,6 @@ import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainView extends StatefulWidget {
@@ -32,16 +32,43 @@ class _MainViewState extends State<MainView> {
     const ShopPage(pageTitle: 'SHOP'),
     const BagPage(pageTitle: 'BAG'),
     const FavoritesPage(pageTitle: 'FAVORITES'),
-    // const AccountPage(pageTitle: 'ACCOUNT'),
-    const Center(
-      child: Text('Account Page'),
+
+    // TODO: Add Account Page
+    const Scaffold(
+      body: Center(
+        child: Text('Account Page'),
+      ),
     )
   ];
 
   void setBagListerForHapticFeedback(Stream<BagState> stream) {
     bagStreamSubscription = stream.listen((event) {
-      HapticFeedback.selectionClick();
-      debugPrint('Click!');
+      if (event is BagLoadedState) {
+        if (event.bagItems.isNotEmpty &&
+            (context.read<PageNavigationProvider>().currentIndex != 2 ||
+                keys[2].currentState?.canPop() == true)) {
+          HapticFeedback.mediumImpact();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Theme.of(context).canvasColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: Constants.borderRadius,
+              ),
+              elevation: 10,
+              content: const TextBody(
+                text: 'Bag Updated',
+              ),
+              action: SnackBarAction(
+                  label: 'View Bag',
+                  onPressed: () {
+                    context.read<PageNavigationProvider>().changeIndex(2);
+                    keys[2].currentState?.popUntil((route) => route.isFirst);
+                  }),
+            ),
+          );
+        }
+      }
     });
   }
 
@@ -95,56 +122,11 @@ class _MainViewState extends State<MainView> {
         type: BottomNavigationBarType.fixed,
         onTap: (value) {
           context.read<PageNavigationProvider>().changeIndex(value);
+          if (value == context.read<PageNavigationProvider>().currentIndex) {
+            keys[value].currentState?.popUntil((route) => route.isFirst);
+          }
         },
       ),
-    );
-  }
-}
-
-class NotiIcon extends StatelessWidget {
-  final IconData icon;
-
-  const NotiIcon({required this.icon, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Icon(
-          icon,
-          size: 24,
-        ),
-        BlocBuilder<BagBloc, BagState>(
-          builder: (context, state) {
-            if (state is BagLoadedState && state.bagItems.isNotEmpty) {
-              return Positioned(
-                right: 0,
-                child: Container(
-                  padding: Constants.innerPadding,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Center(
-                    child: TextBody(
-                      text: state.bagItems.length.toString(),
-                      color: Theme.of(context).canvasColor,
-                    ),
-                  ),
-                ).animate().scaleXY(
-                      curve: Curves.bounceOut,
-                    ),
-              );
-            } else {
-              return const SizedBox();
-            }
-          },
-        )
-      ],
     );
   }
 }

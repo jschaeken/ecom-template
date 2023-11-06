@@ -22,11 +22,12 @@ class DropdownButton extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border.all(
-            color: Theme.of(context).unselectedWidgetColor,
+            width: 2,
+            color: Theme.of(context).primaryColor,
           ),
           borderRadius: BorderRadius.circular(5),
         ),
-        height: 43,
+        height: 45,
         child: Padding(
           padding: Constants.padding,
           child: Row(

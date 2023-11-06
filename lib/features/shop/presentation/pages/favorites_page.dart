@@ -1,6 +1,4 @@
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
-import 'package:ecom_template/features/shop/presentation/widgets/empty_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -17,13 +15,13 @@ class FavoritesPage extends StatelessWidget {
             pageTitle: pageTitle,
             accountInitials: 'JS',
           ),
-          const Expanded(
-            child: EmptyView(
-              icon: CupertinoIcons.heart_fill,
-              title: 'Your favorites is empty',
-              subtitle: 'Add some items to see them here',
-            ),
-          ),
+          // const Expanded(
+          //   child: EmptyView(
+          //     icon: CupertinoIcons.heart_fill,
+          //     title: 'Your favorites is empty',
+          //     subtitle: 'Add some items to see them here',
+          //   ),
+          // ),
         ],
       ),
     );

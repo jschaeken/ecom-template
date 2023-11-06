@@ -6,7 +6,9 @@ class PageNavigationProvider extends ChangeNotifier {
   int get currentIndex => _currentIndex;
 
   void changeIndex(int index) {
-    _currentIndex = index;
-    notifyListeners();
+    if (index != _currentIndex) {
+      _currentIndex = index;
+      notifyListeners();
+    }
   }
 }

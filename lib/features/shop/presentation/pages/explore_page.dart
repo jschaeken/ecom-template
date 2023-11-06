@@ -14,71 +14,73 @@ class ExplorePage extends StatelessWidget {
   final String pageTitle;
   final ScrollController scrollController = ScrollController();
   final TextEditingController searchController = TextEditingController();
-  bool overlaySearchBar = false;
   final String accountInitials = 'JS';
   final collectionsBloc = sl<CollectionsViewBloc>();
 
   @override
   Widget build(BuildContext context) {
     collectionsBloc.add(LoadCollections());
-    return BlocProvider(
-      create: (context) => collectionsBloc,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          RefreshIndicator.adaptive(
-            onRefresh: () async {
-              collectionsBloc.add(LoadCollections());
-              await Future.delayed(const Duration(milliseconds: 400));
-            },
-            color: Theme.of(context).primaryColor,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              controller: scrollController,
-              child: Column(
-                children: [
-                  // Header Title and Account
-                  HeaderRow(
-                    pageTitle: pageTitle,
-                    accountInitials: accountInitials,
-                    child: CustomSearchBar(controller: searchController),
-                  ),
-                  // Categories
-                  CategoryLoader(collectionsBloc: collectionsBloc),
-                ],
-              ),
-            ),
-          ),
-
-          // Overlay Search Bar
-          ListenableBuilder(
-              listenable: scrollController,
-              builder: (context, child) {
-                if (scrollController.position.userScrollDirection ==
-                        ScrollDirection.forward &&
-                    !overlaySearchBar &&
-                    scrollController.offset > 70) {
-                  overlaySearchBar = true;
-                } else if (overlaySearchBar &&
-                    (scrollController.position.userScrollDirection ==
-                            ScrollDirection.reverse ||
-                        scrollController.offset < 70)) {
-                  overlaySearchBar = false;
-                }
-                return Visibility(
-                  visible: overlaySearchBar,
-                  child: Container(
-                    color: Theme.of(context).canvasColor,
-                    child: Padding(
-                      padding: Constants.padding,
+    return Scaffold(
+      body: BlocProvider(
+        create: (context) => collectionsBloc,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            RefreshIndicator.adaptive(
+              onRefresh: () async {
+                collectionsBloc.add(LoadCollections());
+              },
+              color: Theme.of(context).primaryColor,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: scrollController,
+                child: Column(
+                  children: [
+                    // Header Title and Account
+                    HeaderRow(
+                      pageTitle: pageTitle,
+                      accountInitials: accountInitials,
                       child: CustomSearchBar(controller: searchController),
                     ),
-                  ).animate().fadeIn(
-                        duration: const Duration(milliseconds: 100),
+
+                    // Categories
+                    CategoryLoader(collectionsBloc: collectionsBloc),
+                  ],
+                ),
+              ),
+            ),
+
+            // Overlay Search Bar
+            ListenableBuilder(
+                listenable: scrollController,
+                builder: (context, child) {
+                  bool overlay = scrollController.offset > 70;
+                  if (scrollController.position.userScrollDirection ==
+                          ScrollDirection.forward &&
+                      !overlay &&
+                      scrollController.offset > 70) {
+                    overlay = true;
+                  } else if (overlay &&
+                      (scrollController.position.userScrollDirection ==
+                              ScrollDirection.reverse ||
+                          scrollController.offset < 70)) {
+                    overlay = false;
+                  }
+                  return Visibility(
+                    visible: overlay,
+                    child: Container(
+                      color: Theme.of(context).canvasColor,
+                      child: Padding(
+                        padding: Constants.padding,
+                        child: CustomSearchBar(controller: searchController),
                       ),
-                );
-              }),
-        ],
+                    ).animate().fadeIn(
+                          duration: const Duration(milliseconds: 100),
+                        ),
+                  );
+                }),
+          ],
+        ),
       ),
     );
   }

@@ -25,12 +25,6 @@ class _CategoryShopState extends State<CategoryShop> {
   final shopBloc = sl<ShoppingBloc>();
   final collectionsBloc = sl<CollectionsViewBloc>();
 
-  List<String> promoImages = [
-    'https://www.hereshealth.ie/cdn/shop/files/viridian2_614x350.jpg?v=1696405958',
-    'https://www.hereshealth.ie/cdn/shop/files/ecoverzero2_592x364.jpg?v=1696405604',
-    'https://www.hereshealth.ie/cdn/shop/files/hhbannerupdated_b9d83d32-e311-47fd-a402-7a2cd6f0a9c4_1227x725.jpg?v=1696499376%201.25x',
-  ];
-
   List<List<String>> featuredBrandImages = [
     [
       'Veridian',
@@ -123,8 +117,11 @@ class _CategoryShopState extends State<CategoryShop> {
                       ],
                     );
                   } else if (state is ShoppingLoading) {
-                    return const LoadingStateWidget(
-                      height: 240,
+                    return Padding(
+                      padding: Constants.padding,
+                      child: const LoadingStateWidget(
+                        height: 240,
+                      ),
                     );
                   } else if (state is ShoppingError) {
                     return IconTextError(
