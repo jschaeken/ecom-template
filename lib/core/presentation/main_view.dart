@@ -48,6 +48,7 @@ class _MainViewState extends State<MainView> {
             (context.read<PageNavigationProvider>().currentIndex != 2 ||
                 keys[2].currentState?.canPop() == true)) {
           HapticFeedback.mediumImpact();
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               behavior: SnackBarBehavior.floating,
@@ -121,9 +122,10 @@ class _MainViewState extends State<MainView> {
         showSelectedLabels: false,
         type: BottomNavigationBarType.fixed,
         onTap: (value) {
-          context.read<PageNavigationProvider>().changeIndex(value);
           if (value == context.read<PageNavigationProvider>().currentIndex) {
             keys[value].currentState?.popUntil((route) => route.isFirst);
+          } else {
+            context.read<PageNavigationProvider>().changeIndex(value);
           }
         },
       ),
