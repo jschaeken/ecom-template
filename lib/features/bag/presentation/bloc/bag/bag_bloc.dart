@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
@@ -28,7 +29,11 @@ class BagBloc extends Bloc<BagEvent, BagState> {
         case AddBagItemEvent:
           emit(BagLoadingState());
           final bagItem = (event as AddBagItemEvent).bagItem;
-          final result = await addBagItem(BagItemParams(bagItem: bagItem));
+          final bagItemData = BagItemData(
+              parentProductId: bagItem.parentProductId,
+              productVariantId: bagItem.id,
+              quantity: bagItem.quantity);
+          final result = await addBagItem(bagItemData);
           await result.fold(
             (failure) {
               emit(BagErrorState(failure: failure));
@@ -53,7 +58,11 @@ class BagBloc extends Bloc<BagEvent, BagState> {
         case RemoveBagItemEvent:
           emit(BagLoadingState());
           final bagItem = (event as RemoveBagItemEvent).bagItem;
-          final result = await removeBagItem(BagItemParams(bagItem: bagItem));
+          final bagItemData = BagItemData(
+              parentProductId: bagItem.parentProductId,
+              productVariantId: bagItem.id,
+              quantity: bagItem.quantity);
+          final result = await removeBagItem(bagItemData);
           await result.fold(
             (failure) {
               emit(BagErrorState(failure: failure));
@@ -93,8 +102,12 @@ class BagBloc extends Bloc<BagEvent, BagState> {
         case UpdateBagItemQuantityEvent:
           emit(BagLoadingState());
           final bagItem = (event as UpdateBagItemQuantityEvent).bagItem;
-          final result = await updateBagItem(
-              BagItemParams(bagItem: bagItem, quantity: event.quantity));
+          final bagItemData = BagItemData(
+            parentProductId: bagItem.parentProductId,
+            productVariantId: bagItem.id,
+            quantity: bagItem.quantity,
+          );
+          final result = await updateBagItem(bagItemData);
           await result.fold(
             (failure) {
               emit(BagErrorState(failure: failure));

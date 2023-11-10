@@ -76,6 +76,7 @@ Future<void> init() async {
   sl.registerLazySingleton<BagItemsRepository>(
     () => BagItemsRepositoryImpl(
       dataSource: sl(),
+      productRemoteDataSource: sl(),
     ),
   );
 

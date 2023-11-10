@@ -130,8 +130,6 @@ class ShopProductProductVariant extends Equatable {
 
   static productVariantToShopProductProductVariant(
       ProductVariant productVariant) {
-    print(
-        'productVariantToShopProductProductVariant.unitPrice.formatPrice: ${productVariant.unitPrice?.currencyCode}');
     return ShopProductProductVariant(
       price: Price(
         amount: productVariant.price.amount.toString(),

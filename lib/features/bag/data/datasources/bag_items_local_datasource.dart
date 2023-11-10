@@ -1,26 +1,25 @@
 import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/core/success/write_success.dart';
-import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
-import 'package:flutter/foundation.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 const BOX_NAME = 'bag';
 
 abstract class BagItemsLocalDataSource {
-  /// Gets the cached List<[BagItem]> from the local storage
-  Future<List<BagItem>> getAllBagItems();
+  /// Gets the cached List<[BagItemData]> from the local storage
+  Future<List<BagItemData>> getAllLocalBagItemData();
 
-  /// Adds a [BagItem] to the local storage
-  Future<WriteSuccess> addBagItem(BagItem bagItem);
+  /// Adds a new [BagItemData] to the local storage
+  Future<WriteSuccess> addBagItemData(BagItemData bagItem);
 
-  /// Removes a [BagItem] from the local storage
-  Future<WriteSuccess> removeBagItem(String id);
+  /// Removes a [BagItemData] from the local storage
+  Future<WriteSuccess> removeBagItemData(String id);
 
-  /// Adds a [BagItem] in the local storage with the same uniqueKey and adds the quantity to the existing quantity
-  Future<WriteSuccess> addBagItemQuantity(String entryId, BagItem bagItem);
+  /// Adds a [BagItemData] in the local storage with the same uniqueKey and sums the new quantity to the existing quantity
+  Future<WriteSuccess> addBagItemDataQuantity(String entryId, int quantity);
 
-  /// Updates a [BagItem] in the local storage with the same uniqueKey and sets the quantity
-  Future<WriteSuccess> setBagItemQuantity(int quantity, BagItem bagItem);
+  /// Updates a [BagItemData] in the local storage with the same uniqueKey and sets the quantity
+  Future<WriteSuccess> setBagItemDataQuantity(String entryId, int quantity);
 }
 
 class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
@@ -29,22 +28,26 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   BagItemsLocalDataSourceImpl({required this.interface});
 
   @override
-  Future<List<BagItem>> getAllBagItems() async {
+  Future<List<BagItemData>> getAllLocalBagItemData() async {
     final hiveBox = await _getOpenBox();
     final bagItems = hiveBox.values.toList();
     return bagItems;
   }
 
   @override
-  Future<WriteSuccess> addBagItem(BagItem bagItem) async {
+  Future<WriteSuccess> addBagItemData(BagItemData bagItemData) async {
     try {
       final hiveBox = await _getOpenBox();
-      if (hiveBox.containsKey(bagItem.uniqueKey)) {
-        addBagItemQuantity(bagItem.uniqueKey, bagItem);
+      print('hiveBox: $hiveBox');
+      if (hiveBox.containsKey(bagItemData.productVariantId)) {
+        addBagItemDataQuantity(
+            bagItemData.productVariantId, bagItemData.quantity);
+        return const WriteSuccess();
+      } else {
+        print('adding new bag item: $bagItemData');
+        await hiveBox.put(bagItemData.productVariantId, bagItemData);
         return const WriteSuccess();
       }
-      await hiveBox.put(bagItem.uniqueKey, bagItem);
-      return const WriteSuccess();
     } catch (e) {
       print(e.toString());
       throw CacheException();
@@ -52,7 +55,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   }
 
   @override
-  Future<WriteSuccess> removeBagItem(String id) async {
+  Future<WriteSuccess> removeBagItemData(String id) async {
     try {
       final hiveBox = await _getOpenBox();
       if (hiveBox.containsKey(id)) {
@@ -68,16 +71,17 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   }
 
   @override
-  Future<WriteSuccess> addBagItemQuantity(
-      String entryId, BagItem bagItem) async {
+  Future<WriteSuccess> addBagItemDataQuantity(
+      String entryId, int quantity) async {
     try {
       final hiveBox = await _getOpenBox();
-      final BagItem existingItem = hiveBox.get(bagItem.uniqueKey)!;
-      final updatedItem = existingItem.copyWith(
-        quantity: existingItem.quantity + bagItem.quantity,
+      final BagItemData existingData = hiveBox.get(entryId)!;
+      BagItemData updated = BagItemData(
+        parentProductId: existingData.parentProductId,
+        quantity: existingData.quantity + quantity,
+        productVariantId: existingData.productVariantId,
       );
-      debugPrint('updatedItem quantity: ${updatedItem.quantity}');
-      await hiveBox.put(bagItem.uniqueKey, updatedItem);
+      await hiveBox.put(entryId, updated);
       return const WriteSuccess();
     } catch (e) {
       print(e.toString());
@@ -86,11 +90,17 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   }
 
   @override
-  Future<WriteSuccess> setBagItemQuantity(int quantity, BagItem bagItem) async {
+  Future<WriteSuccess> setBagItemDataQuantity(
+      String entryId, int quantity) async {
     try {
       final hiveBox = await _getOpenBox();
-      final updatedItem = bagItem.copyWith(quantity: quantity);
-      await hiveBox.put(bagItem.uniqueKey, updatedItem);
+      final BagItemData existingData = hiveBox.get(entryId)!;
+      BagItemData updated = BagItemData(
+        parentProductId: existingData.parentProductId,
+        quantity: quantity,
+        productVariantId: existingData.productVariantId,
+      );
+      await hiveBox.put(entryId, updated);
       return const WriteSuccess();
     } catch (e) {
       print(e.toString());
@@ -98,12 +108,13 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
     }
   }
 
-  Future<Box<BagItem>> _getOpenBox() async {
+  Future<Box<BagItemData>> _getOpenBox() async {
     try {
-      late final Box<BagItem> hiveBox;
-      hiveBox = await interface.openBox(BOX_NAME);
+      late final Box<BagItemData> hiveBox;
+      hiveBox = await interface.openBox<BagItemData>(BOX_NAME);
       return hiveBox;
     } catch (e) {
+      print('getOpenBox error: ${e.toString()}');
       throw CacheException();
     }
   }
