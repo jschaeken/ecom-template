@@ -268,8 +268,6 @@ void main() {
       updatedAt: 'test updated at',
     );
 
-    ShopCollection testCollection = testCollectionModel;
-
     test('should check if the device is online', () async {
       //arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);

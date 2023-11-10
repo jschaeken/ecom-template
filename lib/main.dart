@@ -1,5 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
+import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         theme: CustomTheme.lightTheme,
         darkTheme: ThemeData.dark(),
         themeMode: ThemeMode.light,
+        // ignore: deprecated_member_use
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
@@ -83,6 +85,7 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(ShopProductImageAdapter());
   Hive.registerAdapter(ShopProductSelectedOptionsAdapter());
   Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
+  Hive.registerAdapter((OptionsSelectionAdapter()));
 
   await injection.init();
 

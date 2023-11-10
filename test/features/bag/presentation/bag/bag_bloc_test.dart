@@ -3,12 +3,14 @@ import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -40,24 +42,29 @@ void main() {
     );
   });
 
-  const tItem = BagItemParams(
-      bagItem: BagItem(
-    id: '1',
-    title: 'test',
-    image: null,
-    price: Price(amount: '100', currencyCode: 'USD'),
-    quantity: 0,
-    availableForSale: true,
-    quantityAvailable: 1,
-    requiresShipping: true,
-    selectedOptions: [],
-    sku: '',
-    weight: '',
-    weightUnit: '',
+  const tItem = BagItemData(
     parentProductId: 'testParentId',
-  ));
+    quantity: 1,
+    productVariantId: 'testVariantId',
+  );
 
-  final testBagItems = [tItem.bagItem];
+  final testBagItems = [
+    BagItem(
+      id: tItem.productVariantId,
+      title: 'test',
+      image: null,
+      price: const Price(amount: '100', currencyCode: 'USD'),
+      quantity: tItem.quantity,
+      availableForSale: true,
+      quantityAvailable: 1,
+      requiresShipping: true,
+      selectedOptions: const [],
+      sku: '',
+      weight: '',
+      weightUnit: '',
+      parentProductId: tItem.parentProductId,
+    )
+  ];
 
   test('Initial state should be BagInitial', () {
     // assert
@@ -74,7 +81,7 @@ void main() {
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
 
-      print('testBagItems: $testBagItems');
+      debugPrint('testBagItems: $testBagItems');
 
       // assert later
       final expected = [
@@ -84,7 +91,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: tItem.bagItem));
+      bloc.add(AddBagItemEvent(bagItem: testBagItems[0]));
     });
 
     test('should emit [BagLoadingState, BagErrorState] when getting data fails',
@@ -105,7 +112,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: tItem.bagItem));
+      bloc.add(AddBagItemEvent(bagItem: testBagItems[0]));
     });
   });
 
@@ -127,7 +134,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(RemoveBagItemEvent(bagItem: tItem.bagItem));
+      bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
 
     test('should emit [BagLoadingState, BagErrorState] when getting data fails',
@@ -148,7 +155,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(RemoveBagItemEvent(bagItem: tItem.bagItem));
+      bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
   });
 }

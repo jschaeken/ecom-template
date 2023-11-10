@@ -22,7 +22,7 @@ class _ImageGalleryState extends State<ImageGallery> {
   PageController imageController = PageController();
   double screenWidth = 500;
   double indicatorWidth = 170;
-  late final imageCount;
+  late final int imageCount;
 
   @override
   void initState() {

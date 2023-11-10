@@ -1,5 +1,6 @@
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
+import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -89,4 +90,38 @@ class CtaButton extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<int?> showListSelectorModal({
+  required BuildContext context,
+  required String heading,
+  required List<String> values,
+}) async {
+  return await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 600,
+          child: Column(
+            children: [
+              const StandardSpacing(),
+              TextHeadline(text: heading),
+              const StandardSpacing(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: values.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onTap: () {
+                        Navigator.pop(context, index + 1);
+                      },
+                      title: TextBody(text: values[index].toString()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      });
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:hive_flutter/hive_flutter.dart';

@@ -1,6 +1,9 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 const BOX_NAME = 'bag';
@@ -38,18 +41,18 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   Future<WriteSuccess> addBagItemData(BagItemData bagItemData) async {
     try {
       final hiveBox = await _getOpenBox();
-      print('hiveBox: $hiveBox');
+      debugPrint('hiveBox: $hiveBox');
       if (hiveBox.containsKey(bagItemData.productVariantId)) {
         addBagItemDataQuantity(
             bagItemData.productVariantId, bagItemData.quantity);
         return const WriteSuccess();
       } else {
-        print('adding new bag item: $bagItemData');
+        debugPrint('adding new bag item: $bagItemData');
         await hiveBox.put(bagItemData.productVariantId, bagItemData);
         return const WriteSuccess();
       }
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -65,7 +68,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
         throw Exception('BagItem not found');
       }
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -84,7 +87,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       await hiveBox.put(entryId, updated);
       return const WriteSuccess();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -103,7 +106,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       await hiveBox.put(entryId, updated);
       return const WriteSuccess();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -114,7 +117,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       hiveBox = await interface.openBox<BagItemData>(BOX_NAME);
       return hiveBox;
     } catch (e) {
-      print('getOpenBox error: ${e.toString()}');
+      debugPrint('getOpenBox error: ${e.toString()}');
       throw CacheException();
     }
   }

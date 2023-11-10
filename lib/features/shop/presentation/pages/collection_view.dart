@@ -32,7 +32,7 @@ class _CollectionViewState extends State<CollectionView> {
   bool isGrid = true;
 
   void switchView() {
-    print('switch view');
+    debugPrint('switch view');
   }
 
   @override

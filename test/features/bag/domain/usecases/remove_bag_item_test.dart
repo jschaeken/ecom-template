@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/success/write_success.dart';
-import 'package:ecom_template/features/bag/data/repositories/bag_items_repository_impl.dart';
+import 'package:ecom_template/features/bag/data/repositories/bag_repository_impl.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockBagItemRepository extends Mock implements BagItemsRepositoryImpl {}
+class MockBagItemRepository extends Mock implements BagRepositoryImpl {}
 
 void main() {
   late RemoveBagItem usecase;
