@@ -2,6 +2,8 @@ import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
@@ -41,6 +43,7 @@ class MyApp extends StatelessWidget {
           create: (_) => PageNavigationProvider(),
         ),
         BlocProvider(create: (_) => injection.sl<BagBloc>()),
+        BlocProvider(create: (_) => injection.sl<FavoritesBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -59,7 +62,6 @@ class MyApp extends StatelessWidget {
 }
 
 // Config
-
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
@@ -86,8 +88,9 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(ShopProductSelectedOptionAdapter());
   Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
   Hive.registerAdapter((OptionsSelectionsAdapter()));
+  Hive.registerAdapter((FavoriteAdapter()));
 
   await injection.init();
 
-  Hive.deleteBoxFromDisk('options_selection');
+  await Hive.deleteFromDisk();
 }

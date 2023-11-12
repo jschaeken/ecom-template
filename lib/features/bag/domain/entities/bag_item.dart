@@ -113,25 +113,27 @@ class BagItem extends ShopProductProductVariant {
           image: image,
         );
 
-  static BagItem fromShopProductVariant(
-      {required ShopProductProductVariant product,
-      required int quantity,
-      required String parentProductId}) {
+  static BagItem fromShopProductVariant({
+    required ShopProductProductVariant productVariant,
+    required int quantity,
+    required String parentProductId,
+    required String parentProductTitle,
+  }) {
     return BagItem(
-      title: product.title,
-      id: product.id,
-      availableForSale: product.availableForSale,
-      price: product.price,
-      sku: product.sku,
-      weight: product.weight,
-      weightUnit: product.weightUnit,
-      image: product.image,
-      selectedOptions: product.selectedOptions,
-      requiresShipping: product.requiresShipping,
-      quantityAvailable: product.quantityAvailable,
-      compareAtPrice: product.compareAtPrice,
-      unitPrice: product.unitPrice,
-      unitPriceMeasurement: product.unitPriceMeasurement,
+      title: parentProductTitle,
+      id: productVariant.id,
+      availableForSale: productVariant.availableForSale,
+      price: productVariant.price,
+      sku: productVariant.sku,
+      weight: productVariant.weight,
+      weightUnit: productVariant.weightUnit,
+      image: productVariant.image,
+      selectedOptions: productVariant.selectedOptions,
+      requiresShipping: productVariant.requiresShipping,
+      quantityAvailable: productVariant.quantityAvailable,
+      compareAtPrice: productVariant.compareAtPrice,
+      unitPrice: productVariant.unitPrice,
+      unitPriceMeasurement: productVariant.unitPriceMeasurement,
       quantity: quantity,
       parentProductId: parentProductId,
     );

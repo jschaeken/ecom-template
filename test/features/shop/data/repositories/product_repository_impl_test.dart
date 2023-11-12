@@ -31,7 +31,7 @@ void main() {
       ShopProductProductVariant(
         availableForSale: true,
         id: '',
-        price: Price(amount: '200', currencyCode: 'USD'),
+        price: Price(amount: 200, currencyCode: 'USD'),
         quantityAvailable: 10,
         requiresShipping: true,
         sku: '',

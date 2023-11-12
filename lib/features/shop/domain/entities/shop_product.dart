@@ -135,7 +135,7 @@ class ShopProductProductVariant extends Equatable {
       ProductVariant productVariant) {
     return ShopProductProductVariant(
       price: Price(
-        amount: productVariant.price.amount.toString(),
+        amount: productVariant.price.amount,
         currencyCode: productVariant.price.currencyCode,
       ),
       title: productVariant.title,
@@ -148,7 +148,7 @@ class ShopProductProductVariant extends Equatable {
       quantityAvailable: productVariant.quantityAvailable,
       unitPrice: productVariant.unitPrice != null
           ? Price(
-              amount: productVariant.unitPrice!.amount.toStringAsFixed(2),
+              amount: productVariant.unitPrice!.amount,
               currencyCode: productVariant.unitPrice!.currencyCode,
             )
           : null,
@@ -174,7 +174,7 @@ class ShopProductProductVariant extends Equatable {
           : null,
       compareAtPrice: productVariant.compareAtPrice != null
           ? Price(
-              amount: productVariant.compareAtPrice!.amount.toString(),
+              amount: productVariant.compareAtPrice!.amount,
               currencyCode: productVariant.compareAtPrice!.currencyCode,
             )
           : null,

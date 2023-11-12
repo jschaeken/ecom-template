@@ -4,6 +4,8 @@ import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
@@ -165,24 +167,63 @@ class _CollectionViewState extends State<CollectionView> {
                         shrinkWrap: true,
                         itemCount: state.products.length,
                         itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (context) {
-                                    return ProductPage(
-                                      id: state.products[index].id,
-                                    );
+                          return BlocBuilder<FavoritesBloc, FavoritesState>(
+                            builder: (context, favoriteState) {
+                              bool? isFavorite;
+                              if (favoriteState is FavoritesAddedLoaded ||
+                                  favoriteState is FavoritesRemovedLoaded ||
+                                  favoriteState is FavoritesLoaded ||
+                                  favoriteState is FavoritesEmpty) {
+                                isFavorite = favoriteState.favorites
+                                    .map((e) => e.id)
+                                    .contains(state.products[index].id);
+                              }
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) {
+                                        return ProductPage(
+                                          id: state.products[index].id,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: ProductContainer(
+                                  product: state.products[index],
+                                  isFavorite: isFavorite,
+                                  onFavoriteTap: () {
+                                    if (isFavorite == null) {
+                                      return;
+                                    } else if (isFavorite) {
+                                      BlocProvider.of<FavoritesBloc>(context)
+                                          .add(
+                                        RemoveFavoriteEvent(
+                                          favorite: Favorite(
+                                            parentProdId:
+                                                state.products[index].id,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      BlocProvider.of<FavoritesBloc>(context)
+                                          .add(
+                                        AddFavoriteEvent(
+                                          favorite: Favorite(
+                                            parentProdId:
+                                                state.products[index].id,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
+                                  price: state.products[index].productVariants
+                                      .first.price,
                                 ),
                               );
                             },
-                            child: ProductContainer(
-                              product: state.products[index],
-                              price: state
-                                  .products[index].productVariants.first.price,
-                            ),
                           );
                         },
                       ).animate().fadeIn();
@@ -192,28 +233,67 @@ class _CollectionViewState extends State<CollectionView> {
                         shrinkWrap: true,
                         itemCount: state.products.length,
                         itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (context) {
-                                    return ProductPage(
-                                      id: state.products[index].id,
-                                    );
-                                  },
+                          return BlocBuilder<FavoritesBloc, FavoritesState>(
+                            builder: (context, favoriteState) {
+                              bool? isFavorite;
+                              if (favoriteState is FavoritesAddedLoaded ||
+                                  favoriteState is FavoritesRemovedLoaded ||
+                                  favoriteState is FavoritesLoaded ||
+                                  favoriteState is FavoritesEmpty) {
+                                isFavorite = favoriteState.favorites
+                                    .map((e) => e.id)
+                                    .contains(state.products[index].id);
+                              }
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) {
+                                        return ProductPage(
+                                          id: state.products[index].id,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: SizedBox(
+                                  height: 500,
+                                  width: double.infinity,
+                                  child: ProductContainer(
+                                    product: state.products[index],
+                                    isFavorite: isFavorite,
+                                    onFavoriteTap: () {
+                                      if (isFavorite == null) {
+                                        return;
+                                      } else if (isFavorite) {
+                                        BlocProvider.of<FavoritesBloc>(context)
+                                            .add(
+                                          RemoveFavoriteEvent(
+                                            favorite: Favorite(
+                                              parentProdId:
+                                                  state.products[index].id,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        BlocProvider.of<FavoritesBloc>(context)
+                                            .add(
+                                          AddFavoriteEvent(
+                                            favorite: Favorite(
+                                              parentProdId:
+                                                  state.products[index].id,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    price: state.products[index].productVariants
+                                        .first.price,
+                                  ),
                                 ),
                               );
                             },
-                            child: SizedBox(
-                              height: 500,
-                              width: double.infinity,
-                              child: ProductContainer(
-                                product: state.products[index],
-                                price: state.products[index].productVariants
-                                    .first.price,
-                              ),
-                            ),
                           );
                         },
                       ).animate().fadeIn();
@@ -263,11 +343,15 @@ class ProductContainer extends StatelessWidget {
   const ProductContainer({
     super.key,
     required this.product,
+    required this.isFavorite,
     required this.price,
+    required this.onFavoriteTap,
   });
 
   final ShopProduct product;
+  final bool? isFavorite;
   final Price price;
+  final VoidCallback onFavoriteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +385,7 @@ class ProductContainer extends StatelessWidget {
                     const StandardSpacing(),
                     TextBody(
                       text:
-                          '${product.productVariants.first.price.currencyCode}${product.productVariants.first.price.amount}',
+                          product.productVariants.first.price.formattedPrice(),
                       fontWeight: FontWeight.bold,
                     ),
                   ],
@@ -314,13 +398,25 @@ class ProductContainer extends StatelessWidget {
             alignment: Alignment.topRight,
             child: Padding(
               padding: Constants.padding.copyWith(top: 10, right: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor, shape: BoxShape.circle),
-                child: Padding(
-                  padding: Constants.padding,
-                  child: const CustomIcon(
-                    Icons.favorite_border_rounded,
+              child: GestureDetector(
+                onTap: onFavoriteTap,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      shape: BoxShape.circle),
+                  child: Padding(
+                    padding: Constants.padding,
+                    child: isFavorite == null
+                        ? const SizedBox()
+                        : CustomIcon(
+                            isFavorite!
+                                ? CupertinoIcons.heart_fill
+                                : CupertinoIcons.heart,
+                            size: 20,
+                            color: isFavorite!
+                                ? Colors.red
+                                : Theme.of(context).primaryColor,
+                          ),
                   ),
                 ),
               ),

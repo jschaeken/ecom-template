@@ -4,12 +4,15 @@ import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
+import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -39,7 +42,94 @@ void main() {
       getAllBagItems: mockGetAllBagItems,
       updateBagItem: mockUpdateBagItem,
     );
+    registerFallbackValue(const BagItemData(
+        parentProductId: 'parentProductId',
+        quantity: 1,
+        productVariantId: 'productVariantId'));
   });
+
+  IncompleteBagItem incompleteBagItem = const IncompleteBagItem(
+    optionsSelections: OptionsSelections(
+      selectedOptions: {'Size': 1},
+    ),
+    product: ShopProduct(
+      id: 'testParentId',
+      isPopular: false,
+      title: 'test',
+      images: [],
+      availableForSale: true,
+      createdAt: '',
+      metafields: [],
+      options: [
+        ShopProductOption(
+          name: 'Size',
+          values: ['S', 'M', 'L'],
+        ),
+      ],
+      productType: '',
+      productVariants: [
+        ShopProductProductVariant(
+          id: 'testVariantId1',
+          availableForSale: true,
+          image: null,
+          price: Price(amount: 100, currencyCode: 'USD'),
+          requiresShipping: true,
+          selectedOptions: [
+            ShopProductSelectedOption(
+              name: 'Size',
+              value: 'S',
+            ),
+          ],
+          sku: '',
+          title: '',
+          weight: '',
+          weightUnit: '',
+          quantityAvailable: 1,
+        ),
+        ShopProductProductVariant(
+          id: 'testVariantId2',
+          availableForSale: true,
+          image: null,
+          price: Price(amount: 100, currencyCode: 'USD'),
+          requiresShipping: true,
+          selectedOptions: [
+            ShopProductSelectedOption(
+              name: 'Size',
+              value: 'M',
+            ),
+          ],
+          sku: '',
+          title: '',
+          weight: '',
+          weightUnit: '',
+          quantityAvailable: 1,
+        ),
+        ShopProductProductVariant(
+          id: 'testVariantId3',
+          availableForSale: true,
+          image: null,
+          price: Price(amount: 100, currencyCode: 'USD'),
+          requiresShipping: true,
+          selectedOptions: [
+            ShopProductSelectedOption(
+              name: 'Size',
+              value: 'L',
+            ),
+          ],
+          sku: '',
+          title: '',
+          weight: '',
+          weightUnit: '',
+          quantityAvailable: 1,
+        ),
+      ],
+      publishedAt: '',
+      tags: [],
+      updatedAt: '',
+      vendor: '',
+    ),
+    quantity: 1,
+  );
 
   const tItem = BagItemData(
     parentProductId: 'testParentId',
@@ -52,7 +142,7 @@ void main() {
       id: tItem.productVariantId,
       title: 'test',
       image: null,
-      price: const Price(amount: '100', currencyCode: 'USD'),
+      price: const Price(amount: 100, currencyCode: 'USD'),
       quantity: tItem.quantity,
       availableForSale: true,
       quantityAvailable: 1,
@@ -75,7 +165,7 @@ void main() {
         'should emit [BagLoadingState, BagLoadedAddedState] when data is gotten successfully',
         () async {
       // arrange
-      when(() => mockAddBagItem.call(tItem))
+      when(() => mockAddBagItem.call(any()))
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
@@ -88,7 +178,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: testBagItems[0]));
+      bloc.add(AddBagItemEvent(bagItem: incompleteBagItem));
     });
 
     test('should emit [BagLoadingState, BagErrorState] when getting data fails',
@@ -96,7 +186,7 @@ void main() {
       final cacheFailure = CacheFailure();
 
       // arrange
-      when(() => mockAddBagItem(tItem))
+      when(() => mockAddBagItem(any()))
           .thenAnswer((_) async => Left(cacheFailure));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => const Right([]));
@@ -109,7 +199,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: testBagItems[0]));
+      bloc.add(AddBagItemEvent(bagItem: incompleteBagItem));
     });
   });
 

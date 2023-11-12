@@ -11,7 +11,7 @@ import 'package:ecom_template/features/bag/domain/entities/options_selection.dar
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_options.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -49,11 +49,11 @@ void main() {
       selectedOptions: [
         ShopProductSelectedOption(name: 'Size', value: 'Extra Extra Large'),
       ],
-      compareAtPrice: Price(amount: '100', currencyCode: ''),
+      compareAtPrice: Price(amount: 100, currencyCode: ''),
       uniqueKey: '',
-      unitPrice: Price(amount: '100', currencyCode: ''),
+      unitPrice: Price(amount: 100, currencyCode: ''),
       unitPriceMeasurement: null,
-      price: Price(amount: '100', currencyCode: ''),
+      price: Price(amount: 100, currencyCode: ''),
       title: 'variant title',
       weight: 'weight',
       weightUnit: '',

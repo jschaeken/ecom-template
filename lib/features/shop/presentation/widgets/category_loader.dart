@@ -1,5 +1,6 @@
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/category_box.dart';
+import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/pages/collection_view.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
@@ -78,8 +79,8 @@ class CategoryLoader extends StatelessWidget {
                 SizedBox(
                   height: 100,
                 ),
-                Text(
-                  'No Collections',
+                TextBody(
+                  text: 'No Collections',
                 ),
               ],
             );

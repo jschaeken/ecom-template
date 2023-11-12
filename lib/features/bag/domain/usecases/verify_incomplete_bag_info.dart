@@ -12,9 +12,9 @@ Future<Either<IncompleteOptionsSelectionFailure, BagItemData>>
       incompleteBagItem.optionsSelections.selectedOptions;
   List<ShopProductOption> productOptions = incompleteBagItem.product.options;
 
-  if (selectedOptions.length != productOptions.length) {
+  if (selectedOptions.length < productOptions.length) {
     return const Left(IncompleteOptionsSelectionFailure(
-      message: 'An Unknown Error Has Occured.',
+      message: 'Please select all required options for this product.',
     ));
   }
 
@@ -33,7 +33,7 @@ Future<Either<IncompleteOptionsSelectionFailure, BagItemData>>
       int optionIndex = selectedOptions[optionName]!;
       if (optionIndex < 0 || optionIndex >= optionValues.length) {
         return const Left(IncompleteOptionsSelectionFailure(
-          message: 'An Unknown Error Has Occured.',
+          message: 'An Unknown Error Has Occured 2.',
         ));
       }
       String optionValue = optionValues[optionIndex];
@@ -64,6 +64,6 @@ Future<Either<IncompleteOptionsSelectionFailure, BagItemData>>
   }
 
   return const Left(IncompleteOptionsSelectionFailure(
-    message: 'An Unknown Error Has Occured.',
+    message: 'An Unknown Error Has Occured 3.',
   ));
 }

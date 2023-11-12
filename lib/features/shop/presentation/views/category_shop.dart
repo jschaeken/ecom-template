@@ -2,6 +2,8 @@ import 'package:ecom_template/core/presentation/widgets/featured_brand_tile.dart
 import 'package:ecom_template/core/presentation/widgets/product_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/slim_text_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/pages/collection_view.dart';
@@ -58,6 +60,7 @@ class _CategoryShopState extends State<CategoryShop> {
   void refresh() {
     shopBloc.add(const GetAllProductsEvent());
     collectionsBloc.add(LoadCollections());
+    BlocProvider.of<FavoritesBloc>(context).add(GetFavoritesEvent());
   }
 
   @override
@@ -97,19 +100,59 @@ class _CategoryShopState extends State<CategoryShop> {
                             itemCount: state.products.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              return LargeProductTile(
-                                product: state.products[index],
-                                isLast: index == state.products.length - 1,
-                                onTap: () {
-                                  Navigator.push(context, CupertinoPageRoute(
-                                    builder: (context) {
-                                      return ProductPage(
-                                        id: state.products[index].id,
-                                      );
+                              return BlocBuilder<FavoritesBloc, FavoritesState>(
+                                builder: (context, favoriteState) {
+                                  bool? isFavorite;
+                                  if (favoriteState is FavoritesAddedLoaded ||
+                                      favoriteState is FavoritesRemovedLoaded ||
+                                      favoriteState is FavoritesLoaded ||
+                                      favoriteState is FavoritesEmpty) {
+                                    isFavorite = favoriteState.favorites
+                                        .map((e) => e.id)
+                                        .contains(state.products[index].id);
+                                  }
+                                  return LargeProductTile(
+                                    product: state.products[index],
+                                    isLast: index == state.products.length - 1,
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          CupertinoPageRoute(
+                                        builder: (context) {
+                                          return ProductPage(
+                                            id: state.products[index].id,
+                                          );
+                                        },
+                                      ));
                                     },
-                                  ));
+                                    isFavorite: isFavorite,
+                                    onFavoriteTap: () {
+                                      if (isFavorite == null) {
+                                        BlocProvider.of<FavoritesBloc>(context)
+                                            .add(GetFavoritesEvent());
+                                      } else if (isFavorite) {
+                                        BlocProvider.of<FavoritesBloc>(context)
+                                            .add(
+                                          RemoveFavoriteEvent(
+                                            favorite: Favorite(
+                                              parentProdId:
+                                                  state.products[index].id,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        BlocProvider.of<FavoritesBloc>(context)
+                                            .add(
+                                          AddFavoriteEvent(
+                                            favorite: Favorite(
+                                              parentProdId:
+                                                  state.products[index].id,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
                                 },
-                                onFavoriteTap: () {},
                               );
                             },
                           ),
@@ -223,8 +266,8 @@ class _CategoryShopState extends State<CategoryShop> {
                           SizedBox(
                             height: 100,
                           ),
-                          Text(
-                            'No Collections',
+                          TextBody(
+                            text: 'No Collections',
                           ),
                         ],
                       );

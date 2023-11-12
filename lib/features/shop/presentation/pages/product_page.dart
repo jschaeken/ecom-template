@@ -213,7 +213,7 @@ class ProductPage extends StatelessWidget {
                                             TextSubHeadline(
                                               text: state.product
                                                   .productVariants[0].price
-                                                  .toString(),
+                                                  .formattedPrice(),
                                             ),
                                           ],
                                         );
@@ -454,22 +454,22 @@ class ProductPage extends StatelessWidget {
                                           BlocBuilder<OptionsSelectionBloc,
                                                   OptionsSelectionState>(
                                               builder: (context, optionState) {
+                                            OptionsSelections optionSelections;
                                             if (optionState
-                                                    is! OptionsSelectionLoadedState ||
-                                                optionState
-                                                        .optionsSelection
-                                                        .selectedOptions
-                                                        .length !=
-                                                    shopState.product.options
-                                                        .length) {
-                                              return const SizedBox();
+                                                is! OptionsSelectionLoadedState) {
+                                              optionSelections =
+                                                  const OptionsSelections(
+                                                      selectedOptions: {});
+                                            } else {
+                                              optionSelections =
+                                                  optionState.optionsSelection;
                                             }
                                             return buttons.CtaButton(
                                               onTap: () {
                                                 _addToBag(
                                                   product: shopState.product,
-                                                  selectedOptions: optionState
-                                                      .optionsSelection,
+                                                  selectedOptions:
+                                                      optionSelections,
                                                   quantity: 1,
                                                   context: context,
                                                 );

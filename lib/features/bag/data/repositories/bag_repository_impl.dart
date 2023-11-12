@@ -39,7 +39,8 @@ class BagRepositoryImpl implements BagRepository {
                   (element) => element.id == bagItemData.productVariantId);
           bagItems.add(
             BagItem.fromShopProductVariant(
-              product: selectedVariant,
+              parentProductTitle: product.title,
+              productVariant: selectedVariant,
               quantity: bagItemData.quantity,
               parentProductId: bagItemData.parentProductId,
             ),

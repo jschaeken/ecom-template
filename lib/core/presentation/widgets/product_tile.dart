@@ -9,12 +9,14 @@ class LargeProductTile extends StatelessWidget {
     super.key,
     required this.product,
     required this.onFavoriteTap,
+    required this.isFavorite,
     required this.onTap,
     required this.isLast,
   });
 
   final ShopProduct product;
   final VoidCallback onFavoriteTap;
+  final bool? isFavorite;
   final VoidCallback onTap;
   final bool isLast;
 
@@ -74,9 +76,16 @@ class LargeProductTile extends StatelessWidget {
                           padding: Constants.padding,
                           child: GestureDetector(
                             onTap: onFavoriteTap,
-                            child: const CustomIcon(
-                              Icons.favorite_border,
-                            ),
+                            child: isFavorite != null
+                                ? CustomIcon(
+                                    isFavorite!
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: isFavorite!
+                                        ? Colors.red
+                                        : Theme.of(context).primaryColor,
+                                  )
+                                : const SizedBox(),
                           ),
                         ),
                       ),
@@ -97,7 +106,8 @@ class LargeProductTile extends StatelessWidget {
                               ),
                               const SizedBox(height: 5),
                               TextBody(
-                                text: product.productVariants[0].price.amount,
+                                text: product.productVariants[0].price
+                                    .formattedPrice(),
                                 color: Colors.white,
                               ),
                             ],

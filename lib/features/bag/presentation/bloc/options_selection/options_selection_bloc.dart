@@ -44,7 +44,6 @@ class OptionsSelectionBloc
           res.fold((l) {
             emit(OptionsSelectionErrorState(failure: l));
           }, (optionsSelections) {
-            debugPrint('new optionsSelections: $optionsSelections');
             emit(OptionsSelectionLoadedState(
               optionsSelection: optionsSelections ??
                   const OptionsSelections(

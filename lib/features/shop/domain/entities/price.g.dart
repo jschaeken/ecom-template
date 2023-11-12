@@ -17,7 +17,7 @@ class PriceAdapter extends TypeAdapter<Price> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Price(
-      amount: fields[0] as String,
+      amount: fields[0] as double,
       currencyCode: fields[1] as String,
     );
   }

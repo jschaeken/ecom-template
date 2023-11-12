@@ -26,7 +26,7 @@ class EmptyView extends StatelessWidget {
             icon,
             size: 100,
             color: Theme.of(context).unselectedWidgetColor,
-          ).animate().shake(),
+          ).animate(onPlay: (_) {}).shake(),
           const StandardSpacing(),
           TextHeadline(text: title),
           const StandardSpacing(),

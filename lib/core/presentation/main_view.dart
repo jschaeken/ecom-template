@@ -7,8 +7,8 @@ import 'package:ecom_template/core/presentation/widgets/noti_icon.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
+import 'package:ecom_template/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/explore_page.dart';
-import 'package:ecom_template/features/shop/presentation/pages/favorites_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +31,11 @@ class _MainViewState extends State<MainView> {
     ExplorePage(pageTitle: 'EXPLORE'),
     const ShopPage(pageTitle: 'SHOP'),
     const BagPage(pageTitle: 'BAG'),
-    const FavoritesPage(pageTitle: 'FAVORITES'),
-
+    const FavoritesPage(title: 'FAVORITES'),
     // TODO: Add Account Page
     const Scaffold(
       body: Center(
-        child: Text('Account Page'),
+        child: TextBody(text: 'Account Page'),
       ),
     )
   ];

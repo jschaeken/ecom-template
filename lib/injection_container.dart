@@ -11,6 +11,13 @@ import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart'
 import 'package:ecom_template/features/bag/domain/usecases/update_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
+import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
+import 'package:ecom_template/features/favorites/domain/repositories/favorites_repository.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/add_favorite.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
@@ -59,6 +66,16 @@ Future<void> init() async {
     ),
   );
 
+  /// Features - Favorites - Favorites Bloc
+  sl.registerFactory(
+    () => FavoritesBloc(
+      addFavoriteUseCase: sl(),
+      removeFavoriteUseCase: sl(),
+      getFavoritesUseCase: sl(),
+      getProductById: sl(),
+    ),
+  );
+
   /// Features - Shop - Use Cases
   sl.registerLazySingleton(() => GetAllProducts(repository: sl()));
   sl.registerLazySingleton(() => GetProductById(repository: sl()));
@@ -87,6 +104,19 @@ Future<void> init() async {
       optionsSelectionDataSource: sl(),
       productRemoteDataSource: sl(),
     ),
+  );
+
+  /// Features - Favorites - Use Cases
+  sl.registerLazySingleton(() => AddFavorite(repository: sl()));
+  sl.registerLazySingleton(() => RemoveFavorite(repository: sl()));
+  sl.registerLazySingleton(() => GetFavorites(repository: sl()));
+
+  sl.registerLazySingleton<FavoritesRepository>(
+    () => FavoritesRepositoryImpl(localDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<FavoritesLocalDataSource>(
+    () => FavoritesLocalDataSourceImpl(interface: sl()),
   );
 
   /// Features - Shop - Data Sources
