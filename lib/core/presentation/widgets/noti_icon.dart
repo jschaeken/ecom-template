@@ -19,7 +19,10 @@ class NotiIcon extends StatelessWidget {
         ),
         BlocBuilder<BagBloc, BagState>(
           builder: (context, state) {
-            if (state is BagLoadedState && state.bagItems.isNotEmpty) {
+            if ((state is BagLoadedState ||
+                    state is BagLoadedAddedState ||
+                    state is BagLoadedRemovedState) &&
+                state.bagItems.isNotEmpty) {
               return Positioned(
                 right: 0,
                 top: 0,

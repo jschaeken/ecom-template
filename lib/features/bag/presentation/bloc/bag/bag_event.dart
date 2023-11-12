@@ -8,7 +8,7 @@ sealed class BagEvent extends Equatable {
 }
 
 class AddBagItemEvent extends BagEvent {
-  final BagItem bagItem;
+  final IncompleteBagItem bagItem;
 
   const AddBagItemEvent({required this.bagItem});
 

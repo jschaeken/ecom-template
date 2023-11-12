@@ -14,7 +14,7 @@ abstract class OptionsSelectionDataSource {
 
   Future<void> saveSelectedOptions(
     String entryId,
-    OptionsSelections optionsSelections,
+    OptionsSelections optionsSelection,
   );
 }
 

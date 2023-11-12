@@ -25,8 +25,7 @@ class BagItemAdapter extends TypeAdapter<BagItem> {
       weight: fields[2] as String,
       weightUnit: fields[3] as String,
       image: fields[13] as ShopProductImage?,
-      selectedOptions:
-          (fields[11] as List?)?.cast<ShopProductSelectedOptions>(),
+      selectedOptions: (fields[11] as List?)?.cast<ShopProductSelectedOption>(),
       requiresShipping: fields[6] as bool,
       quantityAvailable: fields[8] as int,
       compareAtPrice: fields[12] as Price?,

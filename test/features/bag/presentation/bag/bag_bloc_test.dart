@@ -10,7 +10,6 @@ import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart'
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -73,7 +72,7 @@ void main() {
 
   group('Add product to bag', () {
     test(
-        'should emit [BagLoadingState, BagLoadedState] when data is gotten successfully',
+        'should emit [BagLoadingState, BagLoadedAddedState] when data is gotten successfully',
         () async {
       // arrange
       when(() => mockAddBagItem.call(tItem))
@@ -81,12 +80,10 @@ void main() {
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
 
-      debugPrint('testBagItems: $testBagItems');
-
       // assert later
       final expected = [
         BagLoadingState(),
-        BagLoadedState(bagItems: testBagItems),
+        BagLoadedAddedState(bagItems: testBagItems),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
 
@@ -128,7 +125,7 @@ void main() {
       // assert later
       final expected = [
         BagLoadingState(),
-        BagLoadedState(bagItems: testBagItems),
+        BagLoadedRemovedState(bagItems: testBagItems),
       ];
 
       expectLater(bloc.stream, emitsInOrder(expected));

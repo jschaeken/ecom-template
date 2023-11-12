@@ -31,10 +31,6 @@ class _CollectionViewState extends State<CollectionView> {
 
   bool isGrid = true;
 
-  void switchView() {
-    debugPrint('switch view');
-  }
-
   @override
   Widget build(BuildContext context) {
     shoppingBloc.add(GetProductsByCollectionIdEvent(id: widget.id));
@@ -189,7 +185,7 @@ class _CollectionViewState extends State<CollectionView> {
                             ),
                           );
                         },
-                      );
+                      ).animate().fadeIn();
                     } else {
                       return ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
@@ -220,7 +216,7 @@ class _CollectionViewState extends State<CollectionView> {
                             ),
                           );
                         },
-                      );
+                      ).animate().fadeIn();
                     }
                   } else if (state is ShoppingLoading) {
                     return GridView.builder(

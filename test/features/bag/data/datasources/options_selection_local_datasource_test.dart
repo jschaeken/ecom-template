@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:ecom_template/features/bag/data/datasources/options_selection_local_datasource.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +36,7 @@ void main() {
 
       final result = await dataSourceImpl.getSavedSelectedOptions(testId);
 
-      expect(result, equals(const Right(testOptionsSelections)));
+      expect(result, equals(testOptionsSelections));
     });
   });
 

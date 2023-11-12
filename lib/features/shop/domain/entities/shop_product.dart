@@ -1,6 +1,6 @@
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_options.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopify_flutter/models/src/product/associated_collections/associated_collections.dart';
@@ -75,6 +75,9 @@ class ShopProduct extends Equatable {
         descriptionHtml,
         handle,
       ];
+
+  @override
+  bool get stringify => true;
 }
 
 class ShopProductProductVariant extends Equatable {
@@ -89,7 +92,7 @@ class ShopProductProductVariant extends Equatable {
   final int quantityAvailable;
   final Price? unitPrice;
   final ShopProductUnitPriceMeasurement? unitPriceMeasurement;
-  final List<ShopProductSelectedOptions>? selectedOptions;
+  final List<ShopProductSelectedOption>? selectedOptions;
   final Price? compareAtPrice;
   final ShopProductImage? image;
 
@@ -163,7 +166,7 @@ class ShopProductProductVariant extends Equatable {
           : null,
       selectedOptions: productVariant.selectedOptions != null
           ? productVariant.selectedOptions!
-              .map((selOpt) => ShopProductSelectedOptions(
+              .map((selOpt) => ShopProductSelectedOption(
                     name: selOpt.name,
                     value: selOpt.value,
                   ))
@@ -184,6 +187,9 @@ class ShopProductProductVariant extends Equatable {
           : null,
     );
   }
+
+  @override
+  bool get stringify => true;
 }
 
 /// Copy of [AssociatedCollections] from shopify_flutter package

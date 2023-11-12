@@ -23,4 +23,9 @@ abstract class BagRepository {
     String entryId,
     OptionsSelections optionsSelection,
   );
+
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptions(
+    String entryId,
+    OptionsSelections optionsSelection,
+  );
 }

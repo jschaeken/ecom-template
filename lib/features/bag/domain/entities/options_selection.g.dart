@@ -6,7 +6,7 @@ part of 'options_selection.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OptionsSelectionAdapter extends TypeAdapter<OptionsSelections> {
+class OptionsSelectionsAdapter extends TypeAdapter<OptionsSelections> {
   @override
   final int typeId = 7;
 
@@ -35,7 +35,7 @@ class OptionsSelectionAdapter extends TypeAdapter<OptionsSelections> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OptionsSelectionAdapter &&
+      other is OptionsSelectionsAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

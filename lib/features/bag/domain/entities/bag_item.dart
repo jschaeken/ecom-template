@@ -1,11 +1,13 @@
 // ignore_for_file: overridden_fields
+import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
-import '../../../shop/domain/entities/shop_product_selected_options.dart';
+import '../../../shop/domain/entities/shop_product_selected_option.dart';
 
 part 'bag_item.g.dart';
 
@@ -57,7 +59,7 @@ class BagItem extends ShopProductProductVariant {
 
   @override
   @HiveField(11)
-  final List<ShopProductSelectedOptions>? selectedOptions;
+  final List<ShopProductSelectedOption>? selectedOptions;
 
   @override
   @HiveField(12)
@@ -147,7 +149,7 @@ class BagItem extends ShopProductProductVariant {
     int? quantityAvailable,
     Price? unitPrice,
     ShopProductUnitPriceMeasurement? unitPriceMeasurement,
-    List<ShopProductSelectedOptions>? selectedOptions,
+    List<ShopProductSelectedOption>? selectedOptions,
     Price? compareAtPrice,
     ShopProductImage? image,
     int? quantity,
@@ -173,5 +175,29 @@ class BagItem extends ShopProductProductVariant {
       parentProductId: parentProductId ?? this.parentProductId,
       uniqueKey: uniqueKey ?? this.uniqueKey,
     );
+  }
+}
+
+class IncompleteBagItem extends Equatable {
+  final ShopProduct product;
+  final OptionsSelections optionsSelections;
+  final int quantity;
+
+  const IncompleteBagItem({
+    required this.product,
+    required this.optionsSelections,
+    required this.quantity,
+  });
+
+  @override
+  List<Object?> get props => [
+        product,
+        optionsSelections,
+        quantity,
+      ];
+
+  @override
+  String toString() {
+    return 'IncompleteBagItem(product: $product, optionsSelections: $optionsSelections, quantity: $quantity)';
   }
 }

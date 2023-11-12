@@ -105,11 +105,38 @@ class BagRepositoryImpl implements BagRepository {
 
   @override
   Future<Either<Failure, WriteSuccess>> saveSelectedOptions(
-      String entryId, OptionsSelections optionsSelection) async {
+      String productId, OptionsSelections optionsSelections) async {
     try {
       await optionsSelectionDataSource.saveSelectedOptions(
-          entryId, optionsSelection);
+        productId,
+        optionsSelections,
+      );
       return const Right(WriteSuccess());
+    } catch (e) {
+      return Left(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptions(
+      String productId, OptionsSelections newOptionSelection) async {
+    try {
+      final currentOptionsSelections =
+          await optionsSelectionDataSource.getSavedSelectedOptions(productId);
+      if (currentOptionsSelections == null) {
+        await optionsSelectionDataSource.saveSelectedOptions(
+            productId, newOptionSelection);
+        return const Right(WriteSuccess());
+      } else {
+        Map<String, int> newMap = {};
+        currentOptionsSelections.selectedOptions.forEach((key, value) {
+          newMap[key] = value;
+        });
+        newMap.addAll(newOptionSelection.selectedOptions);
+        await optionsSelectionDataSource.saveSelectedOptions(
+            productId, OptionsSelections(selectedOptions: newMap));
+        return const Right(WriteSuccess());
+      }
     } catch (e) {
       return Left(CacheFailure());
     }

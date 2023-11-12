@@ -47,7 +47,7 @@ void main() {
     const BagItem(
       image: ShopProductImage(originalSrc: 'https://test.com/image.png'),
       selectedOptions: [
-        ShopProductSelectedOptions(name: 'Size', value: 'Extra Extra Large'),
+        ShopProductSelectedOption(name: 'Size', value: 'Extra Extra Large'),
       ],
       compareAtPrice: Price(amount: '100', currencyCode: ''),
       uniqueKey: '',

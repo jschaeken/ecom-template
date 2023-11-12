@@ -4,6 +4,7 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/core/presentation/widgets/buttons.dart'
     as buttons;
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
+import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
@@ -27,22 +28,28 @@ class ProductPage extends StatelessWidget {
     shopBloc.add(GetProductByIdEvent(id: id));
   }
 
+  void getSavedSelections() {
+    optionsSelectionBloc.add(GetSavedSelectedOptionsEvent(productId: id));
+  }
+
   void _addToBag({
     required ShopProduct product,
-    required ShopProductProductVariant productVariant,
+    required OptionsSelections selectedOptions,
     required int quantity,
     required BuildContext context,
   }) {
-    final BagItem bagItem = BagItem.fromShopProductVariant(
-      product: productVariant,
+    final IncompleteBagItem bagItem = IncompleteBagItem(
+      product: product,
+      optionsSelections: selectedOptions,
       quantity: quantity,
-      parentProductId: product.id,
     );
     BlocProvider.of<BagBloc>(context).add(AddBagItemEvent(bagItem: bagItem));
   }
 
   void changeSelectedOptions(String optionName, int indexValue,
       String productId, BuildContext context) {
+    debugPrint(
+        'changeSelectedOptions called: $optionName, $indexValue, $productId');
     BlocProvider.of<OptionsSelectionBloc>(context).add(
       OptionsSelectionChanged(
         optionName: optionName,
@@ -56,6 +63,7 @@ class ProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Call bloc event to get product
     getProduct();
+    getSavedSelections();
     return BlocProvider(
       create: (context) => optionsSelectionBloc,
       child: BlocProvider(
@@ -229,8 +237,18 @@ class ProductPage extends StatelessWidget {
                                       );
                                     }
                                     if (state is ShoppingLoadedById) {
-                                      return const TextBody(
-                                        text: 'Selected options will go here',
+                                      return BlocBuilder<OptionsSelectionBloc,
+                                          OptionsSelectionState>(
+                                        builder: (context, optionState) {
+                                          if (optionState
+                                              is OptionsSelectionLoadedState) {
+                                            return const TextBody(
+                                                text:
+                                                    'Current Variant Selection Will Go Here');
+                                          } else {
+                                            return const SizedBox();
+                                          }
+                                        },
                                       );
                                     } else {
                                       return const SizedBox();
@@ -323,10 +341,8 @@ class ProductPage extends StatelessWidget {
                                                                         .optionsSelection
                                                                         .selectedOptions
                                                                         .entries
-                                                                        .elementAt(
-                                                                            index)
-                                                                        .value <
-                                                                    0)
+                                                                        .length <=
+                                                                    index)
                                                             ? 'Select ${state.product.options[index].name}'
                                                             : state
                                                                     .product
@@ -435,32 +451,46 @@ class ProductPage extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          buttons.CtaButton(
-                                            onTap: () {
-                                              _addToBag(
-                                                product: shopState.product,
-                                                productVariant: shopState
-                                                    .product.productVariants[0],
-                                                quantity: 1,
-                                                context: context,
-                                              );
-                                            },
-                                            child: const Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                CustomIcon(
-                                                  CupertinoIcons.bag_fill,
-                                                ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                TextSubHeadline(
-                                                  text: 'Add to Bag',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          BlocBuilder<OptionsSelectionBloc,
+                                                  OptionsSelectionState>(
+                                              builder: (context, optionState) {
+                                            if (optionState
+                                                    is! OptionsSelectionLoadedState ||
+                                                optionState
+                                                        .optionsSelection
+                                                        .selectedOptions
+                                                        .length !=
+                                                    shopState.product.options
+                                                        .length) {
+                                              return const SizedBox();
+                                            }
+                                            return buttons.CtaButton(
+                                              onTap: () {
+                                                _addToBag(
+                                                  product: shopState.product,
+                                                  selectedOptions: optionState
+                                                      .optionsSelection,
+                                                  quantity: 1,
+                                                  context: context,
+                                                );
+                                              },
+                                              child: const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  CustomIcon(
+                                                    CupertinoIcons.bag_fill,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  TextSubHeadline(
+                                                    text: 'Add to Bag',
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
 
                                           const StandardSpacing(),
 

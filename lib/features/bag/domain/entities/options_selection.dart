@@ -14,4 +14,7 @@ class OptionsSelections extends Equatable {
 
   @override
   List<Object?> get props => [selectedOptions];
+
+  @override
+  bool get stringify => true;
 }

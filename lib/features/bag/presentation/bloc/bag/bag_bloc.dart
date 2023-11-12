@@ -7,7 +7,9 @@ import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/verify_incomplete_bag_info.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 part 'bag_event.dart';
 part 'bag_state.dart';
@@ -28,30 +30,39 @@ class BagBloc extends Bloc<BagEvent, BagState> {
       switch (event.runtimeType) {
         case AddBagItemEvent:
           emit(BagLoadingState());
-          final bagItem = (event as AddBagItemEvent).bagItem;
-          final bagItemData = BagItemData(
-              parentProductId: bagItem.parentProductId,
-              productVariantId: bagItem.id,
-              quantity: bagItem.quantity);
-          final result = await addBagItem(bagItemData);
-          await result.fold(
+          final incompleteBagItem = (event as AddBagItemEvent).bagItem;
+          final verifiedResult =
+              await verifyIncompleteBagItem(incompleteBagItem);
+          await verifiedResult.fold(
             (failure) {
               emit(BagErrorState(failure: failure));
             },
-            (success) async {
-              final bagItems = await getAllBagItems(NoParams());
-              bagItems.fold(
+            (bagItemData) async {
+              //////////////////////////////
+              //    Adding Item to Bag    //
+              //////////////////////////////
+              final result = await addBagItem(bagItemData);
+              await result.fold(
                 (failure) {
                   emit(BagErrorState(failure: failure));
                 },
-                (bagItems) {
-                  if (bagItems.isEmpty) {
-                    emit(BagEmptyState());
-                  } else {
-                    emit(BagLoadedState(bagItems: bagItems));
-                  }
+                (success) async {
+                  final bagItems = await getAllBagItems(NoParams());
+                  bagItems.fold(
+                    (failure) {
+                      emit(BagErrorState(failure: failure));
+                    },
+                    (bagItems) {
+                      if (bagItems.isEmpty) {
+                        emit(BagEmptyState());
+                      } else {
+                        emit(BagLoadedAddedState(bagItems: bagItems));
+                      }
+                    },
+                  );
                 },
               );
+              debugPrint('bagItemData: $bagItemData');
             },
           );
           break;
@@ -77,7 +88,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                   if (bagItems.isEmpty) {
                     emit(BagEmptyState());
                   } else {
-                    emit(BagLoadedState(bagItems: bagItems));
+                    emit(BagLoadedRemovedState(bagItems: bagItems));
                   }
                 },
               );
@@ -102,10 +113,11 @@ class BagBloc extends Bloc<BagEvent, BagState> {
         case UpdateBagItemQuantityEvent:
           emit(BagLoadingState());
           final bagItem = (event as UpdateBagItemQuantityEvent).bagItem;
+          final newQuantity = event.quantity;
           final bagItemData = BagItemData(
             parentProductId: bagItem.parentProductId,
             productVariantId: bagItem.id,
-            quantity: bagItem.quantity,
+            quantity: newQuantity,
           );
           final result = await updateBagItem(bagItemData);
           await result.fold(
@@ -113,8 +125,9 @@ class BagBloc extends Bloc<BagEvent, BagState> {
               emit(BagErrorState(failure: failure));
             },
             (success) async {
-              final bagItems = await getAllBagItems(NoParams());
-              bagItems.fold(
+              final res = await getAllBagItems(NoParams());
+
+              res.fold(
                 (failure) {
                   emit(BagErrorState(failure: failure));
                 },

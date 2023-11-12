@@ -7,6 +7,15 @@ sealed class OptionsSelectionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class GetSavedSelectedOptionsEvent extends OptionsSelectionEvent {
+  final String productId;
+
+  const GetSavedSelectedOptionsEvent({required this.productId});
+
+  @override
+  List<Object> get props => [productId];
+}
+
 class OptionsSelectionChanged extends OptionsSelectionEvent {
   // Single option selection
   final String optionName;

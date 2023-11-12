@@ -7,8 +7,8 @@ import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
-import 'package:ecom_template/features/bag/domain/usecases/save_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/update_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
@@ -39,7 +39,7 @@ Future<void> init() async {
   // Product Page - Images Bloc
   sl.registerFactory(() => OptionsSelectionBloc(
         getSavedSelectedOptions: sl(),
-        saveSelectedOptions: sl(),
+        updateSelectedOptions: sl(),
       ));
 
   /// Features - Shop - Collections Bloc
@@ -66,7 +66,7 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => GetAllProductsByCollectionId(repository: sl()));
   sl.registerLazySingleton(() => GetSavedSelectedOptions(repository: sl()));
-  sl.registerLazySingleton(() => SaveSelectedOptions(repository: sl()));
+  sl.registerLazySingleton(() => UpdateSelectedOptions(repository: sl()));
 
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImplementation(

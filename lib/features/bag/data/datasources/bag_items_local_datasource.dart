@@ -41,13 +41,11 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   Future<WriteSuccess> addBagItemData(BagItemData bagItemData) async {
     try {
       final hiveBox = await _getOpenBox();
-      debugPrint('hiveBox: $hiveBox');
       if (hiveBox.containsKey(bagItemData.productVariantId)) {
         addBagItemDataQuantity(
             bagItemData.productVariantId, bagItemData.quantity);
         return const WriteSuccess();
       } else {
-        debugPrint('adding new bag item: $bagItemData');
         await hiveBox.put(bagItemData.productVariantId, bagItemData);
         return const WriteSuccess();
       }

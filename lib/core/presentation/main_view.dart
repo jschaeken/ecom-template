@@ -43,7 +43,7 @@ class _MainViewState extends State<MainView> {
 
   void setBagListerForHapticFeedback(Stream<BagState> stream) {
     bagStreamSubscription = stream.listen((event) {
-      if (event is BagLoadedState) {
+      if (event is BagLoadedAddedState || event is BagLoadedRemovedState) {
         if (event.bagItems.isNotEmpty &&
             (context.read<PageNavigationProvider>().currentIndex != 2 ||
                 keys[2].currentState?.canPop() == true)) {
@@ -57,8 +57,10 @@ class _MainViewState extends State<MainView> {
                 borderRadius: Constants.borderRadius,
               ),
               elevation: 10,
-              content: const TextBody(
-                text: 'Bag Updated',
+              content: TextBody(
+                text: event.runtimeType == BagLoadedAddedState
+                    ? 'Added to Bag'
+                    : 'Removed from Bag',
               ),
               action: SnackBarAction(
                   label: 'View Bag',

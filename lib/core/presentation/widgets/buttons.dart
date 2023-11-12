@@ -113,7 +113,7 @@ Future<int?> showListSelectorModal({
                   itemBuilder: (context, index) {
                     return ListTile(
                       onTap: () {
-                        Navigator.pop(context, index + 1);
+                        Navigator.pop(context, index);
                       },
                       title: TextBody(text: values[index].toString()),
                     );

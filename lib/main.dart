@@ -4,7 +4,7 @@ import 'package:ecom_template/features/bag/domain/entities/options_selection.dar
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_options.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:ecom_template/util/themes.dart';
 import 'package:flutter/foundation.dart';
@@ -83,11 +83,11 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(BagItemDataAdapter());
   Hive.registerAdapter(PriceAdapter());
   Hive.registerAdapter(ShopProductImageAdapter());
-  Hive.registerAdapter(ShopProductSelectedOptionsAdapter());
+  Hive.registerAdapter(ShopProductSelectedOptionAdapter());
   Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
-  Hive.registerAdapter((OptionsSelectionAdapter()));
+  Hive.registerAdapter((OptionsSelectionsAdapter()));
 
   await injection.init();
 
-  // Hive.deleteBoxFromDisk('bag');
+  Hive.deleteBoxFromDisk('options_selection');
 }
