@@ -14,10 +14,14 @@ class BagItemData extends Equatable {
   @HiveField(2)
   final String productVariantId;
 
+  @HiveField(3)
+  final String productVariantTitle;
+
   const BagItemData({
     required this.parentProductId,
     required this.quantity,
     required this.productVariantId,
+    required this.productVariantTitle,
   });
 
   @override
@@ -25,5 +29,6 @@ class BagItemData extends Equatable {
         parentProductId,
         quantity,
         productVariantId,
+        productVariantTitle,
       ];
 }

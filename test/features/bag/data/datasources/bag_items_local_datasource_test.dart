@@ -1,5 +1,3 @@
-import 'package:ecom_template/core/error/exceptions.dart';
-import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/bag/data/datasources/bag_items_local_datasource.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:mocktail/mocktail.dart';
@@ -25,6 +23,7 @@ void main() async {
     productVariantId: '1',
     parentProductId: 'testParentId',
     quantity: 1,
+    productVariantTitle: 'testVariantTitle',
   );
 
   group('getAllBagItems', () {
@@ -50,11 +49,10 @@ void main() async {
               testBagItemData.productVariantId, testBagItemData))
           .thenAnswer((_) async => {});
 
-      final result = await dataSource!.addBagItemData(testBagItemData);
+      await dataSource!.addBagItemData(testBagItemData);
 
       verify(() =>
           mockHiveBox.put(testBagItemData.productVariantId, testBagItemData));
-      expect(result, equals(const WriteSuccess()));
     });
   });
 
@@ -67,14 +65,12 @@ void main() async {
       when(() => mockHiveBox.containsKey(testId)).thenReturn(true);
       when(() => mockHiveBox.delete(testId)).thenAnswer((_) async {});
 
-      final result = await dataSource!.removeBagItemData(testId);
+      await dataSource!.removeBagItemData(testId);
 
       verify(() => mockHiveBox.delete(testId));
-      expect(result, equals(const WriteSuccess()));
     });
 
-    test(
-        'Should throw a cache error when a bag item is not found in the HiveBox',
+    test('Should complete normally when a bag item is not found in the HiveBox',
         () async {
       when(() => mockStorageInterface.isBoxOpen(any())).thenAnswer((_) => true);
       when(() => mockStorageInterface.openBox<BagItemData>(any()))
@@ -83,7 +79,7 @@ void main() async {
 
       final call = dataSource!.removeBagItemData;
 
-      expect(call(testId), throwsA(isA<CacheException>()));
+      expect(call(testId), completes);
     });
   });
 }

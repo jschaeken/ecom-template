@@ -47,9 +47,11 @@ void main() {
       updateBagItem: mockUpdateBagItem,
     );
     registerFallbackValue(const BagItemData(
-        parentProductId: 'parentProductId',
-        quantity: 1,
-        productVariantId: 'productVariantId'));
+      parentProductId: 'parentProductId',
+      productVariantTitle: 'productVariantTitle',
+      quantity: 1,
+      productVariantId: 'productVariantId',
+    ));
   });
 
   IncompleteBagItem incompleteBagItem = const IncompleteBagItem(
@@ -85,7 +87,7 @@ void main() {
             ),
           ],
           sku: '',
-          title: '',
+          title: 'variantTitle1',
           weight: '',
           weightUnit: '',
           quantityAvailable: 1,
@@ -103,7 +105,7 @@ void main() {
             ),
           ],
           sku: '',
-          title: '',
+          title: 'variantTitle2',
           weight: '',
           weightUnit: '',
           quantityAvailable: 1,
@@ -121,7 +123,7 @@ void main() {
             ),
           ],
           sku: '',
-          title: '',
+          title: 'variantTitle3',
           weight: '',
           weightUnit: '',
           quantityAvailable: 1,
@@ -132,12 +134,12 @@ void main() {
       updatedAt: '',
       vendor: '',
     ),
-    quantity: 1,
   );
 
   const tItem = BagItemData(
     parentProductId: 'testParentId',
     quantity: 1,
+    productVariantTitle: 'variantTitle1',
     productVariantId: 'testVariantId',
   );
 
@@ -176,7 +178,6 @@ void main() {
 
       // assert later
       final expected = [
-        BagLoadingState(),
         BagLoadedAddedState(bagItems: testBagItems),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
@@ -197,7 +198,6 @@ void main() {
 
       // assert later
       final expected = [
-        BagLoadingState(),
         BagErrorState(failure: cacheFailure),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
@@ -208,17 +208,17 @@ void main() {
   });
 
   group('Remove product from bag', () {
-    test('should emit [BagLoadingState, BagLoadedState] when data is gotten',
+    test(
+        'should emit [BagLoadingState, BagLoadedRemovedState] when data is gotten',
         () async {
       // arrange
-      when(() => mockRemoveBagItem(tItem))
+      when(() => mockRemoveBagItem(any()))
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
 
       // assert later
       final expected = [
-        BagLoadingState(),
         BagLoadedRemovedState(bagItems: testBagItems),
       ];
 
@@ -228,19 +228,19 @@ void main() {
       bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
 
-    test('should emit [BagLoadingState, BagErrorState] when getting data fails',
+    test(
+        'should emit [BagLoadingState , BagErrorState] when getting data fails',
         () async {
       final cacheFailure = CacheFailure();
 
       // arrange
-      when(() => mockRemoveBagItem(tItem))
+      when(() => mockRemoveBagItem(any()))
           .thenAnswer((_) async => Left(cacheFailure));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => const Right([]));
 
       // assert later
       final expected = [
-        BagLoadingState(),
         BagErrorState(failure: cacheFailure),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));

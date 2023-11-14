@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
@@ -56,14 +54,25 @@ class ProductPage extends StatelessWidget {
     required int indexValue,
     required ShopProduct product,
     required BuildContext context,
-    required int quantity,
   }) {
     BlocProvider.of<OptionsSelectionBloc>(context).add(
       OptionsSelectionChanged(
         optionName: optionName,
         indexValue: indexValue,
         product: product,
+      ),
+    );
+  }
+
+  void changeQuantity({
+    required int quantity,
+    required ShopProduct product,
+    required BuildContext context,
+  }) {
+    BlocProvider.of<OptionsSelectionBloc>(context).add(
+      OptionsSelectionQuantityChanged(
         quantity: quantity,
+        product: product,
       ),
     );
   }
@@ -178,10 +187,51 @@ class ProductPage extends StatelessWidget {
                                           text: state.product.title,
                                         ),
                                       ),
-                                      TextSubHeadline(
-                                        text: state
-                                            .product.productVariants[0].price
-                                            .formattedPrice(),
+                                      BlocBuilder<OptionsSelectionBloc,
+                                          OptionsSelectionState>(
+                                        builder: (context, optionState) {
+                                          switch (optionState.runtimeType) {
+                                            case OptionsSelectionInitial:
+                                              return TextBody(
+                                                text: state.product
+                                                    .productVariants[0].price
+                                                    .formattedPrice(),
+                                              );
+                                            case OptionsSelectionLoadingState:
+                                              return const LoadingStateWidget(
+                                                height: 50,
+                                              );
+                                            case OptionsSelectionLoadedCompleteState:
+                                              optionState
+                                                  as OptionsSelectionLoadedCompleteState;
+                                              return TextSubHeadline(
+                                                text: state
+                                                    .product.productVariants
+                                                    .firstWhere(
+                                                        (element) =>
+                                                            element.id ==
+                                                            optionState
+                                                                .bagItemData
+                                                                .productVariantId,
+                                                        orElse: () => state
+                                                            .product
+                                                            .productVariants[0])
+                                                    .price
+                                                    .formattedPrice(),
+                                              );
+                                            case OptionsSelectionLoadedIncompleteState:
+                                              optionState
+                                                  as OptionsSelectionLoadedIncompleteState;
+                                              return TextBody(
+                                                text: state.product
+                                                    .productVariants[0].price
+                                                    .formattedPrice(),
+                                              );
+                                            case OptionsSelectionErrorState:
+                                            default:
+                                              return const SizedBox();
+                                          }
+                                        },
                                       ),
                                     ],
                                   );
@@ -210,7 +260,9 @@ class ProductPage extends StatelessWidget {
                                   builder: (context, optionState) {
                                     switch (optionState.runtimeType) {
                                       case OptionsSelectionInitial:
-                                        return const SizedBox();
+                                        return const TextBody(
+                                          text: 'Select Options',
+                                        );
                                       case OptionsSelectionLoadingState:
                                         return const LoadingStateWidget(
                                           height: 50,
@@ -220,7 +272,7 @@ class ProductPage extends StatelessWidget {
                                             as OptionsSelectionLoadedCompleteState;
                                         return TextBody(
                                           text: optionState
-                                              .bagItemData.productVariantId,
+                                              .bagItemData.productVariantTitle,
                                         );
                                       case OptionsSelectionLoadedIncompleteState:
                                         optionState
@@ -318,7 +370,6 @@ class ProductPage extends StatelessWidget {
                                                       OptionsSelectionState>(
                                                   builder:
                                                       (context, optionState) {
-                                                log(optionState.toString());
                                                 switch (
                                                     optionState.runtimeType) {
                                                   case OptionsSelectionInitial:
@@ -364,7 +415,6 @@ class ProductPage extends StatelessWidget {
                                                                   optionName,
                                                               product:
                                                                   state.product,
-                                                              quantity: 1,
                                                             );
                                                           }
                                                         }
@@ -419,7 +469,6 @@ class ProductPage extends StatelessWidget {
                                                                   optionName,
                                                               product:
                                                                   state.product,
-                                                              quantity: 1,
                                                             );
                                                           }
                                                         }
@@ -470,7 +519,6 @@ class ProductPage extends StatelessWidget {
                                                                   optionName,
                                                               product:
                                                                   state.product,
-                                                              quantity: 1,
                                                             );
                                                           }
                                                         }
@@ -519,7 +567,6 @@ class ProductPage extends StatelessWidget {
                                                                   optionName,
                                                               product:
                                                                   state.product,
-                                                              quantity: 1,
                                                             );
                                                           }
                                                         }
@@ -549,6 +596,127 @@ class ProductPage extends StatelessWidget {
 
                       const StandardSpacing(
                         multiplier: 2,
+                      ),
+
+                      // Quantity Selector
+                      Padding(
+                        padding: Constants.padding,
+                        child: Column(
+                          children: [
+                            BlocBuilder<ShoppingBloc, ShoppingState>(
+                                builder: (context, shopState) {
+                              if (shopState is ShoppingInitial) {
+                                return const InitialStateWidget();
+                              }
+                              if (shopState is ShoppingLoading) {
+                                return const LoadingStateWidget(
+                                  height: 50,
+                                );
+                              }
+                              if (shopState is ShoppingLoadedById) {
+                                return Row(
+                                  children: [
+                                    const TextSubHeadline(
+                                      text: 'Quantity',
+                                    ),
+                                    const Spacer(),
+                                    BlocBuilder<OptionsSelectionBloc,
+                                            OptionsSelectionState>(
+                                        builder: (context, optionState) {
+                                      switch (optionState.runtimeType) {
+                                        case OptionsSelectionInitial:
+                                          return buttons.QuantitySelector(
+                                              quantity: optionState
+                                                  .optionsSelection.quantity,
+                                              onAdd: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity +
+                                                      1,
+                                                );
+                                              },
+                                              onRemove: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity -
+                                                      1,
+                                                );
+                                              });
+                                        case OptionsSelectionLoadingState:
+                                          return const LoadingStateWidget(
+                                            height: 50,
+                                          );
+                                        case OptionsSelectionLoadedCompleteState:
+                                          optionState
+                                              as OptionsSelectionLoadedCompleteState;
+                                          return buttons.QuantitySelector(
+                                              quantity: optionState
+                                                  .optionsSelection.quantity,
+                                              onAdd: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity +
+                                                      1,
+                                                );
+                                              },
+                                              onRemove: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity -
+                                                      1,
+                                                );
+                                              });
+                                        case OptionsSelectionLoadedIncompleteState:
+                                          optionState
+                                              as OptionsSelectionLoadedIncompleteState;
+                                          return buttons.QuantitySelector(
+                                              quantity: optionState
+                                                  .optionsSelection.quantity,
+                                              onAdd: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity +
+                                                      1,
+                                                );
+                                              },
+                                              onRemove: () {
+                                                changeQuantity(
+                                                  context: context,
+                                                  product: shopState.product,
+                                                  quantity: optionState
+                                                          .optionsSelection
+                                                          .quantity -
+                                                      1,
+                                                );
+                                              });
+                                        case OptionsSelectionErrorState:
+                                        default:
+                                          return const SizedBox();
+                                      }
+                                    }),
+                                  ],
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            }),
+                          ],
+                        ),
                       ),
 
                       // Accent Add to Bag, Apple Pay, Share buttons

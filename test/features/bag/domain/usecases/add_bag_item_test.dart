@@ -20,6 +20,7 @@ void main() {
   const testBagItemData = BagItemData(
     parentProductId: 'testParentId',
     quantity: 1,
+    productVariantTitle: 'testVariantTitle',
     productVariantId: 'testVariantId',
   );
 

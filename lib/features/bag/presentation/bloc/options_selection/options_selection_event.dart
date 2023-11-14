@@ -19,17 +19,26 @@ class OptionsSelectionChanged extends OptionsSelectionEvent {
   final String optionName;
   final int indexValue;
   final ShopProduct product;
-  final int quantity;
 
   const OptionsSelectionChanged({
     required this.optionName,
     required this.indexValue,
     required this.product,
-    required this.quantity,
   });
 
   @override
-  List<Object> get props => [optionName, indexValue, product, quantity];
+  List<Object> get props => [optionName, indexValue, product];
+}
+
+class OptionsSelectionQuantityChanged extends OptionsSelectionEvent {
+  final int quantity;
+
+  final ShopProduct product;
+  const OptionsSelectionQuantityChanged(
+      {required this.quantity, required this.product});
+
+  @override
+  List<Object> get props => [quantity, product];
 }
 
 class CheckValidOptionsSelectionEvent extends OptionsSelectionEvent {

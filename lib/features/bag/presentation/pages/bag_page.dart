@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
@@ -75,6 +77,7 @@ class BagPage extends StatelessWidget {
               } else if (state is BagLoadedState ||
                   state is BagLoadedAddedState ||
                   state is BagLoadedRemovedState) {
+                log(state.bagItems.first.id);
                 return SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(

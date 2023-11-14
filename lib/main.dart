@@ -96,7 +96,35 @@ Future<void> initialConfig() async {
 
   await injection.init();
 
-  await Hive.deleteBoxFromDisk('bag');
-  await Hive.deleteBoxFromDisk('favorites');
-  await Hive.deleteBoxFromDisk('options_selection');
+  // await Hive.deleteBoxFromDisk('bag');
+  // await Hive.deleteBoxFromDisk('favorites');
+  // await Hive.deleteBoxFromDisk('options_selection');
+
+  // try {
+  //   ShopifyCheckout shopifyCheckout = ShopifyCheckout.instance;
+  //   final resp = await shopifyCheckout.createCheckout(
+  //       lineItems: [
+  //         LineItem(
+  //             title: 'title',
+  //             quantity: 2,
+  //             variantId: 'gid://shopify/ProductVariant/46998324445524')
+  //       ],
+  //       email: 'schaekenj@gmail.com',
+  //       shippingAddress: Address(
+  //         address1: '34 Glencairn Lawn',
+  //         address2: 'The Gallops',
+  //         city: 'Leopardtown',
+  //         formattedArea: 'Dublin, Leinster, Ireland',
+  //         countryCode: 'IE',
+  //         country: 'Ireland',
+  //         firstName: 'Jacques',
+  //         lastName: 'Schaeken',
+  //         phone: '0035387654321',
+  //         province: 'Dublin',
+  //         zip: 'D18K0H3',
+  //       ));
+  //   print(resp);
+  // } catch (e) {
+  //   print(e);
+  // }
 }

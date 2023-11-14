@@ -11,7 +11,7 @@ abstract class BagRepository {
 
   Future<Either<Failure, WriteSuccess>> addBagItem(BagItemData bagItemData);
 
-  Future<Either<Failure, WriteSuccess>> removeBagItem(BagItemData id);
+  Future<Either<Failure, WriteSuccess>> removeBagItem(BagItemData bagItemData);
 
   Future<Either<Failure, WriteSuccess>> updateBagItem(BagItemData bagItemData);
 
@@ -24,7 +24,12 @@ abstract class BagRepository {
     OptionsSelections optionsSelection,
   );
 
-  Future<Either<Failure, WriteSuccess>> updateSelectedOptions(
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptionsFields(
+    String entryId,
+    OptionsSelections optionsSelection,
+  );
+
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptionsQuantity(
     String entryId,
     OptionsSelections optionsSelection,
   );

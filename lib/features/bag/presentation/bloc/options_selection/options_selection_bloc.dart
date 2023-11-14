@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
@@ -9,10 +8,12 @@ import 'package:ecom_template/features/bag/domain/entities/options_selection.dar
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/option_selection_verification.dart';
 import 'package:ecom_template/features/bag/domain/usecases/save_selected_options.dart';
-import 'package:ecom_template/features/bag/domain/usecases/update_saved_selected_options.dart';
+import 'package:ecom_template/features/bag/domain/usecases/update_selected_options_quantity.dart';
+import 'package:ecom_template/features/bag/domain/usecases/update_selected_options_fields.dart';
 import 'package:ecom_template/features/bag/util/failures.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 part 'options_selection_event.dart';
 part 'options_selection_state.dart';
@@ -20,18 +21,20 @@ part 'options_selection_state.dart';
 class OptionsSelectionBloc
     extends Bloc<OptionsSelectionEvent, OptionsSelectionState> {
   GetSavedSelectedOptions getSavedSelectedOptions;
-  UpdateSelectedOptions updateSelectedOptions;
+  UpdateSelectedOptionsQuantity updateSelectedOptionsQuantity;
+  UpdateSelectedOptionsFields updateSelectedOptionsFields;
   VerifyOptions verifyOptions;
 
   OptionsSelectionBloc({
     required this.getSavedSelectedOptions,
-    required this.updateSelectedOptions,
+    required this.updateSelectedOptionsQuantity,
+    required this.updateSelectedOptionsFields,
     required this.verifyOptions,
   }) : super(OptionsSelectionInitial()) {
     on<OptionsSelectionEvent>((event, emit) async {
       switch (event.runtimeType) {
         case OptionsSelectionChanged:
-          print('OptionsSelectionChanged');
+          debugPrint('OptionsSelectionChanged');
           // emit(const OptionsSelectionLoadingState());
           (event as OptionsSelectionChanged);
           // Destructuring
@@ -39,7 +42,7 @@ class OptionsSelectionBloc
           final String changedKey = event.optionName;
           final int changedIndexValue = event.indexValue;
           // Saving the changed option
-          await updateSelectedOptions(
+          await updateSelectedOptionsFields(
             SelectedOptionsParams(
               productId: product.id,
               optionsSelection: OptionsSelections(
@@ -50,17 +53,16 @@ class OptionsSelectionBloc
             ),
           );
           // Getting the current saved options
-          final incompleteOrBagItem =
-              await _parseSavedOptions(product: product);
+          final currentSavedOptions = await getSavedSelectedOptions(
+            Params(id: product.id),
+          );
+          final incompleteOrBagItem = await _parseCurrentOptions(
+              product: product, currentSavedOptions: currentSavedOptions);
           await incompleteOrBagItem.fold((incomplete) async {
-            log('Emitting the incomplete bag item, with the current options selection: ${incomplete.optionsSelections}');
-            // Emitting the incomplete bag item, with the current options selection
             emit(OptionsSelectionLoadedIncompleteState(
               optionsSelection: incomplete.optionsSelections,
             ));
           }, (bagItemDataAndOptionsSelections) async {
-            // Emitting the complete bag item, ready to be added to the bag
-            log('Emitting the complete bag item, ready to be added to the bag: ${bagItemDataAndOptionsSelections.$2}');
             emit(OptionsSelectionLoadedCompleteState(
               bagItemData: bagItemDataAndOptionsSelections.$1,
               optionsSelection: bagItemDataAndOptionsSelections.$2,
@@ -72,17 +74,50 @@ class OptionsSelectionBloc
           // Destructuring
           final ShopProduct product = event.product;
           // Getting the current saved options
-          final incompleteOrBagItem =
-              await _parseSavedOptions(product: product);
+          final currentSavedOptions = await getSavedSelectedOptions(
+            Params(id: product.id),
+          );
+          final incompleteOrBagItem = await _parseCurrentOptions(
+              product: product, currentSavedOptions: currentSavedOptions);
           await incompleteOrBagItem.fold((incomplete) async {
-            log('Emitting the incomplete bag item, with the current options selection: ${incomplete.optionsSelections}');
-            // Emitting the incomplete bag item, with the current options selection
             emit(OptionsSelectionLoadedIncompleteState(
               optionsSelection: incomplete.optionsSelections,
             ));
           }, (bagItemDataAndOptionsSelections) async {
-            // Emitting the complete bag item, ready to be added to the bag
-            log('Emitting the complete bag item, ready to be added to the bag: ${bagItemDataAndOptionsSelections.$2}');
+            emit(OptionsSelectionLoadedCompleteState(
+              bagItemData: bagItemDataAndOptionsSelections.$1,
+              optionsSelection: bagItemDataAndOptionsSelections.$2,
+            ));
+          });
+          break;
+        case OptionsSelectionQuantityChanged:
+          event as OptionsSelectionQuantityChanged;
+          // Destructuring
+          final int quantity = event.quantity;
+          if (quantity < 1 || quantity > 10) {
+            return;
+          }
+          final ShopProduct product = event.product;
+          // Saving the changed option
+          await updateSelectedOptionsQuantity(
+            SelectedOptionsParams(
+              productId: product.id,
+              optionsSelection: OptionsSelections(
+                quantity: quantity,
+              ),
+            ),
+          );
+          // Getting the current saved options
+          final currentSavedOptions = await getSavedSelectedOptions(
+            Params(id: product.id),
+          );
+          final incompleteOrBagItem = await _parseCurrentOptions(
+              product: product, currentSavedOptions: currentSavedOptions);
+          await incompleteOrBagItem.fold((incomplete) async {
+            emit(OptionsSelectionLoadedIncompleteState(
+              optionsSelection: incomplete.optionsSelections,
+            ));
+          }, (bagItemDataAndOptionsSelections) async {
             emit(OptionsSelectionLoadedCompleteState(
               bagItemData: bagItemDataAndOptionsSelections.$1,
               optionsSelection: bagItemDataAndOptionsSelections.$2,
@@ -90,21 +125,19 @@ class OptionsSelectionBloc
           });
           break;
         case OptionsSelectionStarted:
-          emit(OptionsSelectionInitial());
       }
     });
   }
 
   Future<Either<IncompleteBagItem, (BagItemData, OptionsSelections)>>
-      _parseSavedOptions({required ShopProduct product}) async {
-    final currentSavedOptions = await getSavedSelectedOptions(
-      Params(id: product.id),
-    );
+      _parseCurrentOptions(
+          {required ShopProduct product,
+          required Either<Failure, OptionsSelections>
+              currentSavedOptions}) async {
     return await currentSavedOptions.fold((l) async {
       return Left(
         IncompleteBagItem(
           product: product,
-          quantity: 1,
           optionsSelections: const OptionsSelections(
             selectedOptions: {},
           ),
@@ -117,7 +150,6 @@ class OptionsSelectionBloc
           product: product,
           // If null, then the options are incomplete, and a blank options selection is used
           optionsSelections: selections,
-          quantity: selections.quantity,
         ),
       );
       // Determing if the options make a complete bag item
@@ -126,7 +158,6 @@ class OptionsSelectionBloc
           IncompleteBagItem(
             optionsSelections: incompleteOptions.currentSelectedOptions,
             product: product,
-            quantity: incompleteOptions.currentSelectedOptions.quantity,
           ),
         );
       }, (bagItemReady) {

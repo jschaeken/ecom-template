@@ -127,3 +127,71 @@ Future<int?> showListSelectorModal({
         );
       });
 }
+
+class QuantitySelector extends StatelessWidget {
+  final int quantity;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+  const QuantitySelector({
+    super.key,
+    required this.quantity,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 45,
+      width: 120,
+      decoration: BoxDecoration(
+        color: Theme.of(context).canvasColor,
+        border: Border.all(
+          width: 2,
+          color: Theme.of(context).primaryColor,
+        ),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                onRemove();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                child: CustomIcon(
+                  CupertinoIcons.minus,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: TextBody(text: quantity.toString()),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                onAdd();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                child: CustomIcon(
+                  CupertinoIcons.plus,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

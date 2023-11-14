@@ -12,7 +12,7 @@ class OptionsSelections extends Equatable {
   final int quantity;
 
   const OptionsSelections({
-    required this.selectedOptions,
+    this.selectedOptions = const {},
     this.quantity = 1,
   });
 

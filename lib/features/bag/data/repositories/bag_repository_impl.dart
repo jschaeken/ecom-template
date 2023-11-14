@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/bag/data/datasources/bag_items_local_datasource.dart';
@@ -25,13 +26,22 @@ class BagRepositoryImpl implements BagRepository {
   Future<Either<Failure, List<BagItem>>> getBagItems() async {
     try {
       // Get all bag items from local cache
-      List<BagItemData> cacheResponse =
-          await bagItemsDataSource.getAllLocalBagItemData();
+      List<BagItemData> cacheResponse = [];
+      try {
+        cacheResponse = await bagItemsDataSource.getAllLocalBagItemData();
+      } catch (e) {
+        throw CacheException();
+      }
       List<BagItem> bagItems = [];
       for (BagItemData bagItemData in cacheResponse) {
         // Get product from remote
-        final product = await productRemoteDataSource
-            .getProductById(bagItemData.parentProductId);
+        ShopProduct? product;
+        try {
+          product = await productRemoteDataSource
+              .getProductById(bagItemData.parentProductId);
+        } catch (e) {
+          throw ServerException();
+        }
         // Get the saved product variant from the ShopProduct
         try {
           ShopProductProductVariant selectedVariant = product.productVariants
@@ -51,6 +61,10 @@ class BagRepositoryImpl implements BagRepository {
         }
       }
       return Right(bagItems);
+    } on CacheException {
+      return Left(CacheFailure());
+    } on ServerException {
+      return Left(ServerFailure());
     } catch (e) {
       return Left(CacheFailure());
     }
@@ -61,8 +75,8 @@ class BagRepositoryImpl implements BagRepository {
   Future<Either<Failure, WriteSuccess>> addBagItem(
       BagItemData bagItemData) async {
     try {
-      final response = await bagItemsDataSource.addBagItemData(bagItemData);
-      return Right(response);
+      await bagItemsDataSource.addBagItemData(bagItemData);
+      return const Right(WriteSuccess());
     } catch (e) {
       return Left(CacheFailure());
     }
@@ -72,9 +86,8 @@ class BagRepositoryImpl implements BagRepository {
   Future<Either<Failure, WriteSuccess>> removeBagItem(
       BagItemData bagItemData) async {
     try {
-      final response = await bagItemsDataSource
-          .removeBagItemData(bagItemData.productVariantId);
-      return Right(response);
+      await bagItemsDataSource.removeBagItemData(bagItemData.productVariantId);
+      return const Right(WriteSuccess());
     } catch (e) {
       return Left(CacheFailure());
     }
@@ -84,9 +97,9 @@ class BagRepositoryImpl implements BagRepository {
   Future<Either<Failure, WriteSuccess>> updateBagItem(
       BagItemData bagItemData) async {
     try {
-      final response = await bagItemsDataSource.setBagItemDataQuantity(
+      await bagItemsDataSource.setBagItemDataQuantity(
           bagItemData.productVariantId, bagItemData.quantity);
-      return Right(response);
+      return const Right(WriteSuccess());
     } catch (e) {
       return Left(CacheFailure());
     }
@@ -99,7 +112,7 @@ class BagRepositoryImpl implements BagRepository {
       OptionsSelections? response =
           await optionsSelectionDataSource.getSavedSelectedOptions(productId);
       if (response == null) {
-        return Left(CacheFailure());
+        return const Right(OptionsSelections());
       } else {
         return Right(response);
       }
@@ -123,7 +136,7 @@ class BagRepositoryImpl implements BagRepository {
   }
 
   @override
-  Future<Either<Failure, WriteSuccess>> updateSelectedOptions(
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptionsFields(
       String productId, OptionsSelections newOptionSelection) async {
     try {
       final currentOptionsSelections =
@@ -139,7 +152,37 @@ class BagRepositoryImpl implements BagRepository {
         });
         newMap.addAll(newOptionSelection.selectedOptions);
         await optionsSelectionDataSource.saveSelectedOptions(
-            productId, OptionsSelections(selectedOptions: newMap));
+          productId,
+          OptionsSelections(
+            selectedOptions: newMap,
+            quantity: currentOptionsSelections.quantity,
+          ),
+        );
+        return const Right(WriteSuccess());
+      }
+    } catch (e) {
+      return Left(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, WriteSuccess>> updateSelectedOptionsQuantity(
+      String productId, OptionsSelections newOptionSelection) async {
+    try {
+      final currentOptionsSelections =
+          await optionsSelectionDataSource.getSavedSelectedOptions(productId);
+      if (currentOptionsSelections == null) {
+        await optionsSelectionDataSource.saveSelectedOptions(
+            productId, newOptionSelection);
+        return const Right(WriteSuccess());
+      } else {
+        await optionsSelectionDataSource.saveSelectedOptions(
+          productId,
+          OptionsSelections(
+            selectedOptions: currentOptionsSelections.selectedOptions,
+            quantity: newOptionSelection.quantity,
+          ),
+        );
         return const Right(WriteSuccess());
       }
     } catch (e) {

@@ -9,7 +9,9 @@ import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
+import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
+import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,7 +56,7 @@ void main() {
       unitPrice: Price(amount: 100, currencyCode: ''),
       unitPriceMeasurement: null,
       price: Price(amount: 100, currencyCode: ''),
-      title: 'variant title',
+      title: 'parent title',
       weight: 'weight',
       weightUnit: '',
       availableForSale: true,
@@ -67,9 +69,53 @@ void main() {
     ),
   ];
 
+  ShopProductModel testProductModel = const ShopProductModel(
+    availableForSale: true,
+    createdAt: '',
+    id: 'testParentId',
+    images: [
+      ShopProductImage(originalSrc: 'https://test.com/image.png'),
+    ],
+    isPopular: false,
+    metafields: [],
+    options: [
+      ShopProductOption(
+        name: 'Size',
+        values: ['Extra Extra Large'],
+      ),
+    ],
+    productType: '',
+    productVariants: [
+      ShopProductProductVariant(
+        image: ShopProductImage(originalSrc: 'https://test.com/image.png'),
+        selectedOptions: [
+          ShopProductSelectedOption(name: 'Size', value: 'Extra Extra Large'),
+        ],
+        compareAtPrice: Price(amount: 100, currencyCode: ''),
+        unitPrice: Price(amount: 100, currencyCode: ''),
+        unitPriceMeasurement: null,
+        price: Price(amount: 100, currencyCode: ''),
+        title: 'variant title',
+        weight: 'weight',
+        weightUnit: '',
+        availableForSale: true,
+        sku: '',
+        requiresShipping: true,
+        id: '1',
+        quantityAvailable: 100,
+      ),
+    ],
+    publishedAt: '',
+    tags: [],
+    title: 'parent title',
+    updatedAt: '',
+    vendor: '',
+  );
+
   final testBagItemData = [
     const BagItemData(
       parentProductId: 'testParentId',
+      productVariantTitle: 'variant title',
       productVariantId: '1',
       quantity: 1,
     ),
@@ -103,7 +149,7 @@ void main() {
         () async {
       // arrange
       when(() => mockBagItemsLocalDataSource.getAllLocalBagItemData())
-          .thenThrow(CacheException());
+          .thenThrow(Exception());
 
       // act
       final result = await repository.getBagItems();
@@ -114,20 +160,22 @@ void main() {
     });
 
     test(
-        'should return a CacheFailure when the call to remote data source is unsuccessful',
+        'should return a ServerFailure when the call to remote data source is unsuccessful',
         () async {
       // arrange
       when(() => mockBagItemsLocalDataSource.getAllLocalBagItemData())
           .thenAnswer((_) async => testBagItemData);
       when(() => mockProductRemoteDataSource.getProductById(
-          testBagItemData[0].parentProductId)).thenThrow(CacheException());
+          testBagItemData[0].parentProductId)).thenThrow(Exception());
 
       // act
       final result = await repository.getBagItems();
 
       // assert
       verify(() => mockBagItemsLocalDataSource.getAllLocalBagItemData());
-      expect(result, equals(Left(CacheFailure())));
+      verify(() => mockProductRemoteDataSource
+          .getProductById(testBagItemData[0].parentProductId));
+      expect(result, equals(Left(ServerFailure())));
     });
   });
 
@@ -234,6 +282,41 @@ void main() {
           .getSavedSelectedOptions(testBagItemData[0].parentProductId));
       expect(result, equals(const Right(testSavedSelectedOptions)));
     });
+
+    test(
+        'should return an empty OptionsSelections Object when the local datasource returns null',
+        () async {
+      // arrange
+      when(() => mockOptionsSelectionLocalDataSource
+          .getSavedSelectedOptions(any())).thenAnswer((_) async => null);
+
+      // act
+      final result = await repository
+          .getSavedSelectedOptions(testBagItemData[0].parentProductId);
+
+      // assert
+      verify(() => mockOptionsSelectionLocalDataSource
+          .getSavedSelectedOptions(testBagItemData[0].parentProductId));
+      expect(
+          result, equals(const Right(OptionsSelections(selectedOptions: {}))));
+    });
+
+    test(
+        'Should return a CacheFailure when the local datasource throws an exception',
+        () async {
+      // arrange
+      when(() => mockOptionsSelectionLocalDataSource.getSavedSelectedOptions(
+          any())).thenThrow(Exception('Test Exception'));
+
+      // act
+      final result = await repository
+          .getSavedSelectedOptions(testBagItemData[0].parentProductId);
+
+      // assert
+      verify(() => mockOptionsSelectionLocalDataSource
+          .getSavedSelectedOptions(testBagItemData[0].parentProductId));
+      expect(result, equals(Left(CacheFailure())));
+    });
   });
 
   group('saveSelectedOptions', () {
@@ -252,12 +335,12 @@ void main() {
 
     const WriteSuccess writeSuccess = WriteSuccess();
 
-    test('Should return a WriteSuccess when the local datasource does',
+    test(
+        'Should return a WriteSuccess when the local datasource completes normally',
         () async {
       // arrange
       when(() => mockOptionsSelectionLocalDataSource.saveSelectedOptions(
-              testId, testSavedSelectedOptions))
-          .thenAnswer((_) async => writeSuccess);
+          testId, testSavedSelectedOptions)).thenAnswer((_) async {});
 
       // act
       final result = await repository.saveSelectedOptions(

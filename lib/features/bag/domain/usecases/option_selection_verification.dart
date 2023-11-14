@@ -46,8 +46,9 @@ class VerifyOptions {
         return Right(
           BagItemData(
             parentProductId: incompleteBagItem.product.id,
+            productVariantTitle: variant.title,
             productVariantId: variant.id,
-            quantity: incompleteBagItem.quantity,
+            quantity: incompleteBagItem.optionsSelections.quantity,
           ),
         );
       }

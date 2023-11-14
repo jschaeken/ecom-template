@@ -28,7 +28,6 @@ class BagBloc extends Bloc<BagEvent, BagState> {
     on<BagEvent>((event, emit) async {
       switch (event.runtimeType) {
         case AddBagItemEvent:
-          // emit(BagLoadingState());
           final bagItemData = (event as AddBagItemEvent).bagItemData;
           //////////////////////////////
           //    Adding Item to Bag    //
@@ -57,12 +56,13 @@ class BagBloc extends Bloc<BagEvent, BagState> {
           debugPrint('bagItemData: $bagItemData');
           break;
         case RemoveBagItemEvent:
-          // emit(BagLoadingState());
           final bagItem = (event as RemoveBagItemEvent).bagItem;
           final bagItemData = BagItemData(
-              parentProductId: bagItem.parentProductId,
-              productVariantId: bagItem.id,
-              quantity: bagItem.quantity);
+            parentProductId: bagItem.parentProductId,
+            productVariantTitle: bagItem.title,
+            productVariantId: bagItem.id,
+            quantity: bagItem.quantity,
+          );
           final result = await removeBagItem(bagItemData);
           await result.fold(
             (failure) {
@@ -106,6 +106,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
           final newQuantity = event.quantity;
           final bagItemData = BagItemData(
             parentProductId: bagItem.parentProductId,
+            productVariantTitle: bagItem.title,
             productVariantId: bagItem.id,
             quantity: newQuantity,
           );

@@ -20,19 +20,22 @@ class BagItemDataAdapter extends TypeAdapter<BagItemData> {
       parentProductId: fields[0] as String,
       quantity: fields[1] as int,
       productVariantId: fields[2] as String,
+      productVariantTitle: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, BagItemData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.parentProductId)
       ..writeByte(1)
       ..write(obj.quantity)
       ..writeByte(2)
-      ..write(obj.productVariantId);
+      ..write(obj.productVariantId)
+      ..writeByte(3)
+      ..write(obj.productVariantTitle);
   }
 
   @override

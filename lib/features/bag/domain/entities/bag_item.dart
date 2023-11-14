@@ -178,28 +178,28 @@ class BagItem extends ShopProductProductVariant {
       uniqueKey: uniqueKey ?? this.uniqueKey,
     );
   }
+
+  @override
+  bool get stringify => true;
 }
 
 class IncompleteBagItem extends Equatable {
   final ShopProduct product;
   final OptionsSelections optionsSelections;
-  final int quantity;
 
   const IncompleteBagItem({
     required this.product,
     required this.optionsSelections,
-    required this.quantity,
   });
 
   @override
   List<Object?> get props => [
         product,
         optionsSelections,
-        quantity,
       ];
 
   @override
   String toString() {
-    return 'IncompleteBagItem(product: $product, optionsSelections: $optionsSelections, quantity: $quantity)';
+    return 'IncompleteBagItem(product: $product, optionsSelections: $optionsSelections)';
   }
 }
