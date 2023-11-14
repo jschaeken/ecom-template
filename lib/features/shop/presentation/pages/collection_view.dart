@@ -395,32 +395,32 @@ class ProductContainer extends StatelessWidget {
           ),
         ),
         Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: Constants.padding.copyWith(top: 10, right: 10),
-              child: GestureDetector(
-                onTap: onFavoriteTap,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      shape: BoxShape.circle),
-                  child: Padding(
-                    padding: Constants.padding,
-                    child: isFavorite == null
-                        ? const SizedBox()
-                        : CustomIcon(
-                            isFavorite!
-                                ? CupertinoIcons.heart_fill
-                                : CupertinoIcons.heart,
-                            size: 20,
-                            color: isFavorite!
-                                ? Colors.red
-                                : Theme.of(context).primaryColor,
-                          ),
-                  ),
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: Constants.padding.copyWith(top: 10, right: 10),
+            child: GestureDetector(
+              onTap: onFavoriteTap,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor, shape: BoxShape.circle),
+                child: Padding(
+                  padding: Constants.padding,
+                  child: isFavorite == null
+                      ? const SizedBox()
+                      : (isFavorite ?? false)
+                          ? const CustomIcon(
+                              CupertinoIcons.heart_fill,
+                              color: Colors.red,
+                            )
+                          : CustomIcon(
+                              CupertinoIcons.heart,
+                              color: Theme.of(context).primaryColor,
+                            ),
                 ),
               ),
-            ))
+            ),
+          ),
+        )
       ],
     );
   }

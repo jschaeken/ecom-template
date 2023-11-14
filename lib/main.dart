@@ -2,12 +2,14 @@ import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/util/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -44,6 +46,8 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => injection.sl<BagBloc>()),
         BlocProvider(create: (_) => injection.sl<FavoritesBloc>()),
+        BlocProvider(create: (_) => injection.sl<ShoppingBloc>()),
+        BlocProvider(create: (_) => injection.sl<OptionsSelectionBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -92,5 +96,7 @@ Future<void> initialConfig() async {
 
   await injection.init();
 
-  await Hive.deleteFromDisk();
+  await Hive.deleteBoxFromDisk('bag');
+  await Hive.deleteBoxFromDisk('favorites');
+  await Hive.deleteBoxFromDisk('options_selection');
 }

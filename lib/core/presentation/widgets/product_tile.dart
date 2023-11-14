@@ -2,6 +2,7 @@ import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LargeProductTile extends StatelessWidget {
@@ -73,19 +74,30 @@ class LargeProductTile extends StatelessWidget {
                       Align(
                         alignment: Alignment.topRight,
                         child: Padding(
-                          padding: Constants.padding,
+                          padding:
+                              Constants.padding.copyWith(top: 10, right: 10),
                           child: GestureDetector(
                             onTap: onFavoriteTap,
-                            child: isFavorite != null
-                                ? CustomIcon(
-                                    isFavorite!
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: isFavorite!
-                                        ? Colors.red
-                                        : Theme.of(context).primaryColor,
-                                  )
-                                : const SizedBox(),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  shape: BoxShape.circle),
+                              child: Padding(
+                                padding: Constants.padding,
+                                child: isFavorite == null
+                                    ? const SizedBox()
+                                    : (isFavorite ?? false)
+                                        ? const CustomIcon(
+                                            CupertinoIcons.heart_fill,
+                                            color: Colors.red,
+                                          )
+                                        : CustomIcon(
+                                            CupertinoIcons.heart,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                              ),
+                            ),
                           ),
                         ),
                       ),

@@ -15,7 +15,7 @@ abstract class BagRepository {
 
   Future<Either<Failure, WriteSuccess>> updateBagItem(BagItemData bagItemData);
 
-  Future<Either<Failure, OptionsSelections?>> getSavedSelectedOptions(
+  Future<Either<Failure, OptionsSelections>> getSavedSelectedOptions(
     String productId,
   );
 

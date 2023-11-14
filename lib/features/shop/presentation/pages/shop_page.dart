@@ -40,30 +40,10 @@ class _ShopPageState extends State<ShopPage>
                 child: CustomSearchBar(controller: searchController),
               ),
               // Categories Tab Bar
-              TabBar(
-                isScrollable: true,
-                controller: tabController,
-                labelColor: Theme.of(context).primaryColor,
-                tabs: const [
-                  Tab(text: 'Food & Drink'),
-                  Tab(text: 'Vitamin & Body'),
-                  Tab(text: 'Household'),
-                  Tab(text: 'Pet'),
-                ],
-              ),
-              // Tab Bar View
-              Flexible(
-                // height: MediaQuery.of(context).size.height,
-                child: TabBarView(
-                  viewportFraction: 1,
-                  // physics: const NeverScrollableScrollPhysics(),
-                  controller: tabController,
-                  children: const [
-                    CategoryShop(id: 'Food'),
-                    CategoryShop(id: 'Vitamin & Body'),
-                    CategoryShop(id: 'Household'),
-                    CategoryShop(id: 'Pet'),
-                  ],
+
+              const Flexible(
+                child: SingleChildScrollView(
+                  child: CategoryShop(id: 'Vitamin & Body'),
                 ),
               ),
             ],

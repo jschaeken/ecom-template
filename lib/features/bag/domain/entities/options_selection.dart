@@ -8,12 +8,16 @@ class OptionsSelections extends Equatable {
   @HiveField(0)
   final Map<String, int> selectedOptions;
 
+  @HiveField(1)
+  final int quantity;
+
   const OptionsSelections({
     required this.selectedOptions,
+    this.quantity = 1,
   });
 
   @override
-  List<Object?> get props => [selectedOptions];
+  List<Object?> get props => [selectedOptions, quantity];
 
   @override
   bool get stringify => true;

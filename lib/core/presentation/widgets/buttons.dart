@@ -10,10 +10,12 @@ class DropdownButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onTap,
+    this.isInvalid = false,
   });
 
   final String text;
   final VoidCallback onTap;
+  final bool isInvalid;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class DropdownButton extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
-            color: Theme.of(context).primaryColor,
+            color: isInvalid ? Colors.red : Theme.of(context).primaryColor,
           ),
           borderRadius: BorderRadius.circular(5),
         ),

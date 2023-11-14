@@ -67,218 +67,211 @@ class _CategoryShopState extends State<CategoryShop> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => collectionsBloc,
-      child: SingleChildScrollView(
-        child: BlocProvider(
-          create: (_) => shopBloc,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Promo PageView Header
-              /* MultiImageBanner(images: promoImages), */
+      child: BlocProvider(
+        create: (_) => shopBloc,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Promo PageView Header
+            /* MultiImageBanner(images: promoImages), */
 
-              const SizedBox(height: 20),
+            BlocBuilder<ShoppingBloc, ShoppingState>(
+              builder: (context, state) {
+                if (state is ShoppingLoaded) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Featured Products
+                      Padding(
+                        padding: Constants.padding.copyWith(bottom: 0),
+                        child: TextHeadline(
+                            text: 'Featured ${widget.id} Products'),
+                      ),
 
-              BlocBuilder<ShoppingBloc, ShoppingState>(
-                builder: (context, state) {
-                  if (state is ShoppingLoaded) {
-                    return Column(
+                      SizedBox(
+                        height: 240,
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView.builder(
+                          controller: pageController,
+                          itemCount: state.products.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return BlocBuilder<FavoritesBloc, FavoritesState>(
+                              builder: (context, favoriteState) {
+                                bool? isFavorite;
+                                if (favoriteState is FavoritesAddedLoaded ||
+                                    favoriteState is FavoritesRemovedLoaded ||
+                                    favoriteState is FavoritesLoaded ||
+                                    favoriteState is FavoritesEmpty) {
+                                  isFavorite = favoriteState.favorites
+                                      .map((e) => e.id)
+                                      .contains(state.products[index].id);
+                                }
+                                return LargeProductTile(
+                                  product: state.products[index],
+                                  isLast: index == state.products.length - 1,
+                                  onTap: () {
+                                    Navigator.push(context, CupertinoPageRoute(
+                                      builder: (context) {
+                                        return ProductPage(
+                                          id: state.products[index].id,
+                                        );
+                                      },
+                                    ));
+                                  },
+                                  isFavorite: isFavorite,
+                                  onFavoriteTap: () {
+                                    if (isFavorite == null) {
+                                      BlocProvider.of<FavoritesBloc>(context)
+                                          .add(GetFavoritesEvent());
+                                    } else if (isFavorite) {
+                                      BlocProvider.of<FavoritesBloc>(context)
+                                          .add(
+                                        RemoveFavoriteEvent(
+                                          favorite: Favorite(
+                                            parentProdId:
+                                                state.products[index].id,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      BlocProvider.of<FavoritesBloc>(context)
+                                          .add(
+                                        AddFavoriteEvent(
+                                          favorite: Favorite(
+                                            parentProdId:
+                                                state.products[index].id,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                } else if (state is ShoppingLoading) {
+                  return Padding(
+                    padding: Constants.padding,
+                    child: const LoadingStateWidget(
+                      height: 240,
+                    ),
+                  );
+                } else if (state is ShoppingError) {
+                  return IconTextError(
+                    failure: state.failure,
+                  );
+                } else if (state is ShoppingInitial) {
+                  return const SizedBox(
+                    height: 240,
+                  );
+                } else {
+                  return const SizedBox(
+                    height: 240,
+                  );
+                }
+              },
+            ),
+
+            // Featured Brands Grid View Title
+            Padding(
+              padding: Constants.padding,
+              child: TextHeadline(text: 'Featured ${widget.id} Brands'),
+            ),
+
+            // Featured Brands Grid View
+            BlocBuilder<ShoppingBloc, ShoppingState>(builder: (context, state) {
+              if (state is ShoppingLoaded) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: Constants.padding.copyWith(top: 0),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.7,
+                    crossAxisSpacing: Constants.padding.right.abs(),
+                    mainAxisSpacing: Constants.padding.bottom.abs(),
+                  ),
+                  itemCount: featuredBrandImages.length,
+                  itemBuilder: (context, index) {
+                    return FeaturedBrandTile(brand: featuredBrandImages[index]);
+                  },
+                );
+              } else if (state is ShoppingLoading) {
+                return const SizedBox();
+              } else if (state is ShoppingError) {
+                return const SizedBox();
+              } else if (state is ShoppingInitial) {
+                return const SizedBox();
+              } else {
+                return const SizedBox();
+              }
+            }),
+
+            //List of Product Categories Title
+            Padding(
+              padding: Constants.padding,
+              child: const TextHeadline(text: 'Trending Collections'),
+            ),
+
+            // ListView of Product Categories
+            BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
+              builder: (context, state) {
+                return BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
+                    builder: (context, state) {
+                  if (state is CollectionsViewLoaded) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.collections.length,
+                      itemBuilder: (context, index) {
+                        return SlimTextTile(
+                          key: UniqueKey(),
+                          text: state.collections[index].title,
+                          onTap: () {
+                            Navigator.push(context, CupertinoPageRoute(
+                              builder: (context) {
+                                return CollectionView(
+                                  id: state.collections[index].id,
+                                  collectionName:
+                                      state.collections[index].title,
+                                );
+                              },
+                            ));
+                          },
+                        );
+                      },
+                    );
+                  } else if (state is CollectionsViewLoading) {
+                    return const LoadingStateWidget();
+                  } else if (state is CollectionsViewError) {
+                    return IconTextError(failure: state.failure);
+                  } else if (state is CollectionsViewInitial) {
+                    return const LoadingStateWidget();
+                  } else if (state is CollectionsViewEmpty) {
+                    return const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Featured Products
-                        Padding(
-                          padding: Constants.padding.copyWith(bottom: 0),
-                          child: TextHeadline(
-                              text: 'Featured ${widget.id} Products'),
-                        ),
-
                         SizedBox(
-                          height: 240,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                            controller: pageController,
-                            itemCount: state.products.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return BlocBuilder<FavoritesBloc, FavoritesState>(
-                                builder: (context, favoriteState) {
-                                  bool? isFavorite;
-                                  if (favoriteState is FavoritesAddedLoaded ||
-                                      favoriteState is FavoritesRemovedLoaded ||
-                                      favoriteState is FavoritesLoaded ||
-                                      favoriteState is FavoritesEmpty) {
-                                    isFavorite = favoriteState.favorites
-                                        .map((e) => e.id)
-                                        .contains(state.products[index].id);
-                                  }
-                                  return LargeProductTile(
-                                    product: state.products[index],
-                                    isLast: index == state.products.length - 1,
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          CupertinoPageRoute(
-                                        builder: (context) {
-                                          return ProductPage(
-                                            id: state.products[index].id,
-                                          );
-                                        },
-                                      ));
-                                    },
-                                    isFavorite: isFavorite,
-                                    onFavoriteTap: () {
-                                      if (isFavorite == null) {
-                                        BlocProvider.of<FavoritesBloc>(context)
-                                            .add(GetFavoritesEvent());
-                                      } else if (isFavorite) {
-                                        BlocProvider.of<FavoritesBloc>(context)
-                                            .add(
-                                          RemoveFavoriteEvent(
-                                            favorite: Favorite(
-                                              parentProdId:
-                                                  state.products[index].id,
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        BlocProvider.of<FavoritesBloc>(context)
-                                            .add(
-                                          AddFavoriteEvent(
-                                            favorite: Favorite(
-                                              parentProdId:
-                                                  state.products[index].id,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                          height: 100,
+                        ),
+                        TextBody(
+                          text: 'No Collections',
                         ),
                       ],
                     );
-                  } else if (state is ShoppingLoading) {
-                    return Padding(
-                      padding: Constants.padding,
-                      child: const LoadingStateWidget(
-                        height: 240,
-                      ),
-                    );
-                  } else if (state is ShoppingError) {
-                    return IconTextError(
-                      failure: state.failure,
-                    );
-                  } else if (state is ShoppingInitial) {
-                    return const SizedBox(
-                      height: 240,
-                    );
                   } else {
-                    return const SizedBox(
-                      height: 240,
-                    );
+                    return const SizedBox();
                   }
-                },
-              ),
-
-              // Featured Brands Grid View Title
-              Padding(
-                padding: Constants.padding,
-                child: TextHeadline(text: 'Featured ${widget.id} Brands'),
-              ),
-
-              // Featured Brands Grid View
-              BlocBuilder<ShoppingBloc, ShoppingState>(
-                  builder: (context, state) {
-                if (state is ShoppingLoaded) {
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: Constants.padding.copyWith(top: 0),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.7,
-                      crossAxisSpacing: Constants.padding.right.abs(),
-                      mainAxisSpacing: Constants.padding.bottom.abs(),
-                    ),
-                    itemCount: featuredBrandImages.length,
-                    itemBuilder: (context, index) {
-                      return FeaturedBrandTile(
-                          brand: featuredBrandImages[index]);
-                    },
-                  );
-                } else if (state is ShoppingLoading) {
-                  return const SizedBox();
-                } else if (state is ShoppingError) {
-                  return const SizedBox();
-                } else if (state is ShoppingInitial) {
-                  return const SizedBox();
-                } else {
-                  return const SizedBox();
-                }
-              }),
-
-              //List of Product Categories Title
-              Padding(
-                padding: Constants.padding,
-                child: const TextHeadline(text: 'Trending Collections'),
-              ),
-
-              // ListView of Product Categories
-              BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
-                builder: (context, state) {
-                  return BlocBuilder<CollectionsViewBloc, CollectionsViewState>(
-                      builder: (context, state) {
-                    if (state is CollectionsViewLoaded) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.collections.length,
-                        itemBuilder: (context, index) {
-                          return SlimTextTile(
-                            key: UniqueKey(),
-                            text: state.collections[index].title,
-                            onTap: () {
-                              Navigator.push(context, CupertinoPageRoute(
-                                builder: (context) {
-                                  return CollectionView(
-                                    id: state.collections[index].id,
-                                    collectionName:
-                                        state.collections[index].title,
-                                  );
-                                },
-                              ));
-                            },
-                          );
-                        },
-                      );
-                    } else if (state is CollectionsViewLoading) {
-                      return const LoadingStateWidget();
-                    } else if (state is CollectionsViewError) {
-                      return IconTextError(failure: state.failure);
-                    } else if (state is CollectionsViewInitial) {
-                      return const LoadingStateWidget();
-                    } else if (state is CollectionsViewEmpty) {
-                      return const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 100,
-                          ),
-                          TextBody(
-                            text: 'No Collections',
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  });
-                },
-              )
-            ],
-          ),
+                });
+              },
+            )
+          ],
         ),
       ),
     );

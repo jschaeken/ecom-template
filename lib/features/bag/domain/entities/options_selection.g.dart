@@ -18,15 +18,18 @@ class OptionsSelectionsAdapter extends TypeAdapter<OptionsSelections> {
     };
     return OptionsSelections(
       selectedOptions: (fields[0] as Map).cast<String, int>(),
+      quantity: fields[1] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, OptionsSelections obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.selectedOptions);
+      ..write(obj.selectedOptions)
+      ..writeByte(1)
+      ..write(obj.quantity);
   }
 
   @override

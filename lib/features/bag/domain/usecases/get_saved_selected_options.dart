@@ -10,7 +10,7 @@ class GetSavedSelectedOptions extends UseCase<List<OptionsSelections>, Params> {
   GetSavedSelectedOptions({required this.repository});
 
   @override
-  Future<Either<Failure, OptionsSelections?>> call(Params params) async {
+  Future<Either<Failure, OptionsSelections>> call(Params params) async {
     return await repository.getSavedSelectedOptions(params.id);
   }
 }

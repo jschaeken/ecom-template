@@ -7,27 +7,45 @@ sealed class OptionsSelectionEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetSavedSelectedOptionsEvent extends OptionsSelectionEvent {
-  final String productId;
-
-  const GetSavedSelectedOptionsEvent({required this.productId});
+class OptionsSelectionStarted extends OptionsSelectionEvent {
+  const OptionsSelectionStarted();
 
   @override
-  List<Object> get props => [productId];
+  List<Object> get props => [];
 }
 
 class OptionsSelectionChanged extends OptionsSelectionEvent {
   // Single option selection
   final String optionName;
   final int indexValue;
-  final String productId;
+  final ShopProduct product;
+  final int quantity;
 
   const OptionsSelectionChanged({
     required this.optionName,
     required this.indexValue,
-    required this.productId,
+    required this.product,
+    required this.quantity,
   });
 
   @override
-  List<Object> get props => [optionName, indexValue, productId];
+  List<Object> get props => [optionName, indexValue, product, quantity];
+}
+
+class CheckValidOptionsSelectionEvent extends OptionsSelectionEvent {
+  final ShopProduct product;
+
+  const CheckValidOptionsSelectionEvent({required this.product});
+
+  @override
+  List<Object> get props => [product];
+}
+
+class PushOptionsSelectionErrorState extends OptionsSelectionEvent {
+  final IncompleteOptionsSelectionFailure failure;
+
+  const PushOptionsSelectionErrorState({required this.failure});
+
+  @override
+  List<Object> get props => [failure];
 }

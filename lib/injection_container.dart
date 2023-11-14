@@ -6,6 +6,7 @@ import 'package:ecom_template/features/bag/domain/repositories/bag_repository.da
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
+import 'package:ecom_template/features/bag/domain/usecases/option_selection_verification.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_saved_selected_options.dart';
@@ -43,10 +44,11 @@ Future<void> init() async {
       getAllProductsByCollectionId: sl(),
     ),
   );
-  // Product Page - Images Bloc
+  // Product Page - Options Selection Bloc
   sl.registerFactory(() => OptionsSelectionBloc(
         getSavedSelectedOptions: sl(),
         updateSelectedOptions: sl(),
+        verifyOptions: sl(),
       ));
 
   /// Features - Shop - Collections Bloc
@@ -91,6 +93,9 @@ Future<void> init() async {
       networkInfo: sl(),
     ),
   );
+
+  /// Features - Options Selection - Use Cases
+  sl.registerLazySingleton(() => VerifyOptions());
 
   /// Features - Bag - Use Cases
   sl.registerLazySingleton(() => AddBagItem(repository: sl()));

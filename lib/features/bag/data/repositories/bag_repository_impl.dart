@@ -93,12 +93,16 @@ class BagRepositoryImpl implements BagRepository {
   }
 
   @override
-  Future<Either<Failure, OptionsSelections?>> getSavedSelectedOptions(
+  Future<Either<Failure, OptionsSelections>> getSavedSelectedOptions(
       String productId) async {
     try {
-      final response =
+      OptionsSelections? response =
           await optionsSelectionDataSource.getSavedSelectedOptions(productId);
-      return Right(response);
+      if (response == null) {
+        return Left(CacheFailure());
+      } else {
+        return Right(response);
+      }
     } catch (e) {
       return Left(CacheFailure());
     }

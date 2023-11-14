@@ -1,11 +1,15 @@
 import 'package:ecom_template/core/error/failures.dart';
+import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 
 class IncompleteOptionsSelectionFailure extends Failure {
-  final String message;
+  final OptionsSelections currentSelectedOptions;
+  final String? message;
 
   const IncompleteOptionsSelectionFailure(
-      {this.message = 'Please complete all required options'});
+      {this.currentSelectedOptions =
+          const OptionsSelections(selectedOptions: {}),
+      this.message});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [currentSelectedOptions];
 }

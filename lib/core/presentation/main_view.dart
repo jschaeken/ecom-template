@@ -7,6 +7,7 @@ import 'package:ecom_template/core/presentation/widgets/noti_icon.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/explore_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
@@ -105,17 +106,17 @@ class _MainViewState extends State<MainView> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: tabBarItems
-            .map(
-              (item) => BottomNavigationBarItem(
-                icon: item.title == 'Bag'
-                    ? NotiIcon(icon: item.icon[0])
+        items: tabBarItems.map((item) {
+          return BottomNavigationBarItem(
+            icon: item.title == 'Bag'
+                ? BagNotiIcon(iconData: item.icon[0])
+                : item.title == 'Favorites'
+                    ? FavoritesNotiIcon(iconData: item.icon[0])
                     : Icon(item.icon[0]),
-                activeIcon: Icon(item.icon[1]),
-                label: item.title,
-              ),
-            )
-            .toList(),
+            activeIcon: Icon(item.icon[1]),
+            label: item.title,
+          );
+        }).toList(),
         currentIndex: context.watch<PageNavigationProvider>().currentIndex,
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Theme.of(context).primaryColor.withOpacity(0.5),
@@ -130,6 +131,69 @@ class _MainViewState extends State<MainView> {
           }
         },
       ),
+    );
+  }
+}
+
+class FavoritesNotiIcon extends StatelessWidget {
+  final IconData iconData;
+  const FavoritesNotiIcon({
+    super.key,
+    required this.iconData,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FavoritesBloc, FavoritesState>(
+      builder: (context, state) {
+        if ((state is FavoritesAddedLoaded ||
+                state is FavoritesRemovedLoaded ||
+                state is FavoritesLoaded) &&
+            state.favorites.isNotEmpty) {
+          return NotiIcon(
+            icon: iconData,
+            visible: true,
+            isUnder: true,
+          );
+        } else {
+          return NotiIcon(
+            icon: iconData,
+            visible: false,
+          );
+        }
+      },
+    );
+  }
+}
+
+class BagNotiIcon extends StatelessWidget {
+  final IconData iconData;
+  const BagNotiIcon({
+    super.key,
+    required this.iconData,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BagBloc, BagState>(
+      builder: (context, state) {
+        if ((state is BagLoadedState ||
+                state is BagLoadedAddedState ||
+                state is BagLoadedRemovedState) &&
+            state.bagItems.isNotEmpty) {
+          return NotiIcon(
+            isUnder: false,
+            icon: iconData,
+            visible: true,
+            text: state.bagItems.length.toString(),
+          );
+        } else {
+          return NotiIcon(
+            icon: iconData,
+            visible: false,
+          );
+        }
+      },
     );
   }
 }

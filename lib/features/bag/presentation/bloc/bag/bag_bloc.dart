@@ -7,7 +7,6 @@ import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
-import 'package:ecom_template/features/bag/domain/usecases/verify_incomplete_bag_info.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -30,41 +29,32 @@ class BagBloc extends Bloc<BagEvent, BagState> {
       switch (event.runtimeType) {
         case AddBagItemEvent:
           // emit(BagLoadingState());
-          final incompleteBagItem = (event as AddBagItemEvent).bagItem;
-          final verifiedResult =
-              await verifyIncompleteBagItem(incompleteBagItem);
-          await verifiedResult.fold(
+          final bagItemData = (event as AddBagItemEvent).bagItemData;
+          //////////////////////////////
+          //    Adding Item to Bag    //
+          //////////////////////////////
+          final result = await addBagItem(bagItemData);
+          await result.fold(
             (failure) {
               emit(BagErrorState(failure: failure));
             },
-            (bagItemData) async {
-              //////////////////////////////
-              //    Adding Item to Bag    //
-              //////////////////////////////
-              final result = await addBagItem(bagItemData);
-              await result.fold(
+            (success) async {
+              final bagItems = await getAllBagItems(NoParams());
+              bagItems.fold(
                 (failure) {
                   emit(BagErrorState(failure: failure));
                 },
-                (success) async {
-                  final bagItems = await getAllBagItems(NoParams());
-                  bagItems.fold(
-                    (failure) {
-                      emit(BagErrorState(failure: failure));
-                    },
-                    (bagItems) {
-                      if (bagItems.isEmpty) {
-                        emit(BagEmptyState());
-                      } else {
-                        emit(BagLoadedAddedState(bagItems: bagItems));
-                      }
-                    },
-                  );
+                (bagItems) {
+                  if (bagItems.isEmpty) {
+                    emit(BagEmptyState());
+                  } else {
+                    emit(BagLoadedAddedState(bagItems: bagItems));
+                  }
                 },
               );
-              debugPrint('bagItemData: $bagItemData');
             },
           );
+          debugPrint('bagItemData: $bagItemData');
           break;
         case RemoveBagItemEvent:
           // emit(BagLoadingState());

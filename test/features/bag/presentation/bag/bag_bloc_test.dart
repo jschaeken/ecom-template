@@ -10,6 +10,7 @@ import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dar
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
+import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
@@ -24,6 +25,8 @@ class MockGetAllBagItems extends Mock implements GetAllBagItems {}
 
 class MockUpdateBagItem extends Mock implements UpdateBagItem {}
 
+class MockOptionsSelectionBloc extends Mock implements OptionsSelectionBloc {}
+
 void main() {
   late BagBloc bloc;
   late MockAddBagItem mockAddBagItem;
@@ -36,6 +39,7 @@ void main() {
     mockRemoveBagItem = MockRemoveBagItem();
     mockGetAllBagItems = MockGetAllBagItems();
     mockUpdateBagItem = MockUpdateBagItem();
+
     bloc = BagBloc(
       addBagItem: mockAddBagItem,
       removeBagItem: mockRemoveBagItem,
@@ -178,7 +182,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: incompleteBagItem));
+      bloc.add(const AddBagItemEvent(bagItemData: tItem));
     });
 
     test('should emit [BagLoadingState, BagErrorState] when getting data fails',
@@ -199,7 +203,7 @@ void main() {
       expectLater(bloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(AddBagItemEvent(bagItem: incompleteBagItem));
+      bloc.add(const AddBagItemEvent(bagItemData: tItem));
     });
   });
 

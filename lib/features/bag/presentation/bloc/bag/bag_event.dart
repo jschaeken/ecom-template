@@ -8,12 +8,12 @@ sealed class BagEvent extends Equatable {
 }
 
 class AddBagItemEvent extends BagEvent {
-  final IncompleteBagItem bagItem;
+  final BagItemData bagItemData;
 
-  const AddBagItemEvent({required this.bagItem});
+  const AddBagItemEvent({required this.bagItemData});
 
   @override
-  List<Object> get props => [bagItem];
+  List<Object> get props => [bagItemData];
 }
 
 class RemoveBagItemEvent extends BagEvent {
