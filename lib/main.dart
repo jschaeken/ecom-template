@@ -91,8 +91,8 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(ShopProductImageAdapter());
   Hive.registerAdapter(ShopProductSelectedOptionAdapter());
   Hive.registerAdapter(ShopProductUnitPriceMeasurementAdapter());
-  Hive.registerAdapter((OptionsSelectionsAdapter()));
-  Hive.registerAdapter((FavoriteAdapter()));
+  Hive.registerAdapter(OptionsSelectionsAdapter());
+  Hive.registerAdapter(FavoriteAdapter());
 
   await injection.init();
 

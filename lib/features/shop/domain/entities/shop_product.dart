@@ -3,9 +3,6 @@ import 'package:ecom_template/features/shop/domain/entities/shop_product_image.d
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shopify_flutter/models/src/product/associated_collections/associated_collections.dart';
-import 'package:shopify_flutter/models/src/product/metafield/metafield.dart';
-import 'package:shopify_flutter/models/src/product/option/option.dart';
 import 'package:shopify_flutter/models/src/product/product_variant/product_variant.dart';
 
 class ShopProduct extends Equatable {
