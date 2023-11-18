@@ -36,8 +36,8 @@ void main() {
         requiresShipping: true,
         sku: '',
         title: '',
-        weight: '200kg',
-        weightUnit: '',
+        weight: 200,
+        weightUnit: 'kg',
       )
     ],
     productType: 'productType',
@@ -48,7 +48,12 @@ void main() {
     vendor: 'vendor',
     metafields: [],
     options: [],
-    isPopular: true,
+    collectionList: [],
+    cursor: '',
+    onlineStoreUrl: '',
+    description: '',
+    descriptionHtml: '',
+    handle: '',
   );
   ShopProduct testProduct = testProductModel;
 

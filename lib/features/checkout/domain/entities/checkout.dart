@@ -14,11 +14,11 @@ class ShopCheckout extends Equatable {
   final ShopAvailableShippingRates? availableShippingRates;
   final String createdAt;
   final String currencyCode;
-  final Price totalTaxV2;
-  final Price totalPriceV2;
+  final Price totalTax;
+  final Price totalPrice;
   final bool taxesIncluded;
   final bool taxExempt;
-  final Price subtotalPriceV2;
+  final Price subtotalPrice;
   final bool requiresShipping;
   final List<ShopAppliedGiftCards> appliedGiftCards;
   final List<ShopLineItem> lineItems;
@@ -39,11 +39,11 @@ class ShopCheckout extends Equatable {
     required this.availableShippingRates,
     required this.createdAt,
     required this.currencyCode,
-    required this.totalTaxV2,
-    required this.totalPriceV2,
+    required this.totalTax,
+    required this.totalPrice,
     required this.taxesIncluded,
     required this.taxExempt,
-    required this.subtotalPriceV2,
+    required this.subtotalPrice,
     required this.requiresShipping,
     required this.lineItems,
     this.appliedGiftCards = const [],
@@ -66,11 +66,11 @@ class ShopCheckout extends Equatable {
         availableShippingRates,
         createdAt,
         currencyCode,
-        totalTaxV2,
-        totalPriceV2,
+        totalTax,
+        totalPrice,
         taxesIncluded,
         taxExempt,
-        subtotalPriceV2,
+        subtotalPrice,
         requiresShipping,
         appliedGiftCards,
         lineItems,

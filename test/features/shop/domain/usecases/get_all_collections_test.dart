@@ -45,7 +45,6 @@ void main() {
             originalSrc: 'originalSrc',
           ),
           compareAtPrice: Price(amount: 200, currencyCode: 'USD'),
-          weightUnit: '',
           availableForSale: true,
           id: '',
           price: Price(amount: 200, currencyCode: 'USD'),
@@ -53,7 +52,8 @@ void main() {
           requiresShipping: true,
           sku: '',
           title: '',
-          weight: '200kg',
+          weight: 200,
+          weightUnit: 'kg',
         )
       ],
       productType: 'productType',
@@ -64,7 +64,12 @@ void main() {
       vendor: 'vendor',
       metafields: [],
       options: [],
-      isPopular: true,
+      collectionList: [],
+      cursor: '',
+      onlineStoreUrl: '',
+      description: '',
+      descriptionHtml: '',
+      handle: '',
     ),
   ];
 

@@ -1,71 +1,71 @@
+import 'package:dartz/dartz.dart';
+import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
-import 'package:ecom_template/features/order/domain/entities/order.dart';
-import 'package:shopify_flutter/shopify/shopify.dart';
 
 abstract class CheckoutRepository {
-  Future<ShopCheckout> createCheckout(
+  Future<Either<Failure, ShopCheckout>> createCheckout({
     List<ShopLineItem>? lineItems,
     ShopShippingAddress? shippingAddress,
     String? email,
-  );
-
-  Future<ShopCheckout> addLineItemsToCheckout(
-      {required String checkoutId, required List<ShopLineItem> lineItems});
-
-  Future<void> checkoutCompleteFree(String checkoutId);
-
-  Future<String?> checkoutCompleteWithTokenizedPaymentV3(
-    String checkoutId, {
-    required ShopifyCheckout checkout,
-    required String token,
-    required String paymentTokenType,
-    required String idempotencyKey,
-    required String amount,
-    required String currencyCode,
   });
 
-  Future<void> checkoutCustomerAssociate(
-      String checkoutId, String customerAccessToken);
+  // Future<ShopCheckout> addLineItemsToCheckout(
+  //     {required String checkoutId, required List<ShopLineItem> lineItems});
 
-  Future<void> checkoutCustomerDisassociate(String checkoutId);
+  // Future<void> checkoutCompleteFree(String checkoutId);
 
-  Future<ShopCheckout> checkoutDiscountCodeApply(
-      String checkoutId, String discountCode);
+  // Future<String?> checkoutCompleteWithTokenizedPaymentV3(
+  //   String checkoutId, {
+  //   required ShopifyCheckout checkout,
+  //   required String token,
+  //   required String paymentTokenType,
+  //   required String idempotencyKey,
+  //   required String amount,
+  //   required String currencyCode,
+  // });
 
-  Future<void> checkoutDiscountCodeRemove(String checkoutId);
+  // Future<void> checkoutCustomerAssociate(
+  //     String checkoutId, String customerAccessToken);
 
-  Future<void> checkoutGiftCardAppend(
-      String checkoutId, List<String> giftCardCodes);
+  // Future<void> checkoutCustomerDisassociate(String checkoutId);
 
-  Future<void> checkoutGiftCardRemove(
-      String checkoutId, String appliedGiftCardId);
+  // Future<ShopCheckout> checkoutDiscountCodeApply(
+  //     String checkoutId, String discountCode);
 
-  Future<void> checkoutLineItemsReplace(
-      String checkoutId, List<Map<String, dynamic>> variantIdList);
+  // Future<void> checkoutDiscountCodeRemove(String checkoutId);
 
-  Future<ShopCheckout> checkoutShippingLineUpdate(
-      String checkoutId, String shippingRateHandle);
+  // Future<void> checkoutGiftCardAppend(
+  //     String checkoutId, List<String> giftCardCodes);
 
-  // Future<ShopCheckout> completeCheckoutWithTokenizedPaymentV2({required String checkoutId, required String price, required ShopMailingAddress billingAddress, required String impotencyKey, required ShopTokenizedPaymentInput tokenizedPayment, required String type});
+  // Future<void> checkoutGiftCardRemove(
+  //     String checkoutId, String appliedGiftCardId);
 
-  Future<List<ShopOrder>?> getAllOrders(String customerAccessToken);
+  // Future<void> checkoutLineItemsReplace(
+  //     String checkoutId, List<Map<String, dynamic>> variantIdList);
 
-  Future<ShopCheckout> getCheckoutInfoQuery(String checkoutId);
+  // Future<ShopCheckout> checkoutShippingLineUpdate(
+  //     String checkoutId, String shippingRateHandle);
 
-  Future<ShopCheckout> removeLineItemsFromCheckout(
-      {required String checkoutId, required List<ShopLineItem> lineItems});
+  // // Future<ShopCheckout> completeCheckoutWithTokenizedPaymentV2({required String checkoutId, required String price, required ShopMailingAddress billingAddress, required String impotencyKey, required ShopTokenizedPaymentInput tokenizedPayment, required String type});
 
-  Future<ShopCheckout> shippingAddressUpdate(
-      String checkoutId, ShopShippingAddress address);
+  // Future<List<ShopOrder>?> getAllOrders(String customerAccessToken);
 
-  Future<void> updateAttributes(String checkoutId);
+  // Future<ShopCheckout> getCheckoutInfoQuery(String checkoutId);
 
-  Future<ShopCheckout> updateCheckoutEmail(String checkoutId, String email);
+  // Future<ShopCheckout> removeLineItemsFromCheckout(
+  //     {required String checkoutId, required List<ShopLineItem> lineItems});
 
-  Future<ShopCheckout> updateLineItemsInCheckout(
-      {required String checkoutId, required List<ShopLineItem> lineItems});
+  // Future<ShopCheckout> shippingAddressUpdate(
+  //     String checkoutId, ShopShippingAddress address);
+
+  // Future<void> updateAttributes(String checkoutId);
+
+  // Future<ShopCheckout> updateCheckoutEmail(String checkoutId, String email);
+
+  // Future<ShopCheckout> updateLineItemsInCheckout(
+  //     {required String checkoutId, required List<ShopLineItem> lineItems});
 
   static foobar() {
     // ShopifyCheckout checkout = ShopifyCheckout.instance;

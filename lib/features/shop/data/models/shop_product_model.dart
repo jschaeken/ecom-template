@@ -8,34 +8,45 @@ import 'package:shopify_flutter/models/src/product/shopify_image/shopify_image.d
 
 class ShopProductModel extends ShopProduct {
   const ShopProductModel({
-    required String id,
     required String title,
-    required String productType,
-    required String vendor,
-    required List<String> tags,
-    required List<ShopProductOption> options,
-    required List<ShopProductImage> images,
-    required List<ShopProductProductVariant> productVariants,
+    required String id,
     required bool availableForSale,
     required String createdAt,
-    required String updatedAt,
+    required List<ShopProductProductVariant> productVariants,
+    required String productType,
     required String publishedAt,
+    required List<String> tags,
+    required String updatedAt,
+    required List<ShopProductImage> images,
+    required List<ShopProductOption> options,
+    required String vendor,
     required List<ShopProductMetafield> metafields,
-    required bool isPopular,
+    required List<ShopProductAssociatedCollections>? collectionList,
+    required String? cursor,
+    required String? onlineStoreUrl,
+    required String? description,
+    required String? descriptionHtml,
+    required String? handle,
   }) : super(
-          id: id,
           title: title,
-          productType: productType,
-          vendor: vendor,
-          tags: tags,
-          options: options,
-          images: images,
-          productVariants: productVariants,
+          id: id,
           availableForSale: availableForSale,
           createdAt: createdAt,
-          updatedAt: updatedAt,
+          productVariants: productVariants,
+          productType: productType,
           publishedAt: publishedAt,
+          tags: tags,
+          updatedAt: updatedAt,
+          images: images,
+          options: options,
           metafields: metafields,
+          collectionList: collectionList,
+          cursor: cursor,
+          onlineStoreUrl: onlineStoreUrl,
+          description: description,
+          descriptionHtml: descriptionHtml,
+          handle: handle,
+          vendor: vendor,
         );
 
   static ShopProductModel fromShopifyProduct(Product product) {
@@ -116,7 +127,109 @@ class ShopProductModel extends ShopProduct {
       updatedAt: product.updatedAt,
       publishedAt: product.publishedAt,
       metafields: shopifyMetafieldsToShopProductMetafields(product.metafields),
-      isPopular: false,
+      collectionList: product.collectionList != null
+          ? product.collectionList!
+              .map((e) => ShopProductAssociatedCollections(
+                    description: e.description,
+                    id: e.id,
+                    title: e.title,
+                    updatedAt: e.updatedAt,
+                    descriptionHtml: e.descriptionHtml,
+                    handle: e.handle,
+                  ))
+              .toList()
+          : null,
+      cursor: product.cursor,
+      description: product.description,
+      descriptionHtml: product.descriptionHtml,
+      handle: product.handle,
+      onlineStoreUrl: product.onlineStoreUrl,
+    );
+  }
+
+  Product toShopifyProduct() {
+    /// ShopProduct option field to ShopifyProduct option field
+    List<Option> shopProductOptionsToShopifyOptions(
+        List<ShopProductOption> options) {
+      try {
+        return options.map((e) {
+          return Option(id: e.id, name: e.name, values: e.values);
+        }).toList();
+      } catch (e) {
+        return [];
+      }
+    }
+
+    /// ShopProduct images field to ShopifyProduct images field
+    List<ShopifyImage> shopProductImagesToShopifyImages(
+        List<ShopProductImage> images) {
+      try {
+        return images.map((e) {
+          return ShopifyImage(
+            id: e.id ?? '',
+            altText: e.altText,
+            originalSrc: e.originalSrc,
+          );
+        }).toList();
+      } catch (e) {
+        return [];
+      }
+    }
+
+    /// ShopProduct productVariants field to ShopifyProduct productVariants field
+    List<ProductVariant> shopProductProductVariantsToShopifyProductVariants(
+        List<ShopProductProductVariant> productVariants) {
+      final shopifyProductVariants = <ProductVariant>[];
+      for (ShopProductProductVariant shopProductProductVariant
+          in productVariants) {
+        shopifyProductVariants.add(
+          ShopProductProductVariant.shopProductProductVariantToProductVariant(
+            shopProductProductVariant,
+          ),
+        );
+      }
+      return shopifyProductVariants;
+    }
+
+    /// ShopProduct Metafields field to ShopifyProduct Metafields fields
+    List<Metafield> shopProductMetafieldsToShopifyMetafields(
+        List<ShopProductMetafield> metafields) {
+      final shopifyMetafields = <Metafield>[];
+      for (ShopProductMetafield shopProductMetafield in metafields) {
+        shopifyMetafields.add(
+          Metafield(
+            id: shopProductMetafield.id ?? 'N/A',
+            key: shopProductMetafield.key ?? 'N/A',
+            namespace: shopProductMetafield.namespace ?? 'N/A',
+            value: shopProductMetafield.value ?? 'N/A',
+            valueType: shopProductMetafield.valueType ?? 'N/A',
+          ),
+        );
+      }
+      return shopifyMetafields;
+    }
+
+    return Product(
+      id: id,
+      title: title,
+      productType: productType,
+      vendor: vendor,
+      tags: tags,
+      option: shopProductOptionsToShopifyOptions(options),
+      images: shopProductImagesToShopifyImages(images),
+      productVariants: shopProductProductVariantsToShopifyProductVariants(
+        productVariants,
+      ),
+      availableForSale: availableForSale,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      publishedAt: publishedAt,
+      metafields: shopProductMetafieldsToShopifyMetafields(metafields),
+      collectionList: [],
+      cursor: cursor,
+      description: description,
+      descriptionHtml: descriptionHtml,
+      handle: handle,
     );
   }
 }

@@ -36,8 +36,8 @@ void main() {
       ShopProductProductVariant(
         price: Price(amount: 200, currencyCode: 'USD'),
         title: 'title',
-        weight: 'weight',
-        weightUnit: 'weightUnit',
+        weight: 100,
+        weightUnit: 'kg',
         availableForSale: true,
         sku: 'sku',
         requiresShipping: true,

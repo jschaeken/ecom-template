@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:shopify_flutter/models/src/order/successful_fulfillment/successful_fulfilment_tracking_info/successful_fulfilment_tracking_info.dart';
 
 class ShopSuccessfulFulfilmentTrackingInfo extends Equatable {
-  final String number;
-  final String url;
+  final String? number;
+  final String? url;
 
   const ShopSuccessfulFulfilmentTrackingInfo({
     required this.number,
@@ -11,4 +12,12 @@ class ShopSuccessfulFulfilmentTrackingInfo extends Equatable {
 
   @override
   List<Object?> get props => [number, url];
+
+  static fromSuccessfulFulfilmentTrackingInfo(
+      SuccessfulFullfilmentTrackingInfo trackingInfo) {
+    return ShopSuccessfulFulfilmentTrackingInfo(
+      number: trackingInfo.number,
+      url: trackingInfo.url,
+    );
+  }
 }

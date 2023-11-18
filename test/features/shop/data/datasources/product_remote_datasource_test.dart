@@ -38,7 +38,6 @@ void main() {
   );
   const testProductEntity = ShopProductModel(
     id: testId,
-    isPopular: false,
     title: 'test',
     images: [],
     availableForSale: true,
@@ -50,7 +49,13 @@ void main() {
     publishedAt: '',
     tags: [],
     updatedAt: '',
+    cursor: '',
+    description: 'test',
+    descriptionHtml: '',
+    handle: '',
+    onlineStoreUrl: '',
     vendor: '',
+    collectionList: [],
   );
 
   group('getProductById', () {

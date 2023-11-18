@@ -37,6 +37,23 @@
 			"}",
 		"),",
 		]
+	},
+	"triple_a_test": {
+		"prefix": "aaa",
+		"body": [
+			"test(",
+			"\t'should $1',",
+			"\t() async {",
+			"\t\t// arrange",
+			"\t\t$2",
+			"\t\t// act",
+			"\t\t$3",
+			"\t\t// assert",
+			"\t\t$4",
+			"\t},",
+			");"
+		],
+		"description": "Flutter test arrange act assert"
 	}
 
 }

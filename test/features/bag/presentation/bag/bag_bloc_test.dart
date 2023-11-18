@@ -60,7 +60,6 @@ void main() {
     ),
     product: ShopProduct(
       id: 'testParentId',
-      isPopular: false,
       title: 'test',
       images: [],
       availableForSale: true,
@@ -68,6 +67,7 @@ void main() {
       metafields: [],
       options: [
         ShopProductOption(
+          id: 'testOptionId',
           name: 'Size',
           values: ['S', 'M', 'L'],
         ),
@@ -88,7 +88,7 @@ void main() {
           ],
           sku: '',
           title: 'variantTitle1',
-          weight: '',
+          weight: 200,
           weightUnit: '',
           quantityAvailable: 1,
         ),
@@ -106,7 +106,7 @@ void main() {
           ],
           sku: '',
           title: 'variantTitle2',
-          weight: '',
+          weight: 100,
           weightUnit: '',
           quantityAvailable: 1,
         ),
@@ -124,7 +124,7 @@ void main() {
           ],
           sku: '',
           title: 'variantTitle3',
-          weight: '',
+          weight: 203,
           weightUnit: '',
           quantityAvailable: 1,
         ),
@@ -155,7 +155,7 @@ void main() {
       requiresShipping: true,
       selectedOptions: const [],
       sku: '',
-      weight: '',
+      weight: 200,
       weightUnit: '',
       parentProductId: tItem.parentProductId,
     )

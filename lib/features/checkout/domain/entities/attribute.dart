@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:shopify_flutter/models/src/checkout/attribute/attribute.dart';
 
 class ShopAttribute extends Equatable {
   final String key;
@@ -14,4 +15,11 @@ class ShopAttribute extends Equatable {
         key,
         value,
       ];
+
+  static ShopAttribute fromAttribute(Attribute attribute) {
+    return ShopAttribute(
+      key: attribute.key,
+      value: attribute.value,
+    );
+  }
 }

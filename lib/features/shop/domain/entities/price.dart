@@ -190,4 +190,12 @@ class Price {
     'ANG': 'ƒ',
     'TMT': 'TMT',
   };
+
+  static Price fromPriceV2(PriceV2 priceV2) {
+    return Price(amount: priceV2.amount, currencyCode: priceV2.currencyCode);
+  }
+
+  static PriceV2 toPriceV2(Price price) {
+    return PriceV2(amount: price.amount, currencyCode: price.currencyCode);
+  }
 }

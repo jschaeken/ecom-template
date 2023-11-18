@@ -3,6 +3,7 @@ import 'package:ecom_template/features/order/domain/entities/line_items_order.da
 import 'package:ecom_template/features/order/domain/entities/successful_fulfilment.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shopify_flutter/models/src/order/order.dart';
 
 class ShopOrder extends Equatable {
   final String id;
@@ -74,4 +75,40 @@ class ShopOrder extends Equatable {
         cursor,
         successfulFulfillments,
       ];
+
+  static fromOrder(Order? order) {
+    return ShopOrder(
+      id: order!.id,
+      email: order.email,
+      currencyCode: order.currencyCode,
+      customerUrl: order.customerUrl,
+      lineItems: ShopLineItemsOrder.fromLineItems(order.lineItems),
+      name: order.name,
+      orderNumber: order.orderNumber,
+      processedAt: order.processedAt,
+      shippingAddress:
+          ShopShippingAddress.fromShippingAddress(order.shippingAddress),
+      billingAddress: order.billingAddress != null
+          ? ShopShippingAddress.fromShippingAddress(order.billingAddress!)
+          : null,
+      statusUrl: order.statusUrl,
+      subtotalPrice: Price.fromPriceV2(order.subtotalPriceV2),
+      totalPrice: Price.fromPriceV2(order.totalPriceV2),
+      totalShippingPrice: Price.fromPriceV2(order.totalShippingPriceV2),
+      totalTax: Price.fromPriceV2(order.totalTaxV2),
+      financialStatus: order.financialStatus,
+      fulfillmentStatus: order.fulfillmentStatus,
+      totalRefunded: order.totalRefundedV2 != null
+          ? Price.fromPriceV2(order.totalRefundedV2!)
+          : null,
+      phone: order.phone,
+      cursor: order.cursor,
+      successfulFulfillments: order.successfulFulfillments != null
+          ? order.successfulFulfillments!
+              .map((fulfilment) =>
+                  ShopSuccessfulFulfilment.fromFulfilment(fulfilment))
+              .toList() as List<ShopSuccessfulFulfilment>
+          : null,
+    );
+  }
 }

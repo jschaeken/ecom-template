@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// Copy of [UnitPriceMeasurement] from shopify_flutter package
@@ -5,7 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'shop_product_unit_price_measurement.g.dart';
 
 @HiveType(typeId: 5)
-class ShopProductUnitPriceMeasurement {
+class ShopProductUnitPriceMeasurement extends Equatable {
   @HiveField(0)
   final String measuredType;
 
@@ -28,4 +29,13 @@ class ShopProductUnitPriceMeasurement {
     required this.referenceUnit,
     required this.referenceValue,
   });
+
+  @override
+  List<Object?> get props => [
+        measuredType,
+        quantityUnit,
+        quantityValue,
+        referenceUnit,
+        referenceValue,
+      ];
 }

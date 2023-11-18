@@ -3,7 +3,11 @@ import 'package:ecom_template/features/shop/domain/entities/shop_product_image.d
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shopify_flutter/models/src/product/price_v_2/price_v_2.dart';
 import 'package:shopify_flutter/models/src/product/product_variant/product_variant.dart';
+import 'package:shopify_flutter/models/src/product/selected_option/selected_option.dart';
+import 'package:shopify_flutter/models/src/product/shopify_image/shopify_image.dart';
+import 'package:shopify_flutter/models/src/product/unit_price_measurement/unit_price_measurement.dart';
 
 class ShopProduct extends Equatable {
   final String title;
@@ -25,8 +29,6 @@ class ShopProduct extends Equatable {
   final String? description;
   final String? descriptionHtml;
   final String? handle;
-  final bool? isPopular;
-
   const ShopProduct({
     required this.title,
     required this.id,
@@ -47,7 +49,6 @@ class ShopProduct extends Equatable {
     this.description,
     this.descriptionHtml,
     this.handle,
-    this.isPopular,
   });
 
   @override
@@ -80,7 +81,7 @@ class ShopProduct extends Equatable {
 class ShopProductProductVariant extends Equatable {
   final Price price;
   final String title;
-  final String weight;
+  final double weight;
   final String weightUnit;
   final bool availableForSale;
   final String sku;
@@ -136,7 +137,7 @@ class ShopProductProductVariant extends Equatable {
         currencyCode: productVariant.price.currencyCode,
       ),
       title: productVariant.title,
-      weight: productVariant.weight.toString(),
+      weight: productVariant.weight,
       weightUnit: productVariant.weightUnit,
       availableForSale: productVariant.availableForSale,
       sku: productVariant.sku,
@@ -187,10 +188,74 @@ class ShopProductProductVariant extends Equatable {
 
   @override
   bool get stringify => true;
+
+  static ProductVariant shopProductProductVariantToProductVariant(
+      ShopProductProductVariant shopProductProductVariant) {
+    return ProductVariant(
+      price: PriceV2(
+        amount: shopProductProductVariant.price.amount,
+        currencyCode: shopProductProductVariant.price.currencyCode,
+      ),
+      title: shopProductProductVariant.title,
+      weight: shopProductProductVariant.weight,
+      weightUnit: shopProductProductVariant.weightUnit,
+      availableForSale: shopProductProductVariant.availableForSale,
+      sku: shopProductProductVariant.sku,
+      requiresShipping: shopProductProductVariant.requiresShipping,
+      id: shopProductProductVariant.id,
+      quantityAvailable: shopProductProductVariant.quantityAvailable,
+      unitPrice: shopProductProductVariant.unitPrice != null
+          ? PriceV2(
+              amount: shopProductProductVariant.unitPrice!.amount,
+              currencyCode: shopProductProductVariant.unitPrice!.currencyCode,
+            )
+          : null,
+      unitPriceMeasurement: shopProductProductVariant.unitPriceMeasurement !=
+              null
+          ? UnitPriceMeasurement(
+              measuredType:
+                  shopProductProductVariant.unitPriceMeasurement!.measuredType,
+              quantityUnit:
+                  shopProductProductVariant.unitPriceMeasurement!.quantityUnit,
+              quantityValue:
+                  shopProductProductVariant.unitPriceMeasurement!.quantityValue,
+              referenceUnit:
+                  shopProductProductVariant.unitPriceMeasurement!.referenceUnit,
+              referenceValue: (shopProductProductVariant
+                          .unitPriceMeasurement?.referenceValue
+                          .toDouble() ??
+                      1.0)
+                  .toInt(),
+            )
+          : null,
+      selectedOptions: shopProductProductVariant.selectedOptions != null
+          ? shopProductProductVariant.selectedOptions!
+              .map((selOpt) => SelectedOption(
+                    name: selOpt.name,
+                    value: selOpt.value,
+                  ))
+              .toList()
+          : null,
+      compareAtPrice: shopProductProductVariant.compareAtPrice != null
+          ? PriceV2(
+              amount: shopProductProductVariant.compareAtPrice!.amount,
+              currencyCode:
+                  shopProductProductVariant.compareAtPrice!.currencyCode,
+            )
+          : null,
+      image: shopProductProductVariant.image != null
+          ? ShopifyImage(
+              altText: shopProductProductVariant.image!.altText,
+              id: shopProductProductVariant.image!.id ?? '',
+              originalSrc: shopProductProductVariant.image!.originalSrc,
+            )
+          : null,
+    );
+  }
 }
 
 /// Copy of [AssociatedCollections] from shopify_flutter package
-class ShopProductAssociatedCollections {
+class ShopProductAssociatedCollections extends Equatable {
   final String id;
   final String title;
   final String description;
@@ -206,10 +271,20 @@ class ShopProductAssociatedCollections {
     this.descriptionHtml,
     this.handle,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        description,
+        updatedAt,
+        descriptionHtml,
+        handle,
+      ];
 }
 
 /// Copy of [Metafield] from shopify_flutter package
-class ShopProductMetafield {
+class ShopProductMetafield extends Equatable {
   final String? description;
   final String? id;
   final String? key;
@@ -225,17 +300,34 @@ class ShopProductMetafield {
     this.value,
     this.valueType,
   });
+
+  @override
+  List<Object?> get props => [
+        description,
+        id,
+        key,
+        namespace,
+        value,
+        valueType,
+      ];
 }
 
 /// Copy of [Option] from shopify_flutter package
-class ShopProductOption {
-  final String? id;
-  final String? name;
-  final List<String>? values;
+class ShopProductOption extends Equatable {
+  final String id;
+  final String name;
+  final List<String> values;
 
   const ShopProductOption({
-    this.id,
-    this.name,
-    this.values,
+    required this.id,
+    required this.name,
+    required this.values,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        values,
+      ];
 }

@@ -22,7 +22,7 @@ class BagItemAdapter extends TypeAdapter<BagItem> {
       availableForSale: fields[4] as bool,
       price: fields[0] as Price,
       sku: fields[5] as String,
-      weight: fields[2] as String,
+      weight: fields[2] as double,
       weightUnit: fields[3] as String,
       image: fields[13] as ShopProductImage?,
       selectedOptions: (fields[11] as List?)?.cast<ShopProductSelectedOption>(),

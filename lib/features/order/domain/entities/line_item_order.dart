@@ -2,6 +2,7 @@ import 'package:ecom_template/features/checkout/domain/entities/product_variant_
 import 'package:ecom_template/features/order/domain/entities/discount_allocations.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shopify_flutter/models/src/order/line_item_order/line_item_order.dart';
 
 class ShopLineItemOrder extends Equatable {
   final int currentQuantity;
@@ -32,4 +33,24 @@ class ShopLineItemOrder extends Equatable {
         discountAllocations,
         variant,
       ];
+
+  static ShopLineItemOrder fromLineItemOrder(LineItemOrder lineItemOrder) {
+    return ShopLineItemOrder(
+      currentQuantity: lineItemOrder.currentQuantity,
+      discountedTotalPrice:
+          Price.fromPriceV2(lineItemOrder.discountedTotalPrice),
+      originalTotalPrice: Price.fromPriceV2(lineItemOrder.originalTotalPrice),
+      quantity: lineItemOrder.quantity,
+      title: lineItemOrder.title,
+      discountAllocations: lineItemOrder.discountAllocations
+          .map((discountAllocations) =>
+              ShopDiscountAllocations.fromDiscountAllocation(
+                  discountAllocations))
+          .toList() as List<ShopDiscountAllocations>,
+      variant: lineItemOrder.variant != null
+          ? ShopProductVariantCheckout.fromProductVariantCheckout(
+              lineItemOrder.variant!)
+          : null,
+    );
+  }
 }

@@ -23,7 +23,7 @@ class BagItem extends ShopProductProductVariant {
 
   @override
   @HiveField(2)
-  final String weight;
+  final double weight;
 
   @override
   @HiveField(3)
@@ -142,7 +142,7 @@ class BagItem extends ShopProductProductVariant {
   BagItem copyWith({
     Price? price,
     String? title,
-    String? weight,
+    double? weight,
     String? weightUnit,
     bool? availableForSale,
     String? sku,

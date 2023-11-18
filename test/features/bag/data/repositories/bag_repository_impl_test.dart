@@ -57,7 +57,7 @@ void main() {
       unitPriceMeasurement: null,
       price: Price(amount: 100, currencyCode: ''),
       title: 'parent title',
-      weight: 'weight',
+      weight: 100,
       weightUnit: '',
       availableForSale: true,
       sku: '',
@@ -76,14 +76,20 @@ void main() {
     images: [
       ShopProductImage(originalSrc: 'https://test.com/image.png'),
     ],
-    isPopular: false,
     metafields: [],
     options: [
       ShopProductOption(
+        id: '1',
         name: 'Size',
         values: ['Extra Extra Large'],
       ),
     ],
+    collectionList: [],
+    cursor: '',
+    description: '',
+    descriptionHtml: '',
+    handle: '',
+    onlineStoreUrl: '',
     productType: '',
     productVariants: [
       ShopProductProductVariant(
@@ -96,7 +102,7 @@ void main() {
         unitPriceMeasurement: null,
         price: Price(amount: 100, currencyCode: ''),
         title: 'variant title',
-        weight: 'weight',
+        weight: 100,
         weightUnit: '',
         availableForSale: true,
         sku: '',
