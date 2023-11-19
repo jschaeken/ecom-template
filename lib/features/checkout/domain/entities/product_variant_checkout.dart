@@ -44,6 +44,7 @@ class ShopProductVariantCheckout extends Equatable {
         compareAtPrice,
         quantityAvailable,
         product,
+        availableForSale,
       ];
 
   static fromProductVariantCheckout(ProductVariantCheckout productVariant) {
@@ -65,6 +66,21 @@ class ShopProductVariantCheckout extends Equatable {
       product: productVariant.product != null
           ? ShopProductModel.fromShopifyProduct(productVariant.product!)
           : null,
+    );
+  }
+
+  static fromProductVariant(ShopProductProductVariant productVariant) {
+    return ShopProductVariantCheckout(
+      id: productVariant.id,
+      title: productVariant.title,
+      sku: productVariant.sku,
+      price: productVariant.price,
+      weight: productVariant.weight,
+      weightUnit: productVariant.weightUnit,
+      image: productVariant.image,
+      availableForSale: productVariant.availableForSale,
+      compareAtPrice: productVariant.compareAtPrice,
+      quantityAvailable: productVariant.quantityAvailable,
     );
   }
 

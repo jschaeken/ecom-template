@@ -9,6 +9,8 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/widgets/quantity_selector.dart';
+import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/pages/product_page.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/empty_view.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
@@ -237,8 +239,28 @@ class BagPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // InitiateCheckoutEvent(
-                        //     bagState.bagItems, context, bagState.totalPrice);
+                        BlocProvider.of<CheckoutBloc>(context).add(
+                          AddToCheckoutEvent(
+                            bagItems: bagState.bagItems,
+                            email: 'schaekenj@gmail.com',
+                            shippingAddress: const ShopShippingAddress(
+                              address1: '34 Glencairn Lawn',
+                              address2: 'The Gallops',
+                              city: 'Dublin',
+                              country: 'Ireland',
+                              firstName: 'Jacques',
+                              lastName: 'Schaeken',
+                              id: 'gid://shopify/ShippingAddress/123456789',
+                              name: 'Jacques Schaeken',
+                              zip: 'D24',
+                              company: 'Jacques Schaeken',
+                              countryCodeV2: 'IE',
+                              phone: '0871234567',
+                              province: 'Dublin',
+                              provinceCode: 'D18K0H3',
+                            ),
+                          ),
+                        );
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

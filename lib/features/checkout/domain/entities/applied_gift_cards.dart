@@ -16,7 +16,8 @@ class ShopAppliedGiftCards extends Equatable {
   @override
   List<Object?> get props => [amountUsed, balance, id];
 
-  static fromAppliedGiftCards(AppliedGiftCards appliedGiftCard) {
+  static ShopAppliedGiftCards fromAppliedGiftCards(
+      AppliedGiftCards appliedGiftCard) {
     return ShopAppliedGiftCards(
       amountUsed: Price.fromPriceV2(appliedGiftCard.amountUsedV2),
       balance: Price.fromPriceV2(appliedGiftCard.balanceV2),

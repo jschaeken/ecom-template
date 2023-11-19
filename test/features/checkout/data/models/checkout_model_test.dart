@@ -5,6 +5,8 @@ import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_rate.dart';
+import 'package:ecom_template/features/order/domain/entities/line_items_order.dart';
+import 'package:ecom_template/features/order/domain/entities/order.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopify_flutter/models/models.dart';
@@ -12,13 +14,16 @@ import 'package:shopify_flutter/models/src/checkout/applied_gift_cards/applied_g
 import 'package:shopify_flutter/models/src/checkout/available_shipping_rates/available_shipping_rates.dart';
 import 'package:shopify_flutter/models/src/checkout/mailing_address/mailing_address.dart';
 import 'package:shopify_flutter/models/src/checkout/shipping_rates/shipping_rates.dart';
+import 'package:shopify_flutter/models/src/order/line_items_order/line_items_order.dart';
+import 'package:shopify_flutter/models/src/order/shipping_address/shipping_address.dart';
 import 'package:shopify_flutter/models/src/product/price_v_2/price_v_2.dart';
 
 void main() {
   const testShopCheckoutModel = ShopCheckoutModel(
     id: 'id',
     ready: true,
-    availableShippingRates: ShopAvailableShippingRates(shippingRates: [
+    availableShippingRates:
+        ShopAvailableShippingRates(ready: true, shippingRates: [
       ShopShippingRate(
           handle: '', price: Price(amount: 2, currencyCode: ''), title: '')
     ]),
@@ -71,7 +76,45 @@ void main() {
     completedAt: 'completedAt',
     email: 'email',
     note: 'note',
-    // order: const ShopOrder()
+    order: ShopOrder(
+      billingAddress: ShopShippingAddress(
+          firstName: 'firstName',
+          lastName: 'lastName',
+          name: 'firstName lastName',
+          id: 'id',
+          address1: 'address1',
+          city: 'city',
+          country: 'country',
+          zip: 'zip'),
+      customerUrl: 'customerUrl',
+      fulfillmentStatus: 'fulfillmentStatus',
+      shippingAddress: ShopShippingAddress(
+          firstName: 'firstName',
+          lastName: 'lastName',
+          name: 'firstName lastName',
+          id: 'id',
+          address1: 'address1',
+          city: 'city',
+          country: 'country',
+          zip: 'zip'),
+      statusUrl: 'statusUrl',
+      cursor: 'cursor',
+      successfulFulfillments: [],
+      id: 'id',
+      orderNumber: 1,
+      processedAt: 'processedAt',
+      totalPrice: Price(amount: 1, currencyCode: 'USD'),
+      totalRefunded: Price(amount: 2, currencyCode: 'EUR'),
+      totalShippingPrice: Price(amount: 3, currencyCode: 'YEN'),
+      subtotalPrice: Price(amount: 4, currencyCode: 'CAD'),
+      totalTax: Price(amount: 5, currencyCode: 'CHZ'),
+      currencyCode: 'currencyCode',
+      financialStatus: 'financialStatus',
+      email: 'email',
+      phone: 'phone',
+      name: 'name',
+      lineItems: ShopLineItemsOrder(lineItemOrderList: []),
+    ),
     orderStatusUrl: 'orderStatusUrl',
     shippingAddress: ShopShippingAddress(
       address1: 'address1',
@@ -94,13 +137,15 @@ void main() {
     ),
     shippingLine: [
       ShopShippingRate(
-          handle: '', price: Price(amount: 2, currencyCode: ''), title: ''),
+        handle: '',
+        price: Price(amount: 2, currencyCode: ''),
+        title: '',
+      ),
     ],
     shopifyPaymentsAccountId: 'shopifyPaymentsAccountId',
     updatedAt: 'updatedAt',
     webUrl: 'webUrl',
   );
-  const ShopCheckout testShopCheckout = testShopCheckoutModel;
 
   final Checkout testCheckout = Checkout(
     id: 'id',
@@ -161,7 +206,45 @@ void main() {
     completedAt: 'completedAt',
     email: 'email',
     note: 'note',
-    // order: const ShopOrder()
+    order: Order(
+      billingAddress: ShippingAddress(
+          firstName: 'firstName',
+          lastName: 'lastName',
+          name: 'firstName lastName',
+          id: 'id',
+          address1: 'address1',
+          city: 'city',
+          country: 'country',
+          zip: 'zip'),
+      shippingAddress: ShippingAddress(
+          firstName: 'firstName',
+          lastName: 'lastName',
+          name: 'firstName lastName',
+          id: 'id',
+          address1: 'address1',
+          city: 'city',
+          country: 'country',
+          zip: 'zip'),
+      customerUrl: 'customerUrl',
+      fulfillmentStatus: 'fulfillmentStatus',
+      statusUrl: 'statusUrl',
+      cursor: 'cursor',
+      successfulFulfillments: [],
+      id: 'id',
+      orderNumber: 1,
+      processedAt: 'processedAt',
+      totalPriceV2: PriceV2(amount: 1, currencyCode: 'USD'),
+      totalRefundedV2: PriceV2(amount: 2, currencyCode: 'EUR'),
+      totalShippingPriceV2: PriceV2(amount: 3, currencyCode: 'YEN'),
+      subtotalPriceV2: PriceV2(amount: 4, currencyCode: 'CAD'),
+      totalTaxV2: PriceV2(amount: 5, currencyCode: 'CHZ'),
+      currencyCode: 'currencyCode',
+      financialStatus: 'financialStatus',
+      email: 'email',
+      phone: 'phone',
+      name: 'name',
+      lineItems: LineItemsOrder(lineItemOrderList: []),
+    ),
     orderStatusUrl: 'orderStatusUrl',
     shippingAddress: MailingAddress(
       address1: 'address1',
@@ -197,7 +280,6 @@ void main() {
       // assert
       expect(testShopCheckoutModel, isA<ShopCheckout>());
     });
-
     test('should return a valid model', () async {
       // act
       final result = ShopCheckoutModel.fromShopifyCheckout(testCheckout);

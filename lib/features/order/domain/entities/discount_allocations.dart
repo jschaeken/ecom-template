@@ -5,7 +5,7 @@ import 'package:shopify_flutter/models/src/order/discount_allocations/discount_a
 class ShopDiscountAllocations extends Equatable {
   final Price? allocatedAmount;
 
-  const ShopDiscountAllocations({required this.allocatedAmount});
+  const ShopDiscountAllocations({this.allocatedAmount});
 
   @override
   List<Object?> get props => [allocatedAmount];

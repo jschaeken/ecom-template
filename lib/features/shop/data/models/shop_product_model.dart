@@ -49,6 +49,29 @@ class ShopProductModel extends ShopProduct {
           vendor: vendor,
         );
 
+  @override
+  List<Object?> get props => [
+        title,
+        id,
+        availableForSale,
+        createdAt,
+        productVariants,
+        productType,
+        publishedAt,
+        tags,
+        updatedAt,
+        images,
+        options,
+        metafields,
+        collectionList,
+        cursor,
+        onlineStoreUrl,
+        description,
+        descriptionHtml,
+        handle,
+        vendor,
+      ];
+
   static ShopProductModel fromShopifyProduct(Product product) {
     /// ShopifyProduct option field to ShopProduct option field
     List<ShopProductOption> shopifyOptionsToShopProductOptions(
@@ -100,6 +123,7 @@ class ShopProductModel extends ShopProduct {
       for (Metafield metafield in metafields) {
         shopProductMetafields.add(
           ShopProductMetafield(
+            description: metafield.description,
             id: metafield.id,
             key: metafield.key,
             namespace: metafield.namespace,

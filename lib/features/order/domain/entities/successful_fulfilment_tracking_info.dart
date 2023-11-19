@@ -13,8 +13,9 @@ class ShopSuccessfulFulfilmentTrackingInfo extends Equatable {
   @override
   List<Object?> get props => [number, url];
 
-  static fromSuccessfulFulfilmentTrackingInfo(
-      SuccessfulFullfilmentTrackingInfo trackingInfo) {
+  static ShopSuccessfulFulfilmentTrackingInfo
+      fromSuccessfulFulfilmentTrackingInfo(
+          SuccessfulFullfilmentTrackingInfo trackingInfo) {
     return ShopSuccessfulFulfilmentTrackingInfo(
       number: trackingInfo.number,
       url: trackingInfo.url,

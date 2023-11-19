@@ -26,7 +26,17 @@ class ShopCollection extends Equatable {
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+        id,
+        title,
+        products,
+        description,
+        descriptionHtml,
+        handle,
+        image,
+        updatedAt,
+        cursor,
+      ];
 }
 
 class ShopProducts extends Equatable {

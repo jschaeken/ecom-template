@@ -113,6 +113,27 @@ class BagItem extends ShopProductProductVariant {
           image: image,
         );
 
+  @override
+  List<Object?> get props => [
+        title,
+        id,
+        availableForSale,
+        price,
+        sku,
+        weight,
+        weightUnit,
+        image,
+        selectedOptions,
+        requiresShipping,
+        quantityAvailable,
+        compareAtPrice,
+        unitPrice,
+        unitPriceMeasurement,
+        quantity,
+        parentProductId,
+        uniqueKey,
+      ];
+
   static BagItem fromShopProductVariant({
     required ShopProductProductVariant productVariant,
     required int quantity,

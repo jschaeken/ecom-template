@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/network/network_info.dart';
-import 'package:ecom_template/features/checkout/data/datasources/checkout_datasource.dart';
+import 'package:ecom_template/features/checkout/data/datasources/checkout_remote_datasource.dart';
 import 'package:ecom_template/features/checkout/data/models/checkout_model.dart';
 import 'package:ecom_template/features/checkout/data/repositories/checkout_repository_impl.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
@@ -11,7 +11,7 @@ import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCheckoutDataSource extends Mock implements CheckoutDataSource {}
+class MockCheckoutDataSource extends Mock implements CheckoutRemoteDataSource {}
 
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
@@ -115,6 +115,9 @@ void main() {
           final result = await repository.createCheckout(
             lineItems: [],
             shippingAddress: const ShopShippingAddress(
+                firstName: 'firstName',
+                lastName: 'lastName',
+                name: 'firstName lastName',
                 id: 'id',
                 address1: 'address1',
                 city: 'city',
@@ -124,16 +127,6 @@ void main() {
           );
           // assert
           expect(result, const Right(testShopCheckout));
-          // verify(() => mockCheckoutDataSource.createCheckout(
-          //       lineItems: [],
-          //       shippingAddress: Address(
-          //           id: 'id',
-          //           address1: 'address1',
-          //           city: 'city',
-          //           country: 'country',
-          //           zip: 'zip'),
-          //       email: null,
-          //     ));
         },
       );
       test(

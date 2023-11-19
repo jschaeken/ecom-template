@@ -14,14 +14,15 @@ class ShopSuccessfulFulfilment extends Equatable {
   @override
   List<Object?> get props => [trackingCompany, trackingInfo];
 
-  static fromFulfilment(SuccessfulFullfilment fulfilment) {
+  static ShopSuccessfulFulfilment fromFulfilment(
+      SuccessfulFullfilment fulfilment) {
     return ShopSuccessfulFulfilment(
       trackingCompany: fulfilment.trackingCompany,
       trackingInfo: fulfilment.trackingInfo != null
           ? fulfilment.trackingInfo!
               .map((trackingInfo) => ShopSuccessfulFulfilmentTrackingInfo
                   .fromSuccessfulFulfilmentTrackingInfo(trackingInfo))
-              .toList() as List<ShopSuccessfulFulfilmentTrackingInfo>
+              .toList()
           : null,
     );
   }

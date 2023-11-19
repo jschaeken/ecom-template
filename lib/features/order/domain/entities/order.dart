@@ -76,9 +76,9 @@ class ShopOrder extends Equatable {
         successfulFulfillments,
       ];
 
-  static fromOrder(Order? order) {
+  static ShopOrder fromOrder(Order order) {
     return ShopOrder(
-      id: order!.id,
+      id: order.id,
       email: order.email,
       currencyCode: order.currencyCode,
       customerUrl: order.customerUrl,
@@ -107,7 +107,7 @@ class ShopOrder extends Equatable {
           ? order.successfulFulfillments!
               .map((fulfilment) =>
                   ShopSuccessfulFulfilment.fromFulfilment(fulfilment))
-              .toList() as List<ShopSuccessfulFulfilment>
+              .toList()
           : null,
     );
   }

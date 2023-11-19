@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shopify_flutter/models/src/product/price_v_2/price_v_2.dart';
 
@@ -5,7 +6,7 @@ part 'price.g.dart';
 
 /// Copy of [PriceV2] from shopify_flutter package
 @HiveType(typeId: 2)
-class Price {
+class Price extends Equatable {
   @HiveField(0)
   final double amount;
 
@@ -16,6 +17,9 @@ class Price {
     required this.amount,
     required this.currencyCode,
   });
+
+  @override
+  List<Object?> get props => [amount, currencyCode];
 
   @override
   String toString() {

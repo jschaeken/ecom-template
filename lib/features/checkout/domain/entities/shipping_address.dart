@@ -28,9 +28,9 @@ class ShopShippingAddress extends Equatable {
     required this.city,
     required this.country,
     required this.zip,
-    this.lastName,
-    this.name,
-    this.firstName,
+    required this.firstName,
+    required this.lastName,
+    required this.name,
     this.address2,
     this.company,
     this.countryCodeV2,
@@ -106,7 +106,7 @@ class ShopShippingAddress extends Equatable {
     );
   }
 
-  static fromMailingAddress(MailingAddress mailingAddress) {
+  static ShopShippingAddress fromMailingAddress(MailingAddress mailingAddress) {
     return ShopShippingAddress(
       id: mailingAddress.id,
       address1: mailingAddress.address1,
@@ -119,6 +119,7 @@ class ShopShippingAddress extends Equatable {
       address2: mailingAddress.address2,
       company: mailingAddress.company,
       countryCodeV2: mailingAddress.countryCodeV2,
+      formattedArea: mailingAddress.formattedArea,
       latitude: mailingAddress.latitude,
       longitude: mailingAddress.longitude,
       phone: mailingAddress.phone,

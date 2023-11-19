@@ -34,7 +34,7 @@ class ShopLineItem extends Equatable {
         variant,
       ];
 
-  static fromLineItem(LineItem lineItem) {
+  static ShopLineItem fromLineItem(LineItem lineItem) {
     return ShopLineItem(
       title: lineItem.title,
       quantity: lineItem.quantity,

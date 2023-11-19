@@ -13,6 +13,12 @@ import 'package:ecom_template/features/bag/domain/usecases/update_selected_optio
 import 'package:ecom_template/features/bag/domain/usecases/update_selected_options_fields.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/checkout/data/datasources/checkout_remote_datasource.dart';
+import 'package:ecom_template/features/checkout/data/repositories/checkout_repository_impl.dart';
+import 'package:ecom_template/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_line_items.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
 import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:ecom_template/features/favorites/domain/repositories/favorites_repository.dart';
@@ -32,12 +38,32 @@ import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:shopify_flutter/shopify/src/shopify_store.dart';
+import 'package:shopify_flutter/shopify/shopify.dart';
 
 final GetIt sl = GetIt.instance;
 
 Future<void> init() async {
-  /// Features - Shop - Shopping Bloc
+  /// Features ///
+
+  /// Shop ///
+  // Data Sources
+  sl.registerLazySingleton<ProductRemoteDataSource>(
+    () => ProductRemoteDataSourceImpl(shopifyStore: sl()),
+  );
+  // Repositories
+  sl.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImplementation(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => GetAllProducts(repository: sl()));
+  sl.registerLazySingleton(() => GetProductById(repository: sl()));
+  sl.registerLazySingleton(() => GetAllCollections(repository: sl()));
+  sl.registerLazySingleton(
+      () => GetAllProductsByCollectionId(repository: sl()));
+  // Blocs
   sl.registerFactory(
     () => ShoppingBloc(
       getAllProducts: sl(),
@@ -45,22 +71,31 @@ Future<void> init() async {
       getAllProductsByCollectionId: sl(),
     ),
   );
-  // Product Page - Options Selection Bloc
-  sl.registerFactory(() => OptionsSelectionBloc(
-        getSavedSelectedOptions: sl(),
-        updateSelectedOptionsQuantity: sl(),
-        updateSelectedOptionsFields: sl(),
-        verifyOptions: sl(),
-      ));
-
-  /// Features - Shop - Collections Bloc
   sl.registerFactory(
     () => CollectionsViewBloc(
       getAllCollections: sl(),
     ),
   );
 
-  /// Features - Bag - Bag Bloc
+  /// Bag ///
+  // Data Sources
+  sl.registerLazySingleton<BagItemsLocalDataSource>(
+    () => BagItemsLocalDataSourceImpl(interface: sl()),
+  );
+  // Repositories
+  sl.registerLazySingleton<BagRepository>(
+    () => BagRepositoryImpl(
+      bagItemsDataSource: sl(),
+      optionsSelectionDataSource: sl(),
+      productRemoteDataSource: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => AddBagItem(repository: sl()));
+  sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
+  sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
+  sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
+  // Blocs
   sl.registerFactory(
     () => BagBloc(
       addBagItem: sl(),
@@ -70,7 +105,22 @@ Future<void> init() async {
     ),
   );
 
-  /// Features - Favorites - Favorites Bloc
+  /// Favorites ///
+  // Data Sources
+  sl.registerLazySingleton<FavoritesLocalDataSource>(
+    () => FavoritesLocalDataSourceImpl(interface: sl()),
+  );
+  // Repositories
+  sl.registerLazySingleton<FavoritesRepository>(
+    () => FavoritesRepositoryImpl(
+      localDataSource: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => AddFavorite(repository: sl()));
+  sl.registerLazySingleton(() => RemoveFavorite(repository: sl()));
+  sl.registerLazySingleton(() => GetFavorites(repository: sl()));
+  // Blocs
   sl.registerFactory(
     () => FavoritesBloc(
       addFavoriteUseCase: sl(),
@@ -80,72 +130,51 @@ Future<void> init() async {
     ),
   );
 
-  /// Features - Shop - Use Cases
-  sl.registerLazySingleton(() => GetAllProducts(repository: sl()));
-  sl.registerLazySingleton(() => GetProductById(repository: sl()));
-  sl.registerLazySingleton(() => GetAllCollections(repository: sl()));
-  sl.registerLazySingleton(
-      () => GetAllProductsByCollectionId(repository: sl()));
+  /// Options Selection ///
+  // Data Sources
+  sl.registerLazySingleton<OptionsSelectionDataSource>(
+    () => OptionsSelectionDataSourceImpl(interface: sl()),
+  );
+  // Repositories
+  /* Uses Bag Item Repository */
+  // Use Cases
   sl.registerLazySingleton(() => GetSavedSelectedOptions(repository: sl()));
   sl.registerLazySingleton(() => UpdateSelectedOptionsFields(repository: sl()));
   sl.registerLazySingleton(
       () => UpdateSelectedOptionsQuantity(repository: sl()));
+  sl.registerLazySingleton(() => VerifyOptions());
+  // Blocs
+  sl.registerFactory(() => OptionsSelectionBloc(
+        getSavedSelectedOptions: sl(),
+        updateSelectedOptionsQuantity: sl(),
+        updateSelectedOptionsFields: sl(),
+        verifyOptions: sl(),
+      ));
 
-  sl.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImplementation(
-      remoteDataSource: sl(),
+  /// Checkout ///
+  // Data Sources
+  sl.registerLazySingleton<CheckoutRemoteDataSource>(
+      () => CheckoutRemoteDataSourceImpl(shopifyCheckout: sl()));
+  // Repositories
+  sl.registerLazySingleton<CheckoutRepository>(
+    () => CheckoutRepositoryImpl(
+      dataSource: sl(),
       networkInfo: sl(),
     ),
   );
+  // Use Cases
+  sl.registerLazySingleton(() => CreateCheckout(repository: sl()));
+  sl.registerLazySingleton(() => BagItemsToLineItems());
+  // Blocs
+  sl.registerFactory(
+      () => CheckoutBloc(createCheckout: sl(), bagItemsToLineItems: sl()));
 
-  /// Features - Options Selection - Use Cases
-  sl.registerLazySingleton(() => VerifyOptions());
-
-  /// Features - Bag - Use Cases
-  sl.registerLazySingleton(() => AddBagItem(repository: sl()));
-  sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
-  sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
-  sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
-
-  sl.registerLazySingleton<BagRepository>(
-    () => BagRepositoryImpl(
-      bagItemsDataSource: sl(),
-      optionsSelectionDataSource: sl(),
-      productRemoteDataSource: sl(),
-    ),
-  );
-
-  /// Features - Favorites - Use Cases
-  sl.registerLazySingleton(() => AddFavorite(repository: sl()));
-  sl.registerLazySingleton(() => RemoveFavorite(repository: sl()));
-  sl.registerLazySingleton(() => GetFavorites(repository: sl()));
-
-  sl.registerLazySingleton<FavoritesRepository>(
-    () => FavoritesRepositoryImpl(localDataSource: sl()),
-  );
-
-  sl.registerLazySingleton<FavoritesLocalDataSource>(
-    () => FavoritesLocalDataSourceImpl(interface: sl()),
-  );
-
-  /// Features - Shop - Data Sources
-  sl.registerLazySingleton<ProductRemoteDataSource>(
-    () => ProductRemoteDataSourceImpl(shopifyStore: sl()),
-  );
-
-  /// Features - Bag - Data Sources
-  sl.registerLazySingleton<BagItemsLocalDataSource>(
-    () => BagItemsLocalDataSourceImpl(interface: sl()),
-  );
-  sl.registerLazySingleton<OptionsSelectionDataSource>(
-    () => OptionsSelectionDataSourceImpl(interface: sl()),
-  );
-
-  /// Core
+  /// Core ///
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
-  /// External
+  /// External ///
   sl.registerLazySingleton(() => InternetConnectionChecker());
   sl.registerLazySingleton(() => ShopifyStore.instance);
+  sl.registerLazySingleton(() => ShopifyCheckout.instance);
   sl.registerLazySingleton(() => Hive);
 }

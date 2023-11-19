@@ -46,7 +46,7 @@ class ShopLineItemOrder extends Equatable {
           .map((discountAllocations) =>
               ShopDiscountAllocations.fromDiscountAllocation(
                   discountAllocations))
-          .toList() as List<ShopDiscountAllocations>,
+          .toList(),
       variant: lineItemOrder.variant != null
           ? ShopProductVariantCheckout.fromProductVariantCheckout(
               lineItemOrder.variant!)

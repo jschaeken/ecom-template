@@ -71,6 +71,9 @@ void main() {
             )
           ],
           shippingAddress: ShopShippingAddress(
+              firstName: 'firstName',
+              lastName: 'lastName',
+              name: 'firstName lastName',
               id: 'id',
               address1: 'address1',
               city: 'city',

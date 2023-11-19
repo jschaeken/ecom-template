@@ -54,12 +54,13 @@ class ShopCheckoutModel extends ShopCheckout {
       requiresShipping: checkout.requiresShipping,
       lineItems: checkout.lineItems
           .map((lineItem) => ShopLineItem.fromLineItem(lineItem))
-          .toList() as List<ShopLineItem>,
+          .toList(),
       appliedGiftCards: checkout.appliedGiftCards
           .map((appliedGiftCard) =>
               ShopAppliedGiftCards.fromAppliedGiftCards(appliedGiftCard))
-          .toList() as List<ShopAppliedGiftCards>,
-      order: ShopOrder.fromOrder(checkout.order),
+          .toList(),
+      order:
+          checkout.order != null ? ShopOrder.fromOrder(checkout.order!) : null,
       orderStatusUrl: checkout.orderStatusUrl,
       shopifyPaymentsAccountId: checkout.shopifyPaymentsAccountId,
       shippingAddress: checkout.shippingAddress != null

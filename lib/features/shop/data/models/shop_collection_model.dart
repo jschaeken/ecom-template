@@ -1,5 +1,6 @@
 import 'package:ecom_template/features/shop/data/models/shop_product_model.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_collection.dart';
+import 'package:equatable/equatable.dart';
 import 'package:shopify_flutter/models/src/collection/collection.dart';
 
 class ShopCollectionModel extends ShopCollection {
@@ -24,6 +25,19 @@ class ShopCollectionModel extends ShopCollection {
           image: image,
           cursor: cursor,
         );
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        products,
+        description,
+        descriptionHtml,
+        handle,
+        image,
+        updatedAt,
+        cursor,
+      ];
 
   static ShopCollectionModel fromShopifyCollection(Collection collection) {
     return ShopCollectionModel(
@@ -53,7 +67,7 @@ class ShopCollectionModel extends ShopCollection {
   }
 }
 
-class ShopCollectionImage {
+class ShopCollectionImage extends Equatable {
   final String? originalSrc;
   final String? altText;
   final String? id;
@@ -63,6 +77,13 @@ class ShopCollectionImage {
     required this.altText,
     required this.id,
   });
+
+  @override
+  List<Object?> get props => [
+        originalSrc,
+        altText,
+        id,
+      ];
 
   @override
   String toString() =>

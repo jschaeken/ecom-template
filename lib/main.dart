@@ -3,6 +3,7 @@ import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => injection.sl<FavoritesBloc>()),
         BlocProvider(create: (_) => injection.sl<ShoppingBloc>()),
         BlocProvider(create: (_) => injection.sl<OptionsSelectionBloc>()),
+        BlocProvider(create: (_) => injection.sl<CheckoutBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

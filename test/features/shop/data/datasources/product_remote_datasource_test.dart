@@ -23,7 +23,6 @@ void main() {
   final testProduct = Product(
     id: testId,
     title: 'test',
-    description: 'test',
     images: [],
     availableForSale: true,
     createdAt: '',
@@ -34,7 +33,13 @@ void main() {
     publishedAt: '',
     tags: [],
     updatedAt: '',
+    cursor: '',
+    description: 'test',
+    descriptionHtml: '',
+    handle: '',
+    onlineStoreUrl: '',
     vendor: '',
+    collectionList: [],
   );
   const testProductEntity = ShopProductModel(
     id: testId,
