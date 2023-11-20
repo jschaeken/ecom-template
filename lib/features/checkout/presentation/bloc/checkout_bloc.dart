@@ -36,7 +36,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
             emit(CheckoutError(failure: failure));
           }, (shopCheckout) {
             for (var element in shopCheckout.lineItems) {
-              debugPrint(element.title);
+              debugPrint(element.variantId.toString());
             }
             emit(CheckoutLoaded(checkout: shopCheckout));
           });

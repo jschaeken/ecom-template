@@ -55,16 +55,14 @@ class BagPage extends StatelessWidget {
             accountInitials: 'JS',
             centerTitle: true,
           ),
-          Flexible(
+          Expanded(
             child: BlocBuilder<BagBloc, BagState>(
               builder: (context, state) {
                 if (state is BagInitial || state is BagEmptyState) {
-                  return const Expanded(
-                    child: EmptyView(
-                      icon: CupertinoIcons.bag_fill,
-                      title: 'Your bag is empty',
-                      subtitle: 'Add items to your bag to continue',
-                    ),
+                  return const EmptyView(
+                    icon: CupertinoIcons.bag_fill,
+                    title: 'Your bag is empty',
+                    subtitle: 'Add items to your bag to continue',
                   );
                 } else if (state is BagLoadingState) {
                   return Expanded(
@@ -141,10 +139,14 @@ class BagPage extends StatelessWidget {
                                 onTap: () => navigateToProductPage(
                                     state.bagItems[index].parentProductId,
                                     context),
+                                margin: true,
                                 imageUrl:
                                     state.bagItems[index].image?.originalSrc,
-                                optionsSelected:
-                                    state.bagItems[index].selectedOptions,
+                                subHeadings: state
+                                    .bagItems[index].selectedOptions
+                                    ?.map((prodOption) =>
+                                        '${prodOption.name}: ${prodOption.value}')
+                                    .toList(),
                                 quantity: state.bagItems[index].quantity,
                                 price: state.bagItems[index].price,
                                 onQuantitySelectorTap: () async {
@@ -177,31 +179,30 @@ class BagPage extends StatelessWidget {
                                         Theme.of(context).unselectedWidgetColor,
                                   ),
                                   TextBody(
-                                    text: 'Free',
+                                    text: state.bagTotals.subtotal
+                                        .formattedPrice(),
                                     color:
                                         Theme.of(context).unselectedWidgetColor,
                                   ),
                                 ],
                               ),
                               const StandardSpacing(),
-                              const Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  TextSubHeadline(
+                                  const TextSubHeadline(
                                     text: 'Total',
                                   ),
                                   TextSubHeadline(
-                                    text: 'Free',
+                                    text:
+                                        state.bagTotals.total.formattedPrice(),
                                   ),
                                 ],
                               ),
                             ],
                           ),
                         ),
-
-                        // Spacing
-                        const StandardSpacing(multiplier: 10),
                       ],
                     ),
                   );

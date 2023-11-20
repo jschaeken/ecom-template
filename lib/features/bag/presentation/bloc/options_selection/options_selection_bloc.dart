@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
-import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
-import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
+import 'package:ecom_template/features/bag/domain/entities/product_selections.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/option_selection_verification.dart';
 import 'package:ecom_template/features/bag/domain/usecases/save_selected_options.dart';
@@ -52,52 +50,30 @@ class OptionsSelectionBloc
               ),
             ),
           );
-          // Getting the current saved options
-          final currentSavedOptions = await getSavedSelectedOptions(
-            Params(id: product.id),
+
+          // Getting the current saved options, and creating a BagItemData object, which is emitted
+          await _handleOptionsSelectionsChanged(
+            product: product,
+            emit: emit,
           );
-          final incompleteOrBagItem = await _parseCurrentOptions(
-              product: product, currentSavedOptions: currentSavedOptions);
-          await incompleteOrBagItem.fold((incomplete) async {
-            emit(OptionsSelectionLoadedIncompleteState(
-              optionsSelection: incomplete.optionsSelections,
-            ));
-          }, (bagItemDataAndOptionsSelections) async {
-            emit(OptionsSelectionLoadedCompleteState(
-              bagItemData: bagItemDataAndOptionsSelections.$1,
-              optionsSelection: bagItemDataAndOptionsSelections.$2,
-            ));
-          });
           break;
+
         case CheckValidOptionsSelectionEvent:
           event as CheckValidOptionsSelectionEvent;
-          // Destructuring
           final ShopProduct product = event.product;
-          // Getting the current saved options
-          final currentSavedOptions = await getSavedSelectedOptions(
-            Params(id: product.id),
+          await _handleOptionsSelectionsChanged(
+            product: product,
+            emit: emit,
           );
-          final incompleteOrBagItem = await _parseCurrentOptions(
-              product: product, currentSavedOptions: currentSavedOptions);
-          await incompleteOrBagItem.fold((incomplete) async {
-            emit(OptionsSelectionLoadedIncompleteState(
-              optionsSelection: incomplete.optionsSelections,
-            ));
-          }, (bagItemDataAndOptionsSelections) async {
-            emit(OptionsSelectionLoadedCompleteState(
-              bagItemData: bagItemDataAndOptionsSelections.$1,
-              optionsSelection: bagItemDataAndOptionsSelections.$2,
-            ));
-          });
           break;
         case OptionsSelectionQuantityChanged:
           event as OptionsSelectionQuantityChanged;
           // Destructuring
+          final ShopProduct product = event.product;
           final int quantity = event.quantity;
           if (quantity < 1 || quantity > 10) {
             return;
           }
-          final ShopProduct product = event.product;
           // Saving the changed option
           await updateSelectedOptionsQuantity(
             SelectedOptionsParams(
@@ -108,63 +84,84 @@ class OptionsSelectionBloc
             ),
           );
           // Getting the current saved options
-          final currentSavedOptions = await getSavedSelectedOptions(
-            Params(id: product.id),
+          await _handleOptionsSelectionsChanged(
+            product: product,
+            emit: emit,
           );
-          final incompleteOrBagItem = await _parseCurrentOptions(
-              product: product, currentSavedOptions: currentSavedOptions);
-          await incompleteOrBagItem.fold((incomplete) async {
-            emit(OptionsSelectionLoadedIncompleteState(
-              optionsSelection: incomplete.optionsSelections,
-            ));
-          }, (bagItemDataAndOptionsSelections) async {
-            emit(OptionsSelectionLoadedCompleteState(
-              bagItemData: bagItemDataAndOptionsSelections.$1,
-              optionsSelection: bagItemDataAndOptionsSelections.$2,
-            ));
-          });
           break;
         case OptionsSelectionStarted:
       }
     });
   }
 
-  Future<Either<IncompleteBagItem, (BagItemData, OptionsSelections)>>
-      _parseCurrentOptions(
-          {required ShopProduct product,
-          required Either<Failure, OptionsSelections>
-              currentSavedOptions}) async {
-    return await currentSavedOptions.fold((l) async {
-      return Left(
-        IncompleteBagItem(
-          product: product,
-          optionsSelections: const OptionsSelections(
-            selectedOptions: {},
-          ),
-        ),
-      );
-    }, (selections) async {
-      // Verifying the options
-      final result = await verifyOptions.verifyIncompleteBagItem(
-        incompleteBagItem: IncompleteBagItem(
-          product: product,
-          // If null, then the options are incomplete, and a blank options selection is used
-          optionsSelections: selections,
-        ),
-      );
-      // Determing if the options make a complete bag item
-      return result.fold((incompleteOptions) {
-        return Left(
-          IncompleteBagItem(
-            optionsSelections: incompleteOptions.currentSelectedOptions,
-            product: product,
+  Future<void> _handleOptionsSelectionsChanged({
+    required ShopProduct product,
+    required Emitter<OptionsSelectionState> emit,
+  }) async {
+    final currentSavedOptions = await getSavedSelectedOptions(
+      Params(id: product.id),
+    );
+
+    List<ProductSelection> currentSelections = [];
+    ProductSelections? currentProductSelections;
+    await currentSavedOptions.fold((failure) async {
+      debugPrint('OptionsSelectionChanged failure: $failure, $product');
+      // If theres a failure, then the chosen value are set to the first value in the list of that option
+      for (ShopProductOption option in product.options) {
+        currentSelections.add(
+          ProductSelection(
+            title: option.name,
+            values: option.values,
+            chosenValue: option.values[0],
           ),
         );
-      }, (bagItemReady) {
-        return Right(
-          (bagItemReady, selections),
+      }
+      currentProductSelections = ProductSelections(
+        selections: currentSelections,
+        quantity: 1,
+      );
+    }, (optionsSelections) async {
+      for (ShopProductOption option in product.options) {
+        currentSelections.add(
+          ProductSelection(
+            title: option.name,
+            values: option.values,
+            chosenValue: option
+                .values[optionsSelections.selectedOptions[option.name] ?? 0],
+          ),
         );
-      });
+      }
+      currentProductSelections = ProductSelections(
+        selections: currentSelections,
+        quantity: optionsSelections.quantity,
+      );
     });
+    final bagItemOrFailure = verifyOptions.getBagItemData(
+      shopProduct: product,
+      productSelections: currentProductSelections!,
+    );
+
+    // If the options are complete, then the bag item data is returned, else the failure is returned
+    await bagItemOrFailure.fold(
+      (l) async {
+        emit(
+          OptionsSelectionErrorState(
+            currentSelections: currentProductSelections!,
+            failure: const IncompleteOptionsSelectionFailure(
+              message:
+                  'There was an error with finding the selected product variant.',
+            ),
+          ),
+        );
+      },
+      (bagItemData) async {
+        emit(
+          OptionsSelectionLoadedCompleteState(
+            bagItemData: bagItemData,
+            currentSelections: currentProductSelections!,
+          ),
+        );
+      },
+    );
   }
 }

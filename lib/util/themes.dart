@@ -17,7 +17,7 @@ class CustomTheme {
     primaryColorLight: Colors.black,
     disabledColor: Colors.black,
     highlightColor: Colors.black,
-    indicatorColor: const Color.fromARGB(255, 163, 246, 175),
+    indicatorColor: const Color.fromARGB(255, 106, 219, 81),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,

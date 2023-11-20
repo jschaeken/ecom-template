@@ -1,10 +1,8 @@
 // ignore_for_file: overridden_fields
-import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
-import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
 import '../../../shop/domain/entities/shop_product_selected_option.dart';
@@ -202,25 +200,4 @@ class BagItem extends ShopProductProductVariant {
 
   @override
   bool get stringify => true;
-}
-
-class IncompleteBagItem extends Equatable {
-  final ShopProduct product;
-  final OptionsSelections optionsSelections;
-
-  const IncompleteBagItem({
-    required this.product,
-    required this.optionsSelections,
-  });
-
-  @override
-  List<Object?> get props => [
-        product,
-        optionsSelections,
-      ];
-
-  @override
-  String toString() {
-    return 'IncompleteBagItem(product: $product, optionsSelections: $optionsSelections)';
-  }
 }

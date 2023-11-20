@@ -1,16 +1,14 @@
 part of 'options_selection_bloc.dart';
 
 sealed class OptionsSelectionState extends Equatable {
-  final OptionsSelections optionsSelection;
+  final ProductSelections currentSelections;
 
   const OptionsSelectionState({
-    this.optionsSelection = const OptionsSelections(
-      selectedOptions: {},
-    ),
+    this.currentSelections = const ProductSelections(),
   });
 
   @override
-  List<Object> get props => [optionsSelection];
+  List<Object> get props => [currentSelections];
 }
 
 final class OptionsSelectionInitial extends OptionsSelectionState {}
@@ -24,26 +22,14 @@ final class OptionsSelectionLoadingState extends OptionsSelectionState {
 
 final class OptionsSelectionLoadedCompleteState extends OptionsSelectionState {
   final BagItemData bagItemData;
-  @override
-  final OptionsSelections optionsSelection;
 
   const OptionsSelectionLoadedCompleteState({
     required this.bagItemData,
-    required this.optionsSelection,
-  }) : super(optionsSelection: optionsSelection);
+    required ProductSelections currentSelections,
+  }) : super(currentSelections: currentSelections);
 
   @override
-  List<Object> get props => [bagItemData, optionsSelection];
-}
-
-final class OptionsSelectionLoadedIncompleteState
-    extends OptionsSelectionState {
-  const OptionsSelectionLoadedIncompleteState({
-    required OptionsSelections optionsSelection,
-  }) : super(optionsSelection: optionsSelection);
-
-  @override
-  List<Object> get props => [optionsSelection];
+  List<Object> get props => [bagItemData, currentSelections];
 }
 
 final class OptionsSelectionErrorState extends OptionsSelectionState {
@@ -51,8 +37,9 @@ final class OptionsSelectionErrorState extends OptionsSelectionState {
 
   const OptionsSelectionErrorState({
     required this.failure,
-  });
+    required ProductSelections currentSelections,
+  }) : super(currentSelections: currentSelections);
 
   @override
-  List<Object> get props => [failure];
+  List<Object> get props => [failure, currentSelections];
 }

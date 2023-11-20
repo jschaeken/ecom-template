@@ -4,6 +4,7 @@ import 'package:ecom_template/features/bag/data/datasources/options_selection_lo
 import 'package:ecom_template/features/bag/data/repositories/bag_repository_impl.dart';
 import 'package:ecom_template/features/bag/domain/repositories/bag_repository.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/option_selection_verification.dart';
@@ -95,6 +96,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
   sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
   sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
+  sl.registerLazySingleton(() => CalculateBagTotals());
   // Blocs
   sl.registerFactory(
     () => BagBloc(
@@ -102,6 +104,7 @@ Future<void> init() async {
       removeBagItem: sl(),
       getAllBagItems: sl(),
       updateBagItem: sl(),
+      calculateBagTotals: sl(),
     ),
   );
 

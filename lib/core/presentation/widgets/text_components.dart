@@ -87,20 +87,27 @@ class TextBody extends StatelessWidget {
     this.color,
     this.fontWeight,
     this.decoration,
+    this.maxLines,
   });
 
   final String text;
   final Color? color;
   final FontWeight? fontWeight;
   final TextDecoration? decoration;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
-    return Text(text,
-        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+    return Text(
+      text,
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
             color: color,
             fontWeight: fontWeight,
             decoration: decoration,
-            fontSize: 15));
+            fontSize: 15,
+          ),
+    );
   }
 }

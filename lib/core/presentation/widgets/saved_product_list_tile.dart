@@ -3,7 +3,6 @@ import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/widgets/quantity_selector.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:flutter/material.dart';
 
 class SavedProductListTile extends StatelessWidget {
@@ -11,26 +10,29 @@ class SavedProductListTile extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.imageUrl,
-    this.optionsSelected,
+    this.subHeadings,
     this.quantity,
     this.price,
     this.onQuantitySelectorTap,
+    this.margin = false,
     super.key,
   });
 
   final String title;
   final Function onTap;
   final String? imageUrl;
-  final List<ShopProductSelectedOption>? optionsSelected;
+  final List<String>? subHeadings;
   final int? quantity;
   final Price? price;
   final Function? onQuantitySelectorTap;
+  final bool margin;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap(),
       child: Card(
+          margin: margin ? null : const EdgeInsets.all(0),
           color: Theme.of(context).canvasColor,
           child: Padding(
             padding: Constants.padding,
@@ -85,16 +87,14 @@ class SavedProductListTile extends StatelessWidget {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: optionsSelected == null
-                                ? 0
-                                : optionsSelected!.length,
+                            itemCount:
+                                subHeadings == null ? 0 : subHeadings!.length,
                             itemBuilder: (context, i) {
                               return Padding(
                                 padding: Constants.padding
                                     .copyWith(left: 0, right: 0, top: 0),
                                 child: TextBody(
-                                  text:
-                                      '${optionsSelected![i].name}: ${optionsSelected![i].value}',
+                                  text: subHeadings![i],
                                   color:
                                       Theme.of(context).unselectedWidgetColor,
                                 ),

@@ -4,7 +4,6 @@ import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
-import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
@@ -12,8 +11,6 @@ import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart'
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -53,89 +50,6 @@ void main() {
       productVariantId: 'productVariantId',
     ));
   });
-
-  IncompleteBagItem incompleteBagItem = const IncompleteBagItem(
-    optionsSelections: OptionsSelections(
-      selectedOptions: {'Size': 1},
-    ),
-    product: ShopProduct(
-      id: 'testParentId',
-      title: 'test',
-      images: [],
-      availableForSale: true,
-      createdAt: '',
-      metafields: [],
-      options: [
-        ShopProductOption(
-          id: 'testOptionId',
-          name: 'Size',
-          values: ['S', 'M', 'L'],
-        ),
-      ],
-      productType: '',
-      productVariants: [
-        ShopProductProductVariant(
-          id: 'testVariantId1',
-          availableForSale: true,
-          image: null,
-          price: Price(amount: 100, currencyCode: 'USD'),
-          requiresShipping: true,
-          selectedOptions: [
-            ShopProductSelectedOption(
-              name: 'Size',
-              value: 'S',
-            ),
-          ],
-          sku: '',
-          title: 'variantTitle1',
-          weight: 200,
-          weightUnit: '',
-          quantityAvailable: 1,
-        ),
-        ShopProductProductVariant(
-          id: 'testVariantId2',
-          availableForSale: true,
-          image: null,
-          price: Price(amount: 100, currencyCode: 'USD'),
-          requiresShipping: true,
-          selectedOptions: [
-            ShopProductSelectedOption(
-              name: 'Size',
-              value: 'M',
-            ),
-          ],
-          sku: '',
-          title: 'variantTitle2',
-          weight: 100,
-          weightUnit: '',
-          quantityAvailable: 1,
-        ),
-        ShopProductProductVariant(
-          id: 'testVariantId3',
-          availableForSale: true,
-          image: null,
-          price: Price(amount: 100, currencyCode: 'USD'),
-          requiresShipping: true,
-          selectedOptions: [
-            ShopProductSelectedOption(
-              name: 'Size',
-              value: 'L',
-            ),
-          ],
-          sku: '',
-          title: 'variantTitle3',
-          weight: 203,
-          weightUnit: '',
-          quantityAvailable: 1,
-        ),
-      ],
-      publishedAt: '',
-      tags: [],
-      updatedAt: '',
-      vendor: '',
-    ),
-  );
-
   const tItem = BagItemData(
     parentProductId: 'testParentId',
     quantity: 1,

@@ -219,14 +219,6 @@ class ProductPage extends StatelessWidget {
                                                     .price
                                                     .formattedPrice(),
                                               );
-                                            case OptionsSelectionLoadedIncompleteState:
-                                              optionState
-                                                  as OptionsSelectionLoadedIncompleteState;
-                                              return TextBody(
-                                                text: state.product
-                                                    .productVariants[0].price
-                                                    .formattedPrice(),
-                                              );
                                             case OptionsSelectionErrorState:
                                             default:
                                               return const SizedBox();
@@ -270,15 +262,36 @@ class ProductPage extends StatelessWidget {
                                       case OptionsSelectionLoadedCompleteState:
                                         optionState
                                             as OptionsSelectionLoadedCompleteState;
-                                        return TextBody(
-                                          text: optionState
-                                              .bagItemData.productVariantTitle,
-                                        );
-                                      case OptionsSelectionLoadedIncompleteState:
-                                        optionState
-                                            as OptionsSelectionLoadedIncompleteState;
-                                        return const TextBody(
-                                          text: 'Select Options',
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            TextBody(
+                                              text: optionState.bagItemData
+                                                  .productVariantTitle,
+                                            ),
+                                            //Out of stock
+                                            state.product.availableForSale
+                                                ? const SizedBox()
+                                                : Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      color: Colors.red[100],
+                                                    ),
+                                                    child: Padding(
+                                                      padding: Constants
+                                                          .innerPadding,
+                                                      child: const TextBody(
+                                                        text: 'Out of Stock',
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ],
                                         );
                                       case OptionsSelectionErrorState:
                                       default:
@@ -305,280 +318,151 @@ class ProductPage extends StatelessWidget {
                               }
                               if (state is ShoppingLoadedById) {
                                 // Select Options Title and Options Guide
-
-                                return ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: state.product.options.length,
-                                    separatorBuilder: (context, index) {
-                                      return const StandardSpacing(
-                                          multiplier: 3);
-                                    },
-                                    itemBuilder: (context, index) {
-                                      String optionName =
-                                          state.product.options[index].name ??
-                                              'Option ${index + 1}';
-                                      List<String> optionsValues =
-                                          state.product.options[index].values ??
-                                              [];
-                                      return Column(
-                                        children: [
-                                          Row(
+                                BlocProvider.of<OptionsSelectionBloc>(context)
+                                    .add(CheckValidOptionsSelectionEvent(
+                                  product: state.product,
+                                ));
+                                return BlocBuilder<OptionsSelectionBloc,
+                                    OptionsSelectionState>(
+                                  builder: (context, optionState) {
+                                    return ListView.separated(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: optionState.currentSelections
+                                            .selections.length,
+                                        separatorBuilder: (context, index) {
+                                          return const StandardSpacing(
+                                              multiplier: 3);
+                                        },
+                                        itemBuilder: (context, index) {
+                                          String optionName = optionState
+                                              .currentSelections
+                                              .selections[index]
+                                              .title;
+                                          return Column(
                                             children: [
-                                              Expanded(
-                                                  child: TextSubHeadline(
-                                                text: optionName,
-                                              )),
-                                              Flexible(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    CustomIcon(
-                                                      CupertinoIcons
-                                                          .info_circle,
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                      size: 18,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    TextBody(
-                                                      text: '$optionName Guide',
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                    ),
-                                                  ],
-                                                ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                      child: TextSubHeadline(
+                                                    text: optionName,
+                                                  )),
+                                                ],
                                               ),
+                                              const StandardSpacing(),
+                                              Padding(
+                                                  padding: Constants
+                                                      .innerPadding
+                                                      .copyWith(
+                                                    top: 0,
+                                                    bottom: 0,
+                                                    left: 0,
+                                                  ),
+                                                  child: Builder(builder: (_) {
+                                                    switch (optionState
+                                                        .runtimeType) {
+                                                      case OptionsSelectionInitial:
+                                                        return const LoadingStateWidget(
+                                                          height: 50,
+                                                        );
+                                                      case OptionsSelectionLoadingState:
+                                                        return const LoadingStateWidget(
+                                                          height: 50,
+                                                        );
+                                                      case OptionsSelectionLoadedCompleteState:
+                                                        return buttons
+                                                            .DropdownButton(
+                                                          text: optionState
+                                                              .currentSelections
+                                                              .selections[index]
+                                                              .chosenValue,
+                                                          isInvalid: false,
+                                                          onTap: () async {
+                                                            int?
+                                                                returnedSelectedIndex =
+                                                                await buttons
+                                                                    .showListSelectorModal(
+                                                              context: context,
+                                                              values: optionState
+                                                                  .currentSelections
+                                                                  .selections[
+                                                                      index]
+                                                                  .values
+                                                                  .toList(),
+                                                              heading:
+                                                                  'Select ${optionState.currentSelections.selections[index].title}',
+                                                            );
+                                                            if (returnedSelectedIndex !=
+                                                                null) {
+                                                              if (context
+                                                                  .mounted) {
+                                                                changeSelectedOptions(
+                                                                  context:
+                                                                      context,
+                                                                  indexValue:
+                                                                      returnedSelectedIndex,
+                                                                  optionName:
+                                                                      optionName,
+                                                                  product: state
+                                                                      .product,
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        );
+                                                      case OptionsSelectionErrorState:
+                                                        return buttons
+                                                            .DropdownButton(
+                                                          text: optionState
+                                                              .currentSelections
+                                                              .selections[index]
+                                                              .title,
+                                                          isInvalid: false,
+                                                          onTap: () async {
+                                                            int?
+                                                                returnedSelectedIndex =
+                                                                await buttons
+                                                                    .showListSelectorModal(
+                                                              context: context,
+                                                              values: optionState
+                                                                  .currentSelections
+                                                                  .selections[
+                                                                      index]
+                                                                  .values
+                                                                  .toList(),
+                                                              heading:
+                                                                  'Select ${optionState.currentSelections.selections[index].title}',
+                                                            );
+                                                            if (returnedSelectedIndex !=
+                                                                null) {
+                                                              if (context
+                                                                  .mounted) {
+                                                                changeSelectedOptions(
+                                                                  context:
+                                                                      context,
+                                                                  indexValue:
+                                                                      returnedSelectedIndex,
+                                                                  optionName:
+                                                                      optionName,
+                                                                  product: state
+                                                                      .product,
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        );
+                                                      default:
+                                                        return const SizedBox();
+                                                    }
+                                                  })),
                                             ],
-                                          ),
-                                          const StandardSpacing(),
-                                          Padding(
-                                              padding: Constants.innerPadding
-                                                  .copyWith(
-                                                top: 0,
-                                                bottom: 0,
-                                                left: 0,
-                                              ),
-                                              child: BlocBuilder<
-                                                      OptionsSelectionBloc,
-                                                      OptionsSelectionState>(
-                                                  builder:
-                                                      (context, optionState) {
-                                                switch (
-                                                    optionState.runtimeType) {
-                                                  case OptionsSelectionInitial:
-                                                    final Map<String, int>
-                                                        selectedOptionsMap =
-                                                        optionState
-                                                            .optionsSelection
-                                                            .selectedOptions;
-                                                    bool chosen =
-                                                        selectedOptionsMap[
-                                                                optionName] !=
-                                                            null;
-                                                    return buttons
-                                                        .DropdownButton(
-                                                      text: chosen
-                                                          ? optionsValues[
-                                                              selectedOptionsMap[
-                                                                  optionName]!]
-                                                          : 'Select $optionName',
-                                                      isInvalid: false,
-                                                      onTap: () async {
-                                                        int? selIndex =
-                                                            await buttons
-                                                                .showListSelectorModal(
-                                                          context: context,
-                                                          values: state
-                                                                  .product
-                                                                  .options[
-                                                                      index]
-                                                                  .values
-                                                                  ?.toList() ??
-                                                              [],
-                                                          heading:
-                                                              'Select ${state.product.options[index].name}',
-                                                        );
-                                                        if (selIndex != null) {
-                                                          if (context.mounted) {
-                                                            changeSelectedOptions(
-                                                              context: context,
-                                                              indexValue:
-                                                                  selIndex,
-                                                              optionName:
-                                                                  optionName,
-                                                              product:
-                                                                  state.product,
-                                                            );
-                                                          }
-                                                        }
-                                                      },
-                                                    );
-                                                  case OptionsSelectionLoadingState:
-                                                    return const LoadingStateWidget(
-                                                      height: 50,
-                                                    );
-                                                  case OptionsSelectionLoadedCompleteState:
-                                                    optionState
-                                                        as OptionsSelectionLoadedCompleteState;
-                                                    final Map<String, int>
-                                                        selectedOptionsMap =
-                                                        optionState
-                                                            .optionsSelection
-                                                            .selectedOptions;
-                                                    bool chosen =
-                                                        selectedOptionsMap[
-                                                                optionName] !=
-                                                            null;
-                                                    return buttons
-                                                        .DropdownButton(
-                                                      text: chosen
-                                                          ? optionsValues[
-                                                              selectedOptionsMap[
-                                                                  optionName]!]
-                                                          : 'Select $optionName',
-                                                      isInvalid: false,
-                                                      onTap: () async {
-                                                        int? selIndex =
-                                                            await buttons
-                                                                .showListSelectorModal(
-                                                          context: context,
-                                                          values: state
-                                                                  .product
-                                                                  .options[
-                                                                      index]
-                                                                  .values
-                                                                  ?.toList() ??
-                                                              [],
-                                                          heading:
-                                                              'Select ${state.product.options[index].name}',
-                                                        );
-                                                        if (selIndex != null) {
-                                                          if (context.mounted) {
-                                                            changeSelectedOptions(
-                                                              context: context,
-                                                              indexValue:
-                                                                  selIndex,
-                                                              optionName:
-                                                                  optionName,
-                                                              product:
-                                                                  state.product,
-                                                            );
-                                                          }
-                                                        }
-                                                      },
-                                                    );
-                                                  case OptionsSelectionLoadedIncompleteState:
-                                                    optionState
-                                                        as OptionsSelectionLoadedIncompleteState;
-                                                    final Map<String, int>
-                                                        selectedOptionsMap =
-                                                        optionState
-                                                            .optionsSelection
-                                                            .selectedOptions;
-                                                    bool chosen =
-                                                        selectedOptionsMap[
-                                                                optionName] !=
-                                                            null;
-                                                    return buttons
-                                                        .DropdownButton(
-                                                      text: chosen
-                                                          ? optionsValues[
-                                                              selectedOptionsMap[
-                                                                  optionName]!]
-                                                          : 'Select $optionName',
-                                                      isInvalid: !chosen,
-                                                      onTap: () async {
-                                                        int? selIndex =
-                                                            await buttons
-                                                                .showListSelectorModal(
-                                                          context: context,
-                                                          values: state
-                                                                  .product
-                                                                  .options[
-                                                                      index]
-                                                                  .values
-                                                                  ?.toList() ??
-                                                              [],
-                                                          heading:
-                                                              'Select ${state.product.options[index].name}',
-                                                        );
-                                                        if (selIndex != null) {
-                                                          if (context.mounted) {
-                                                            changeSelectedOptions(
-                                                              context: context,
-                                                              indexValue:
-                                                                  selIndex,
-                                                              optionName:
-                                                                  optionName,
-                                                              product:
-                                                                  state.product,
-                                                            );
-                                                          }
-                                                        }
-                                                      },
-                                                    );
-                                                  case OptionsSelectionErrorState:
-                                                    final Map<String, int>
-                                                        selectedOptionsMap =
-                                                        optionState
-                                                            .optionsSelection
-                                                            .selectedOptions;
-                                                    bool active =
-                                                        selectedOptionsMap[
-                                                                optionName] !=
-                                                            null;
-                                                    return buttons
-                                                        .DropdownButton(
-                                                      text: active
-                                                          ? optionsValues[
-                                                              selectedOptionsMap[
-                                                                  optionName]!]
-                                                          : 'Select $optionName',
-                                                      isInvalid: true,
-                                                      onTap: () async {
-                                                        int? selIndex =
-                                                            await buttons
-                                                                .showListSelectorModal(
-                                                          context: context,
-                                                          values: state
-                                                                  .product
-                                                                  .options[
-                                                                      index]
-                                                                  .values
-                                                                  ?.toList() ??
-                                                              [],
-                                                          heading:
-                                                              'Select ${state.product.options[index].name}',
-                                                        );
-                                                        if (selIndex != null) {
-                                                          if (context.mounted) {
-                                                            changeSelectedOptions(
-                                                              context: context,
-                                                              indexValue:
-                                                                  selIndex,
-                                                              optionName:
-                                                                  optionName,
-                                                              product:
-                                                                  state.product,
-                                                            );
-                                                          }
-                                                        }
-                                                      },
-                                                    );
-                                                  default:
-                                                    return const SizedBox();
-                                                }
-                                              })),
-                                        ],
-                                      );
-                                    });
+                                          );
+                                        });
+                                  },
+                                );
                               } else if (state is ShoppingError) {
                                 return const SizedBox();
                               } else {
@@ -625,45 +509,26 @@ class ProductPage extends StatelessWidget {
                                         builder: (context, optionState) {
                                       switch (optionState.runtimeType) {
                                         case OptionsSelectionInitial:
-                                          return buttons.QuantitySelector(
-                                              quantity: optionState
-                                                  .optionsSelection.quantity,
-                                              onAdd: () {
-                                                changeQuantity(
-                                                  context: context,
-                                                  product: shopState.product,
-                                                  quantity: optionState
-                                                          .optionsSelection
-                                                          .quantity +
-                                                      1,
-                                                );
-                                              },
-                                              onRemove: () {
-                                                changeQuantity(
-                                                  context: context,
-                                                  product: shopState.product,
-                                                  quantity: optionState
-                                                          .optionsSelection
-                                                          .quantity -
-                                                      1,
-                                                );
-                                              });
+                                          return const LoadingStateWidget(
+                                            height: 50,
+                                            width: 50,
+                                          );
                                         case OptionsSelectionLoadingState:
                                           return const LoadingStateWidget(
                                             height: 50,
+                                            width: 50,
                                           );
-                                        case OptionsSelectionLoadedCompleteState:
-                                          optionState
-                                              as OptionsSelectionLoadedCompleteState;
+                                        case OptionsSelectionLoadedCompleteState ||
+                                              OptionsSelectionErrorState:
                                           return buttons.QuantitySelector(
                                               quantity: optionState
-                                                  .optionsSelection.quantity,
+                                                  .currentSelections.quantity,
                                               onAdd: () {
                                                 changeQuantity(
                                                   context: context,
                                                   product: shopState.product,
                                                   quantity: optionState
-                                                          .optionsSelection
+                                                          .currentSelections
                                                           .quantity +
                                                       1,
                                                 );
@@ -673,38 +538,11 @@ class ProductPage extends StatelessWidget {
                                                   context: context,
                                                   product: shopState.product,
                                                   quantity: optionState
-                                                          .optionsSelection
+                                                          .currentSelections
                                                           .quantity -
                                                       1,
                                                 );
                                               });
-                                        case OptionsSelectionLoadedIncompleteState:
-                                          optionState
-                                              as OptionsSelectionLoadedIncompleteState;
-                                          return buttons.QuantitySelector(
-                                              quantity: optionState
-                                                  .optionsSelection.quantity,
-                                              onAdd: () {
-                                                changeQuantity(
-                                                  context: context,
-                                                  product: shopState.product,
-                                                  quantity: optionState
-                                                          .optionsSelection
-                                                          .quantity +
-                                                      1,
-                                                );
-                                              },
-                                              onRemove: () {
-                                                changeQuantity(
-                                                  context: context,
-                                                  product: shopState.product,
-                                                  quantity: optionState
-                                                          .optionsSelection
-                                                          .quantity -
-                                                      1,
-                                                );
-                                              });
-                                        case OptionsSelectionErrorState:
                                         default:
                                           return const SizedBox();
                                       }
@@ -756,12 +594,6 @@ class ProductPage extends StatelessWidget {
                                                     optionState.bagItemData,
                                                 context: context,
                                               );
-                                              return;
-                                            case OptionsSelectionLoadedIncompleteState:
-                                              optionState
-                                                  as OptionsSelectionLoadedIncompleteState;
-                                              _getSavedSelections(
-                                                  context, shopState.product);
                                               return;
                                             case OptionsSelectionErrorState:
                                             default:

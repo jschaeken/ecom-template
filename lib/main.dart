@@ -12,7 +12,6 @@ import 'package:ecom_template/features/shop/domain/entities/shop_product_selecte
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/util/themes.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +28,8 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      // enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );
@@ -97,36 +97,4 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(FavoriteAdapter());
 
   await injection.init();
-
-  // await Hive.deleteBoxFromDisk('bag');
-  // await Hive.deleteBoxFromDisk('favorites');
-  // await Hive.deleteBoxFromDisk('options_selection');
-
-  // try {
-  //   ShopifyCheckout shopifyCheckout = ShopifyCheckout.instance;
-  //   final resp = await shopifyCheckout.createCheckout(
-  //       lineItems: [
-  //         LineItem(
-  //             title: 'title',
-  //             quantity: 2,
-  //             variantId: 'gid://shopify/ProductVariant/46998324445524')
-  //       ],
-  //       email: 'schaekenj@gmail.com',
-  //       shippingAddress: Address(
-  //         address1: '34 Glencairn Lawn',
-  //         address2: 'The Gallops',
-  //         city: 'Leopardtown',
-  //         formattedArea: 'Dublin, Leinster, Ireland',
-  //         countryCode: 'IE',
-  //         country: 'Ireland',
-  //         firstName: 'Jacques',
-  //         lastName: 'Schaeken',
-  //         phone: '0035387654321',
-  //         province: 'Dublin',
-  //         zip: 'D18K0H3',
-  //       ));
-  //   print(resp);
-  // } catch (e) {
-  //   print(e);
-  // }
 }

@@ -209,6 +209,26 @@ void main() {
             parentProductId: 'parentProductId',
           )
         ],
+        email: '',
+        shippingAddress: ShopShippingAddress(
+          address1: 'address1',
+          address2: 'address2',
+          city: 'city',
+          company: 'company',
+          country: 'country',
+          countryCodeV2: 'countryCodeV2',
+          firstName: 'firstName',
+          formattedArea: 'formattedArea',
+          id: 'id',
+          lastName: 'lastName',
+          latitude: 1,
+          longitude: 1,
+          name: 'name',
+          phone: 'phone',
+          province: 'province',
+          provinceCode: 'provinceCode',
+          zip: 'zip',
+        ),
       ));
     },
   );
