@@ -31,3 +31,14 @@ class CheckoutClosedEvent extends CheckoutEvent {
   @override
   List<Object> get props => [];
 }
+
+class CheckoutCompletedEvent extends CheckoutEvent {
+  final String orderId;
+
+  const CheckoutCompletedEvent({
+    required this.orderId,
+  }) : super(bagItems: const []);
+
+  @override
+  List<Object> get props => [orderId];
+}

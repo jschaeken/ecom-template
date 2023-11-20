@@ -34,7 +34,9 @@ import 'package:ecom_template/features/shop/domain/usecases/get_all_collections.
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_all_products_by_collection_id.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
+import 'package:ecom_template/features/shop/domain/usecases/get_products_by_substring.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/searching/searching_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
@@ -64,6 +66,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetAllCollections(repository: sl()));
   sl.registerLazySingleton(
       () => GetAllProductsByCollectionId(repository: sl()));
+  sl.registerLazySingleton(() => GetProductsBySubstring(repository: sl()));
   // Blocs
   sl.registerFactory(
     () => ShoppingBloc(
@@ -75,6 +78,11 @@ Future<void> init() async {
   sl.registerFactory(
     () => CollectionsViewBloc(
       getAllCollections: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => SearchingBloc(
+      getProductsBySubstring: sl(),
     ),
   );
 

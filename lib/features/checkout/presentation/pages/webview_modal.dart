@@ -4,22 +4,21 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class WebViewModal extends StatefulWidget {
+class WebViewPage extends StatefulWidget {
   final String url;
   final String title;
 
-  const WebViewModal({required this.url, required this.title, Key? key})
+  const WebViewPage({required this.url, required this.title, Key? key})
       : super(key: key);
 
   @override
-  State<WebViewModal> createState() => _WebViewModalState();
+  State<WebViewPage> createState() => _WebViewPageState();
 }
 
-class _WebViewModalState extends State<WebViewModal> {
+class _WebViewPageState extends State<WebViewPage> {
   late WebViewController controller;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initPlatformState();
   }
@@ -29,9 +28,16 @@ class _WebViewModalState extends State<WebViewModal> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
-        NavigationDelegate(),
+        NavigationDelegate(
+          onNavigationRequest: (request) {
+            if (request.url.contains('thank_you')) {
+              Navigator.of(context).pop(true);
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
       )
-      ..loadRequest(Uri.parse('https://flutter.dev'));
+      ..loadRequest(Uri.parse(widget.url));
   }
 
   @override
@@ -42,18 +48,8 @@ class _WebViewModalState extends State<WebViewModal> {
         child:
             //Check if iOS or Android
             Platform.isAndroid || Platform.isIOS
-                ? Column(
-                    children: [
-                      const Text('WebView Launch'),
-                      ElevatedButton(
-                          onPressed: () {
-                            controller.loadRequest(Uri.parse(widget.url));
-                          },
-                          child: const Text('Launch WebView')),
-                      WebViewWidget(
-                        controller: controller,
-                      ),
-                    ],
+                ? WebViewWidget(
+                    controller: controller,
                   )
                 : const Center(
                     child: TextBody(

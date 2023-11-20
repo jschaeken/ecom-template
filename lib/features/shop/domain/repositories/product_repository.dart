@@ -15,4 +15,8 @@ abstract class ProductRepository {
   );
 
   Future<Either<Failure, List<ShopCollection>>> getAllCollections();
+
+  Future<Either<Failure, List<ShopProduct>>> getProductsBySubstring(
+    String substring,
+  );
 }

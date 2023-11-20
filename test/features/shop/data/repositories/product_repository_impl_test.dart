@@ -56,6 +56,11 @@ void main() {
     handle: '',
   );
   ShopProduct testProduct = testProductModel;
+  List<ShopProductModel> testProductModels = [
+    testProductModel,
+    testProductModel
+  ];
+  List<ShopProduct> testProducts = testProductModels;
 
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
@@ -309,6 +314,69 @@ void main() {
         () async {
           //act
           final result = await repository.getAllCollections();
+
+          //assert
+          expect(result, Left(InternetConnectionFailure()));
+        },
+      );
+    });
+  });
+
+  group('getProductsBySubstring', () {
+    test('should check if the device is online', () async {
+      //arrange
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemoteDataSource.getProductsBySubstring(testId))
+          .thenAnswer(
+              (invocation) async => [testProductModel, testProductModel]);
+
+      //act
+      await repository.getProductsBySubstring(testId);
+
+      //assert
+      verify(() => mockNetworkInfo.isConnected);
+    });
+
+    runTestsOnline(() {
+      test(
+          'Should return a list of ShopProduct entities when call to remote datsource for multiple products is successful',
+          () async {
+        //arrange
+
+        when(() => mockRemoteDataSource.getProductsBySubstring(testId))
+            .thenAnswer((_) async => testProductModels);
+
+        //act
+        final result = await repository.getProductsBySubstring(testId);
+
+        //assert
+        verify(() => mockRemoteDataSource.getProductsBySubstring(testId));
+        expect(result, Right(testProducts));
+      });
+
+      test(
+        'should return a server failure when the call to the remote datasource is unsuccessful',
+        () async {
+          // arrange
+          when(() => mockRemoteDataSource.getProductsBySubstring(testId))
+              .thenThrow(ServerException());
+
+          // act
+          final result = await repository.getProductsBySubstring(testId);
+
+          // assert
+          verify(() => mockRemoteDataSource.getProductsBySubstring(testId));
+          expect(result, Left(ServerFailure()));
+        },
+      );
+    });
+
+    runTestsOffline(() {
+      test(
+        'Should return internet connection failure when device is offline',
+        () async {
+          //act
+          final result = await repository.getProductsBySubstring(testId);
 
           //assert
           expect(result, Left(InternetConnectionFailure()));

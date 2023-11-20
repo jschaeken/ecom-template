@@ -40,6 +40,11 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
             }
             emit(CheckoutLoaded(checkout: shopCheckout));
           });
+          break;
+        case CheckoutCompletedEvent:
+          event as CheckoutCompletedEvent;
+          emit(CheckoutCompleted(orderId: event.orderId));
+          break;
 
         case CheckoutClosedEvent:
           emit(CheckoutInitial());

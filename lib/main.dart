@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages, unused_import
 import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
@@ -10,8 +11,10 @@ import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_unit_price_measurement.dart';
+import 'package:ecom_template/features/shop/presentation/bloc/searching/searching_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/util/themes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +23,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shopify_flutter/shopify_config.dart';
 import 'package:ecom_template/injection_container.dart' as injection;
+import 'package:path_provider/path_provider.dart';
 
 import 'core/presentation/main_view.dart';
 import 'core/presentation/state_managment/navigation_provider.dart';
@@ -28,8 +32,7 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      // enabled: !kReleaseMode,
-      enabled: false,
+      enabled: !kReleaseMode,
       builder: (context) => const MyApp(),
     ),
   );
@@ -50,6 +53,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => injection.sl<ShoppingBloc>()),
         BlocProvider(create: (_) => injection.sl<OptionsSelectionBloc>()),
         BlocProvider(create: (_) => injection.sl<CheckoutBloc>()),
+        BlocProvider(create: (_) => injection.sl<SearchingBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

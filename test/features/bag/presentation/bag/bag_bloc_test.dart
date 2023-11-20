@@ -4,7 +4,9 @@ import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
+import 'package:ecom_template/features/bag/domain/entities/bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
@@ -24,24 +26,29 @@ class MockUpdateBagItem extends Mock implements UpdateBagItem {}
 
 class MockOptionsSelectionBloc extends Mock implements OptionsSelectionBloc {}
 
+class MockCalculateBagTotals extends Mock implements CalculateBagTotals {}
+
 void main() {
   late BagBloc bloc;
   late MockAddBagItem mockAddBagItem;
   late MockGetAllBagItems mockGetAllBagItems;
   late MockRemoveBagItem mockRemoveBagItem;
   late MockUpdateBagItem mockUpdateBagItem;
+  late MockCalculateBagTotals mockCalculateBagTotals;
 
   setUp(() {
     mockAddBagItem = MockAddBagItem();
     mockRemoveBagItem = MockRemoveBagItem();
     mockGetAllBagItems = MockGetAllBagItems();
     mockUpdateBagItem = MockUpdateBagItem();
+    mockCalculateBagTotals = MockCalculateBagTotals();
 
     bloc = BagBloc(
       addBagItem: mockAddBagItem,
       removeBagItem: mockRemoveBagItem,
       getAllBagItems: mockGetAllBagItems,
       updateBagItem: mockUpdateBagItem,
+      calculateBagTotals: mockCalculateBagTotals,
     );
     registerFallbackValue(const BagItemData(
       parentProductId: 'parentProductId',
@@ -75,6 +82,11 @@ void main() {
     )
   ];
 
+  const testBagTotals = BagTotals(
+    total: Price(amount: 100, currencyCode: 'USD'),
+    subtotal: Price(amount: 100, currencyCode: 'USD'),
+  );
+
   test('Initial state should be BagInitial', () {
     // assert
     expect(bloc.state, equals(BagInitial()));
@@ -89,10 +101,12 @@ void main() {
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
+      when(() => mockCalculateBagTotals(any()))
+          .thenAnswer((_) async => const Right(testBagTotals));
 
       // assert later
       final expected = [
-        BagLoadedAddedState(bagItems: testBagItems),
+        BagLoadedAddedState(bagItems: testBagItems, bagTotals: testBagTotals),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
 
@@ -130,10 +144,12 @@ void main() {
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
+      when(() => mockCalculateBagTotals(any()))
+          .thenAnswer((_) async => const Right(testBagTotals));
 
       // assert later
       final expected = [
-        BagLoadedRemovedState(bagItems: testBagItems),
+        BagLoadedRemovedState(bagItems: testBagItems, bagTotals: testBagTotals),
       ];
 
       expectLater(bloc.stream, emitsInOrder(expected));

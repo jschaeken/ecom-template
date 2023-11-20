@@ -68,4 +68,19 @@ class ProductRepositoryImplementation implements ProductRepository {
       return Left(InternetConnectionFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<ShopProduct>>> getProductsBySubstring(
+    String substring,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return Right(await remoteDataSource.getProductsBySubstring(substring));
+      } catch (e) {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
 }

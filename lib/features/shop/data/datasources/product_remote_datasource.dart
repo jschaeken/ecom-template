@@ -25,6 +25,8 @@ abstract class ProductRemoteDataSource {
   ///
   /// Throws a [ServerException] for all error codes
   Future<List<ShopCollectionModel>> getAllCollections();
+
+  Future<List<ShopProductModel>> getProductsBySubstring(String substring);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -79,6 +81,22 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
               ShopCollectionModel.fromShopifyCollection(collection))
           .toList();
       return models;
+    } catch (e) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<ShopProductModel>> getProductsBySubstring(
+      String substring) async {
+    try {
+      final response = await shopifyStore.searchProducts(substring);
+      if (response == null) {
+        throw ServerException();
+      }
+      return response
+          .map((product) => ShopProductModel.fromShopifyProduct(product))
+          .toList();
     } catch (e) {
       throw ServerException();
     }

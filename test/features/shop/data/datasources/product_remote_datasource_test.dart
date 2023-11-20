@@ -130,4 +130,29 @@ void main() {
       expect(result, equals([testProductEntity]));
     });
   });
+
+  group('getProductsBysubstring', () {
+    void mockShopifySearchProductsSuccess() {
+      when(() => mockShopifyStore.searchProducts('test'))
+          .thenAnswer((_) async => [testProduct]);
+    }
+
+    test('should call the shopifyStore to get products by substring', () async {
+      // arrange
+      mockShopifySearchProductsSuccess();
+      // act
+      await dataSource.getProductsBySubstring('test');
+      // assert
+      verify(() => mockShopifyStore.searchProducts('test'));
+    });
+
+    test('should return a list of products', () async {
+      // arrange
+      mockShopifySearchProductsSuccess();
+      // act
+      final result = await dataSource.getProductsBySubstring('test');
+      // assert
+      expect(result, equals([testProductEntity]));
+    });
+  });
 }

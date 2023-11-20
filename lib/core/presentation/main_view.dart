@@ -8,6 +8,7 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:ecom_template/features/checkout/presentation/pages/checkout_complete_dialogue.dart';
 import 'package:ecom_template/features/checkout/presentation/pages/checkout_modal.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/favorites/presentation/pages/favorites_page.dart';
@@ -148,13 +149,22 @@ class _MainViewState extends State<MainView> {
                 case CheckoutInitial:
                   return const SizedBox.shrink();
                 case CheckoutLoading || CheckoutLoaded || CheckoutError:
-                  return CheckoutModal(
+                  return IncompleteCheckoutModal(
                     onClosed: () {
                       context.read<CheckoutBloc>().add(
                             const CheckoutClosedEvent(),
                           );
                     },
+                    onCompleted: (orderId) {
+                      context
+                          .read<CheckoutBloc>()
+                          .add(CheckoutCompletedEvent(orderId: orderId));
+                    },
                   );
+                case CheckoutCompleted:
+                  checkoutState as CheckoutCompleted;
+                  return CheckoutCompleteDialogue(
+                      orderId: checkoutState.orderId);
                 default:
                   return const SizedBox.shrink();
               }

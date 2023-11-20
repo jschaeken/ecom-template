@@ -20,6 +20,15 @@ final class CheckoutLoaded extends CheckoutState {
   List<Object> get props => [checkout];
 }
 
+final class CheckoutCompleted extends CheckoutState {
+  final String orderId;
+
+  const CheckoutCompleted({required this.orderId});
+
+  @override
+  List<Object> get props => [orderId];
+}
+
 final class CheckoutError extends CheckoutState {
   final Failure failure;
 

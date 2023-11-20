@@ -1,23 +1,34 @@
 import 'package:ecom_template/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:flutter/material.dart';
 
-class CheckoutModal extends StatefulWidget {
+class IncompleteCheckoutModal extends StatefulWidget {
   final Function onClosed;
+  final Function(String orderId) onCompleted;
 
-  const CheckoutModal({required this.onClosed, super.key});
+  const IncompleteCheckoutModal(
+      {required this.onClosed, required this.onCompleted, Key? key})
+      : super(key: key);
 
   @override
-  State<CheckoutModal> createState() => _CheckoutModalState();
+  State<IncompleteCheckoutModal> createState() =>
+      _IncompleteCheckoutModalState();
 }
 
-class _CheckoutModalState extends State<CheckoutModal> {
+class _IncompleteCheckoutModalState extends State<IncompleteCheckoutModal> {
   @override
   void initState() {
     super.initState();
     // postframe callback
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _showCheckoutModal(context);
-      widget.onClosed();
+      final result = await _showCheckoutModal(context);
+      if (!result) {
+        widget.onClosed();
+      } else {
+        widget.onCompleted('demo_order_id');
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
     });
   }
 
@@ -34,7 +45,7 @@ class _CheckoutModalState extends State<CheckoutModal> {
   }
 }
 
-Future<void> _showCheckoutModal(BuildContext context) async {
+Future<bool> _showCheckoutModal(BuildContext context) async {
   await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -50,4 +61,5 @@ Future<void> _showCheckoutModal(BuildContext context) async {
       builder: (context) {
         return const SizedBox(height: 600, child: CheckoutPage());
       });
+  return false;
 }

@@ -4,6 +4,7 @@ import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/checkout/presentation/pages/webview_modal.dart';
+import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ecom_template/core/presentation/widgets/buttons.dart'
@@ -339,63 +340,150 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: Constants.padding.copyWith(top: 0, bottom: 0),
-          child: buttons.CtaButton(
-            height: 50,
-            width: double.infinity,
-            color: Theme.of(context).primaryColor,
-            onTap: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomIcon(
-                  Icons.apple,
-                  color: Theme.of(context).canvasColor,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                TextHeadline(
-                  text: 'Pay',
-                  color: Theme.of(context).canvasColor,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const StandardSpacing(
-          multiplier: 1,
-        ),
-        Padding(
-          padding: Constants.padding.copyWith(top: 0, bottom: 0),
-          child: buttons.CtaButton(
-            height: 50,
-            width: double.infinity,
-            color: Theme.of(context).indicatorColor,
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const WebViewModal(
-                  url: 'https://example.com',
-                  title: 'Payment',
+        BlocBuilder<CheckoutBloc, CheckoutState>(
+          builder: (context, checkoutState) {
+            switch (checkoutState.runtimeType) {
+              case CheckoutInitial:
+                return const TextBody(text: 'Items');
+              case CheckoutLoading:
+                return Column(
+                  children: [
+                    Padding(
+                      padding: Constants.padding.copyWith(top: 0, bottom: 0),
+                      child: const LoadingStateWidget(
+                        height: 50,
+                      ),
+                    ),
+                    const StandardSpacing(
+                      multiplier: 1,
+                    ),
+                    Padding(
+                      padding: Constants.padding.copyWith(top: 0),
+                      child: const LoadingStateWidget(
+                        height: 50,
+                      ),
+                    ),
+                  ],
                 );
-              }));
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextHeadline(
-                  text: 'Continue To Payment',
-                  color: Theme.of(context).canvasColor,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const StandardSpacing(
-          multiplier: 3,
+              case CheckoutLoaded:
+                checkoutState as CheckoutLoaded;
+                return Column(
+                  children: [
+                    // Apple Pay / Google Pay
+                    ApplePayButton(
+                      onTap: () {},
+                    ),
+
+                    const StandardSpacing(
+                      multiplier: 1,
+                    ),
+
+                    // Continue to Web Payment
+                    checkoutState.checkout.webUrl != null
+                        ? ContinueToPaymentButton(onTap: () async {
+                            bool? didCompletePayment = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return WebViewPage(
+                                    url: checkoutState.checkout.webUrl!,
+                                    title: 'Payment',
+                                  );
+                                },
+                              ),
+                            );
+                            // TODO: Implement WebviewPageResult handling
+                            if (didCompletePayment != null &&
+                                didCompletePayment) {
+                              debugPrint('did complete payment');
+                              if (context.mounted) {
+                                Navigator.of(context).pop(true);
+                              }
+                            } else {
+                              debugPrint('did not complete payment');
+                            }
+                          })
+                        : const SizedBox.shrink(),
+                    const StandardSpacing(
+                      multiplier: 3,
+                    ),
+                  ],
+                );
+              default:
+                return const SizedBox.shrink();
+            }
+          },
         ),
       ],
+    );
+  }
+}
+
+class ContinueToPaymentButton extends StatelessWidget {
+  const ContinueToPaymentButton({
+    required this.onTap,
+    super.key,
+  });
+
+  final Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: Constants.padding.copyWith(top: 0, bottom: 0),
+      child: buttons.CtaButton(
+        height: 50,
+        width: double.infinity,
+        color: Theme.of(context).indicatorColor,
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextHeadline(
+              text: 'Continue To Payment',
+              color: Theme.of(context).canvasColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ApplePayButton extends StatelessWidget {
+  const ApplePayButton({
+    required this.onTap,
+    super.key,
+  });
+
+  final Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: Constants.padding.copyWith(top: 0, bottom: 0),
+      child: buttons.CtaButton(
+        height: 50,
+        width: double.infinity,
+        color: Theme.of(context).primaryColor,
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomIcon(
+              Icons.apple,
+              color: Theme.of(context).canvasColor,
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            TextHeadline(
+              text: 'Pay',
+              color: Theme.of(context).canvasColor,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
