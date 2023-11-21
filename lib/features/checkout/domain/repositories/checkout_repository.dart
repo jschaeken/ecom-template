@@ -11,6 +11,10 @@ abstract class CheckoutRepository {
     String? email,
   });
 
+  Future<Either<Failure, ShopCheckout>> getCheckoutById({
+    required String checkoutId,
+  });
+
   // Future<ShopCheckout> addLineItemsToCheckout(
   //     {required String checkoutId, required List<ShopLineItem> lineItems});
 
@@ -52,8 +56,6 @@ abstract class CheckoutRepository {
 
   // Future<List<ShopOrder>?> getAllOrders(String customerAccessToken);
 
-  // Future<ShopCheckout> getCheckoutInfoQuery(String checkoutId);
-
   // Future<ShopCheckout> removeLineItemsFromCheckout(
   //     {required String checkoutId, required List<ShopLineItem> lineItems});
 
@@ -66,36 +68,4 @@ abstract class CheckoutRepository {
 
   // Future<ShopCheckout> updateLineItemsInCheckout(
   //     {required String checkoutId, required List<ShopLineItem> lineItems});
-
-  static foobar() {
-    // ShopifyCheckout checkout = ShopifyCheckout.instance;
-    // checkout.addLineItemsToCheckout(
-    //     checkoutId: checkoutId, lineItems: lineItems);
-    // checkout.checkForError(queryResult);
-    // checkout.checkoutCompleteFree(checkoutId);
-    // checkout.checkoutCompleteWithTokenizedPaymentV3(checkoutId,
-    //     checkout: checkout,
-    //     token: token,
-    //     paymentTokenType: paymentTokenType,
-    //     idempotencyKey: idempotencyKey,
-    //     amount: amount,
-    //     currencyCode: currencyCode,);
-    // checkout.checkoutCustomerAssociate(checkoutId, customerAccessToken)
-    // checkout.checkoutCustomerDisassociate(checkoutId);
-    // checkout.checkoutDiscountCodeApply(checkoutId, discountCode);
-    // checkout.checkoutDiscountCodeRemove(checkoutId);
-    // checkout.checkoutGiftCardAppend(checkoutId, giftCardCodes);
-    // checkout.checkoutGiftCardRemove(checkoutId, appliedGiftCardId);
-    // checkout.checkoutLineItemsReplace(checkoutId, variantIdList);
-    // checkout.checkoutShippingLineUpdate(checkoutId, shippingRateHandle)
-    // checkout.completeCheckoutWithTokenizedPaymentV2(checkoutId: checkoutId, price: price, billingAddress: billingAddress, impotencyKey: impotencyKey, tokenizedPayment: tokenizedPayment, type: type);
-    // checkout.createCheckout(checkoutInput);
-    // checkout.getAllOrders(customerAccessToken);
-    // checkout.getCheckoutInfoQuery(checkoutId);
-    // checkout.removeLineItemsFromCheckout(checkoutId: checkoutId, lineItems: lineItems);
-    // checkout.shippingAddressUpdate(checkoutId, address);
-    // checkout.updateAttributes(checkoutId);
-    // checkout.updateCheckoutEmail(checkoutId, email);
-    // checkout.updateLineItemsInCheckout(checkoutId: checkoutId, lineItems: lineItems);
-  }
 }

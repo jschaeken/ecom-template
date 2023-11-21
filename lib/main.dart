@@ -32,7 +32,8 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      // enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );

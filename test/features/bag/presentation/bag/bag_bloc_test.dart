@@ -7,11 +7,13 @@ import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
+import 'package:ecom_template/features/bag/domain/usecases/clear_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/remove_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/update_bag_item.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,6 +23,10 @@ class MockAddBagItem extends Mock implements AddBagItem {}
 class MockRemoveBagItem extends Mock implements RemoveBagItem {}
 
 class MockGetAllBagItems extends Mock implements GetAllBagItems {}
+
+class MockClearBagItems extends Mock implements ClearBagItems {}
+
+class MockCheckoutBloc extends Mock implements CheckoutBloc {}
 
 class MockUpdateBagItem extends Mock implements UpdateBagItem {}
 
@@ -35,18 +41,28 @@ void main() {
   late MockRemoveBagItem mockRemoveBagItem;
   late MockUpdateBagItem mockUpdateBagItem;
   late MockCalculateBagTotals mockCalculateBagTotals;
+  late MockClearBagItems mockClearBagItems;
+  late MockCheckoutBloc mockCheckoutBloc;
 
   setUp(() {
     mockAddBagItem = MockAddBagItem();
     mockRemoveBagItem = MockRemoveBagItem();
     mockGetAllBagItems = MockGetAllBagItems();
     mockUpdateBagItem = MockUpdateBagItem();
+    mockCheckoutBloc = MockCheckoutBloc();
     mockCalculateBagTotals = MockCalculateBagTotals();
+    mockClearBagItems = MockClearBagItems();
+
+    when(() => mockCheckoutBloc.stream).thenAnswer((_) =>
+        Stream<CheckoutState>.fromIterable(
+            [const CheckoutCompleted(orderId: 'testOrderId')]));
 
     bloc = BagBloc(
       addBagItem: mockAddBagItem,
       removeBagItem: mockRemoveBagItem,
       getAllBagItems: mockGetAllBagItems,
+      clearBagItems: mockClearBagItems,
+      checkoutBloc: mockCheckoutBloc,
       updateBagItem: mockUpdateBagItem,
       calculateBagTotals: mockCalculateBagTotals,
     );
@@ -56,6 +72,7 @@ void main() {
       quantity: 1,
       productVariantId: 'productVariantId',
     ));
+    registerFallbackValue(NoParams());
   });
   const tItem = BagItemData(
     parentProductId: 'testParentId',
@@ -101,8 +118,6 @@ void main() {
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
-      when(() => mockCalculateBagTotals(any()))
-          .thenAnswer((_) async => const Right(testBagTotals));
 
       // assert later
       final expected = [
@@ -178,5 +193,24 @@ void main() {
       // act
       bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
+  });
+
+  group('Listen to checkout bloc', () {
+    test(
+      'should clear bag items when checkout bloc listened to emits a CheckoutCompleted event',
+      () async {
+        // arrange
+        when(() => mockClearBagItems(any()))
+            .thenAnswer((_) async => const Right(WriteSuccess()));
+        when(() => mockGetAllBagItems(NoParams()))
+            .thenAnswer((_) async => const Right([]));
+
+        // assert later
+        final expected = [
+          BagEmptyState(),
+        ];
+        expectLater(bloc.stream, emitsInOrder(expected));
+      },
+    );
   });
 }

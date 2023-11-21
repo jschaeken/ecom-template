@@ -5,6 +5,7 @@ import 'package:ecom_template/features/bag/data/repositories/bag_repository_impl
 import 'package:ecom_template/features/bag/domain/repositories/bag_repository.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
+import 'package:ecom_template/features/bag/domain/usecases/clear_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_saved_selected_options.dart';
 import 'package:ecom_template/features/bag/domain/usecases/option_selection_verification.dart';
@@ -19,6 +20,7 @@ import 'package:ecom_template/features/checkout/data/repositories/checkout_repos
 import 'package:ecom_template/features/checkout/domain/repositories/checkout_repository.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_line_items.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
 import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
@@ -104,13 +106,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveBagItem(repository: sl()));
   sl.registerLazySingleton(() => GetAllBagItems(repository: sl()));
   sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
+  sl.registerLazySingleton(() => ClearBagItems(repository: sl()));
   sl.registerLazySingleton(() => CalculateBagTotals());
   // Blocs
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => BagBloc(
       addBagItem: sl(),
       removeBagItem: sl(),
       getAllBagItems: sl(),
+      checkoutBloc: sl(),
+      clearBagItems: sl(),
       updateBagItem: sl(),
       calculateBagTotals: sl(),
     ),
@@ -175,10 +180,14 @@ Future<void> init() async {
   );
   // Use Cases
   sl.registerLazySingleton(() => CreateCheckout(repository: sl()));
+  sl.registerLazySingleton(() => GetCheckoutInfo(repository: sl()));
   sl.registerLazySingleton(() => BagItemsToLineItems());
   // Blocs
-  sl.registerFactory(
-      () => CheckoutBloc(createCheckout: sl(), bagItemsToLineItems: sl()));
+  sl.registerFactory(() => CheckoutBloc(
+        createCheckout: sl(),
+        getCheckoutInfo: sl(),
+        bagItemsToLineItems: sl(),
+      ));
 
   /// Core ///
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

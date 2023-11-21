@@ -38,4 +38,21 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
       return Left(InternetConnectionFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, ShopCheckout>> getCheckoutById(
+      {required String checkoutId}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response =
+            await dataSource.getCheckoutInfo(checkoutId: checkoutId);
+        return Right(response);
+      } catch (e) {
+        debugPrint(e.toString());
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
 }

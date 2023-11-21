@@ -31,8 +31,9 @@ final class CheckoutCompleted extends CheckoutState {
 
 final class CheckoutError extends CheckoutState {
   final Failure failure;
+  final String? checkoutId;
 
-  const CheckoutError({required this.failure});
+  const CheckoutError({required this.failure, this.checkoutId});
 
   @override
   List<Object> get props => [failure];

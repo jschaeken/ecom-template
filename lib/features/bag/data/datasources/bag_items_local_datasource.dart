@@ -19,6 +19,9 @@ abstract class BagItemsLocalDataSource {
 
   /// Updates a [BagItemData] in the local storage with the same uniqueKey and sets the quantity
   Future<void> setBagItemDataQuantity(String entryId, int quantity);
+
+  /// Clears all the [BagItemData] from the local storage
+  Future<void> clearBagItems();
 }
 
 class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
@@ -80,6 +83,13 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       productVariantId: existingData.productVariantId,
     );
     await hiveBox.put(entryId, updated);
+    return;
+  }
+
+  @override
+  Future<void> clearBagItems() async {
+    final hiveBox = await _getOpenBox();
+    await hiveBox.clear();
     return;
   }
 

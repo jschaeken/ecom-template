@@ -176,4 +176,81 @@ void main() {
       });
     });
   });
+
+  group('getCheckoutInfo', () {
+    test(
+      'should check if the device is online',
+      () async {
+        // arrange
+        when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+        when(() => mockCheckoutDataSource.getCheckoutInfo(
+              checkoutId: any(named: 'checkoutId'),
+            )).thenAnswer((_) async => testShopCheckoutModel);
+
+        // act
+        await repository.getCheckoutById(
+          checkoutId: '',
+        );
+
+        // assert
+        verify(() => mockNetworkInfo.isConnected);
+      },
+    );
+
+    group('Device is online', () {
+      setUp(() {
+        when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      });
+
+      test(
+        'should return a ShopCheckout Object when the call to the data source is successful',
+        () async {
+          // arrange
+          when(() => mockCheckoutDataSource.getCheckoutInfo(
+                checkoutId: any(named: 'checkoutId'),
+              )).thenAnswer((_) async => testShopCheckoutModel);
+          // act
+          final result = await repository.getCheckoutById(
+            checkoutId: '',
+          );
+          // assert
+          expect(result, const Right(testShopCheckout));
+        },
+      );
+      test(
+        'should return a ServerFailure when the call to the data source is unsuccessful',
+        () async {
+          // arrange
+          when(() => mockCheckoutDataSource.getCheckoutInfo(
+                checkoutId: any(named: 'checkoutId'),
+              )).thenThrow(Exception());
+          // act
+          final result = await repository.getCheckoutById(
+            checkoutId: '',
+          );
+          // assert
+          expect(result, equals(Left(ServerFailure())));
+        },
+      );
+    });
+
+    group('Device is offline', () {
+      setUp(() => when(() => mockNetworkInfo.isConnected)
+          .thenAnswer((_) async => false));
+
+      test(
+        'should return an InternetConnectionFailure object when device is not online',
+        () async {
+          // act
+          final result = await repository.getCheckoutById(
+            checkoutId: '',
+          );
+
+          // assert
+          expect(result, equals(Left(InternetConnectionFailure())));
+          verifyZeroInteractions(mockCheckoutDataSource);
+        },
+      );
+    });
+  });
 }

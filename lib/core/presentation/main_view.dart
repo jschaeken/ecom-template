@@ -1,22 +1,22 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:ecom_template/core/config.dart';
-import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/core/presentation/global_haptic_feedback.dart';
+import 'package:ecom_template/core/presentation/global_pop_up.dart';
 import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
 import 'package:ecom_template/core/presentation/widgets/noti_icon.dart';
-import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/account/presentation/pages/account_page.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
-import 'package:ecom_template/features/checkout/presentation/pages/checkout_complete_dialogue.dart';
 import 'package:ecom_template/features/checkout/presentation/pages/checkout_modal.dart';
-import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:ecom_template/features/order/domain/entities/order_completion.dart';
 import 'package:ecom_template/features/shop/presentation/pages/explore_page.dart';
 import 'package:ecom_template/features/shop/presentation/pages/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainView extends StatefulWidget {
@@ -29,65 +29,60 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   final List<TabBarItem> tabBarItems = Config.tabBarItems;
   late List<GlobalKey<NavigatorState>> keys;
-  StreamSubscription<BagState>? bagStreamSubscription;
+  StreamSubscription<BagState>? bagHapticStreamSubscription;
+  StreamSubscription<CheckoutState>? checkoutStreamSubscription;
 
   final List<Widget> tabBarPages = [
     ExplorePage(pageTitle: 'EXPLORE'),
     const ShopPage(pageTitle: 'SHOP'),
     const BagPage(pageTitle: 'BAG'),
     const FavoritesPage(title: 'FAVORITES'),
-    // TODO: Add Account Page
-    const Scaffold(
-      body: Center(
-        child: TextBody(text: 'Account Page'),
-      ),
-    )
+    const AccountPage(title: 'ACCOUNT'),
   ];
 
-  void setBagListerForHapticFeedback(Stream<BagState> stream) {
-    bagStreamSubscription = stream.listen((event) {
-      if (event is BagLoadedAddedState || event is BagLoadedRemovedState) {
-        if (event.bagItems.isNotEmpty &&
-            (context.read<PageNavigationProvider>().currentIndex != 2 ||
-                keys[2].currentState?.canPop() == true)) {
-          HapticFeedback.mediumImpact();
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).canvasColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: Constants.borderRadius,
-              ),
-              elevation: 10,
-              content: TextBody(
-                text: event.runtimeType == BagLoadedAddedState
-                    ? 'Added to Bag'
-                    : 'Removed from Bag',
-              ),
-              action: SnackBarAction(
-                  label: 'View Bag',
-                  onPressed: () {
-                    context.read<PageNavigationProvider>().changeIndex(2);
-                    keys[2].currentState?.popUntil((route) => route.isFirst);
-                  }),
-            ),
-          );
-        }
-      }
-    });
-  }
+  // TODO: Implement Snackbars
+  // ScaffoldMessenger.of(context).clearSnackBars();
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             behavior: SnackBarBehavior.floating,
+  //             backgroundColor: Theme.of(context).canvasColor,
+  //             shape: RoundedRectangleBorder(
+  //               borderRadius: Constants.borderRadius,
+  //             ),
+  //             elevation: 10,
+  //             content: TextBody(
+  //               text: event.runtimeType == BagLoadedAddedState
+  //                   ? 'Added to Bag'
+  //                   : 'Removed from Bag',
+  //             ),
+  //             action: SnackBarAction(
+  //                 label: 'View Bag',
+  //                 onPressed: () {
+  //                   context.read<PageNavigationProvider>().changeIndex(2);
+  //                   keys[2].currentState?.popUntil((route) => route.isFirst);
+  //                 }),
+  //           ),
+  //         );
 
   @override
   void initState() {
     super.initState();
     keys = tabBarPages.map((page) => GlobalKey<NavigatorState>()).toList();
-    setBagListerForHapticFeedback(BlocProvider.of<BagBloc>(context).stream);
+    bagHapticStreamSubscription = setBagListerForHapticFeedback(
+      keys: keys,
+      pageNavigationProvider: context.read<PageNavigationProvider>(),
+      stream: BlocProvider.of<BagBloc>(context).stream,
+    );
+    checkoutStreamSubscription = setCheckoutListerOrderCompletePopUp(
+      stream: BlocProvider.of<CheckoutBloc>(context).stream,
+      context: context,
+    );
   }
 
   @override
   dispose() {
-    bagStreamSubscription?.cancel();
+    bagHapticStreamSubscription?.cancel();
+    checkoutStreamSubscription?.cancel();
     super.dispose();
   }
 
@@ -148,92 +143,40 @@ class _MainViewState extends State<MainView> {
               switch (checkoutState.runtimeType) {
                 case CheckoutInitial:
                   return const SizedBox.shrink();
-                case CheckoutLoading || CheckoutLoaded || CheckoutError:
+                case CheckoutLoading:
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  );
+                case CheckoutLoaded:
+                  checkoutState as CheckoutLoaded;
                   return IncompleteCheckoutModal(
-                    onClosed: () {
-                      context.read<CheckoutBloc>().add(
-                            const CheckoutClosedEvent(),
-                          );
-                    },
-                    onCompleted: (orderId) {
-                      context
-                          .read<CheckoutBloc>()
-                          .add(CheckoutCompletedEvent(orderId: orderId));
+                    checkout: checkoutState.checkout,
+                    onCompleted: (orderCompletion) {
+                      if (orderCompletion.status ==
+                          OrderCompletionStatus.completed) {
+                        log('Order Completed: ${orderCompletion.orderId}');
+                        context.read<CheckoutBloc>().add(CheckoutCompletedEvent(
+                            orderId: orderCompletion.orderId!));
+                      } else {
+                        log('Order Not Completed');
+                        context
+                            .read<CheckoutBloc>()
+                            .add(const CheckoutClosedEvent());
+                      }
                     },
                   );
                 case CheckoutCompleted:
-                  checkoutState as CheckoutCompleted;
-                  return CheckoutCompleteDialogue(
-                      orderId: checkoutState.orderId);
+                  return const SizedBox.shrink();
+                case CheckoutError:
+                  return const SizedBox.shrink();
                 default:
                   return const SizedBox.shrink();
               }
             }),
           ],
         );
-      },
-    );
-  }
-}
-
-class FavoritesNotiIcon extends StatelessWidget {
-  final IconData iconData;
-  const FavoritesNotiIcon({
-    super.key,
-    required this.iconData,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<FavoritesBloc, FavoritesState>(
-      builder: (context, state) {
-        if ((state is FavoritesAddedLoaded ||
-                state is FavoritesRemovedLoaded ||
-                state is FavoritesLoaded) &&
-            state.favorites.isNotEmpty) {
-          return NotiIcon(
-            icon: iconData,
-            visible: true,
-            isUnder: true,
-          );
-        } else {
-          return NotiIcon(
-            icon: iconData,
-            visible: false,
-          );
-        }
-      },
-    );
-  }
-}
-
-class BagNotiIcon extends StatelessWidget {
-  final IconData iconData;
-  const BagNotiIcon({
-    super.key,
-    required this.iconData,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BagBloc, BagState>(
-      builder: (context, state) {
-        if ((state is BagLoadedState ||
-                state is BagLoadedAddedState ||
-                state is BagLoadedRemovedState) &&
-            state.bagItems.isNotEmpty) {
-          return NotiIcon(
-            isUnder: false,
-            icon: iconData,
-            visible: true,
-            text: state.bagItems.length.toString(),
-          );
-        } else {
-          return NotiIcon(
-            icon: iconData,
-            visible: false,
-          );
-        }
       },
     );
   }

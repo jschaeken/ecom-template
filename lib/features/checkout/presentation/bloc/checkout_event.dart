@@ -42,3 +42,14 @@ class CheckoutCompletedEvent extends CheckoutEvent {
   @override
   List<Object> get props => [orderId];
 }
+
+class GetCheckoutInfoEvent extends CheckoutEvent {
+  final String id;
+
+  const GetCheckoutInfoEvent({
+    required this.id,
+  }) : super(bagItems: const []);
+
+  @override
+  List<Object> get props => [id];
+}

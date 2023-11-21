@@ -189,4 +189,14 @@ class BagRepositoryImpl implements BagRepository {
       return Left(CacheFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, WriteSuccess>> clearBagItems() async {
+    try {
+      await bagItemsDataSource.clearBagItems();
+      return const Right(WriteSuccess());
+    } catch (e) {
+      return Left(CacheFailure());
+    }
+  }
 }
