@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, unused_import
+// ignore_for_file: depend_on_referenced_packages, unused_import, deprecated_member_use
 import 'package:device_preview/device_preview.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
@@ -32,8 +32,7 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      // enabled: !kReleaseMode,
-      enabled: false,
+      enabled: !kReleaseMode,
       builder: (context) => const MyApp(),
     ),
   );
@@ -62,7 +61,6 @@ class MyApp extends StatelessWidget {
         theme: CustomTheme.lightTheme,
         darkTheme: ThemeData.dark(),
         themeMode: ThemeMode.light,
-        // ignore: deprecated_member_use
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,

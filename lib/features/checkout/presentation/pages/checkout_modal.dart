@@ -1,8 +1,11 @@
 import 'dart:developer';
 
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:ecom_template/features/order/domain/entities/order_completion.dart';
+import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/checkout.dart';
 
@@ -25,8 +28,7 @@ class _IncompleteCheckoutModalState extends State<IncompleteCheckoutModal> {
     super.initState();
     // postframe callback
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      OrderCompletion? orderCompletion =
-          await _showCheckoutModal(context, widget.checkout);
+      OrderCompletion? orderCompletion = await _showCheckoutModal(context);
       log('Order Completion in checkout modal: $orderCompletion');
       if (orderCompletion != null) {
         widget.onCompleted(orderCompletion);
@@ -55,8 +57,7 @@ class _IncompleteCheckoutModalState extends State<IncompleteCheckoutModal> {
   }
 }
 
-Future<OrderCompletion?> _showCheckoutModal(
-    BuildContext context, ShopCheckout checkout) async {
+Future<OrderCompletion?> _showCheckoutModal(BuildContext context) async {
   return await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -72,11 +73,39 @@ Future<OrderCompletion?> _showCheckoutModal(
     builder: (context) {
       return SizedBox(
         height: 600,
-        child: CheckoutIncompleteSheet(
-          onOrderPlacementAttempt: (orderCompletion) {
-            Navigator.of(context).pop<OrderCompletion>(orderCompletion);
+        child: BlocBuilder<CheckoutBloc, CheckoutState>(
+          builder: (context, checkoutState) {
+            if (checkoutState is CheckoutLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (checkoutState is CheckoutError) {
+              return Center(
+                child: IconTextError(
+                  failure: checkoutState.failure,
+                ),
+              );
+            }
+            if (checkoutState is CheckoutLoaded) {
+              return const CheckoutIncompleteSheet(
+                  // onDiscountCodeApplication: (discountCode) {
+                  //   BlocProvider.of<CheckoutBloc>(context, listen: false).add(
+                  //     AddDiscountCodeEvent(
+                  //       discountCode: discountCode,
+                  //       checkoutId: checkoutState.checkout.id,
+                  //     ),
+                  //   );
+                  // },
+                  // onOrderPlacementAttempt: (orderCompletion) {
+                  //   Navigator.of(context).pop<OrderCompletion>(orderCompletion);
+                  // },
+                  );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           },
-          checkout: checkout,
         ),
       );
     },

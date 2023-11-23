@@ -40,7 +40,7 @@ class ShopLineItem extends Equatable {
       quantity: lineItem.quantity,
       discountAllocations: lineItem.discountAllocations
           .map((discountAllocations) =>
-              ShopDiscountAllocations.fromDiscountAllocation(
+              ShopDiscountAllocations.fromDiscountAllocations(
                   discountAllocations))
           .toList(),
       customAttributes: lineItem.customAttributes
@@ -61,7 +61,7 @@ class ShopLineItem extends Equatable {
       quantity: quantity,
       discountAllocations: discountAllocations
           .map((discountAllocations) =>
-              discountAllocations.toDiscountAllocation())
+              discountAllocations.toDiscountAllocations())
           .toList(),
       variantId: variantId,
       id: id,

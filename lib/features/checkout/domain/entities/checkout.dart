@@ -32,6 +32,8 @@ class ShopCheckout extends Equatable {
   final String? note;
   final String? webUrl;
   final String? updatedAt;
+  final Price? totalDiscountApplied;
+  final List<String>? discountCodesApplied;
 
   const ShopCheckout({
     required this.id,
@@ -57,6 +59,8 @@ class ShopCheckout extends Equatable {
     this.note,
     this.webUrl,
     this.updatedAt,
+    this.totalDiscountApplied,
+    this.discountCodesApplied,
   });
 
   @override
@@ -84,5 +88,7 @@ class ShopCheckout extends Equatable {
         note,
         webUrl,
         updatedAt,
+        totalDiscountApplied,
+        discountCodesApplied,
       ];
 }

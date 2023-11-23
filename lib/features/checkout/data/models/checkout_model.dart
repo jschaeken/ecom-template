@@ -7,7 +7,7 @@ import 'package:ecom_template/features/checkout/domain/entities/shipping_rate.da
 import 'package:ecom_template/features/order/domain/entities/order.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:shopify_flutter/models/models.dart';
-import 'package:shopify_flutter/models/src/checkout/checkout.dart';
+import 'package:shopify_flutter/models/src/order/discount_allocations/discount_allocations.dart';
 
 class ShopCheckoutModel extends ShopCheckout {
   const ShopCheckoutModel({
@@ -34,7 +34,68 @@ class ShopCheckoutModel extends ShopCheckout {
     super.note,
     super.webUrl,
     super.updatedAt,
+    super.totalDiscountApplied,
+    super.discountCodesApplied,
   });
+
+  //copyWith method
+  ShopCheckoutModel copyWith({
+    String? id,
+    bool? ready,
+    ShopAvailableShippingRates? availableShippingRates,
+    String? createdAt,
+    String? currencyCode,
+    Price? totalTax,
+    Price? totalPrice,
+    bool? taxesIncluded,
+    bool? taxExempt,
+    Price? subtotalPrice,
+    bool? requiresShipping,
+    List<ShopAppliedGiftCards>? appliedGiftCards,
+    List<ShopLineItem>? lineItems,
+    ShopOrder? order,
+    String? orderStatusUrl,
+    String? shopifyPaymentsAccountId,
+    ShopShippingAddress? shippingAddress,
+    List<ShopShippingRate>? shippingLine,
+    String? email,
+    String? completedAt,
+    String? note,
+    String? webUrl,
+    String? updatedAt,
+    Price? totalDiscountApplied,
+    List<String>? discountCodesApplied,
+  }) {
+    return ShopCheckoutModel(
+      id: id ?? this.id,
+      ready: ready ?? this.ready,
+      availableShippingRates:
+          availableShippingRates ?? this.availableShippingRates,
+      createdAt: createdAt ?? this.createdAt,
+      currencyCode: currencyCode ?? this.currencyCode,
+      totalTax: totalTax ?? this.totalTax,
+      totalPrice: totalPrice ?? this.totalPrice,
+      taxesIncluded: taxesIncluded ?? this.taxesIncluded,
+      taxExempt: taxExempt ?? this.taxExempt,
+      subtotalPrice: subtotalPrice ?? this.subtotalPrice,
+      requiresShipping: requiresShipping ?? this.requiresShipping,
+      appliedGiftCards: appliedGiftCards ?? this.appliedGiftCards,
+      lineItems: lineItems ?? this.lineItems,
+      order: order ?? this.order,
+      orderStatusUrl: orderStatusUrl ?? this.orderStatusUrl,
+      shopifyPaymentsAccountId:
+          shopifyPaymentsAccountId ?? this.shopifyPaymentsAccountId,
+      shippingAddress: shippingAddress ?? this.shippingAddress,
+      shippingLine: shippingLine ?? this.shippingLine,
+      email: email ?? this.email,
+      completedAt: completedAt ?? this.completedAt,
+      note: note ?? this.note,
+      webUrl: webUrl ?? this.webUrl,
+      updatedAt: updatedAt ?? this.updatedAt,
+      totalDiscountApplied: totalDiscountApplied ?? this.totalDiscountApplied,
+      discountCodesApplied: discountCodesApplied ?? this.discountCodesApplied,
+    );
+  }
 
   static ShopCheckoutModel fromShopifyCheckout(Checkout checkout) {
     return ShopCheckoutModel(
@@ -74,6 +135,20 @@ class ShopCheckoutModel extends ShopCheckout {
       note: checkout.note,
       webUrl: checkout.webUrl,
       updatedAt: checkout.updatedAt,
+      totalDiscountApplied: Price(
+        amount: _calculateTotalDiscountAmount(checkout.lineItems),
+        currencyCode: checkout.currencyCode,
+      ),
     );
   }
+}
+
+double _calculateTotalDiscountAmount(List<LineItem> lineItems) {
+  double totalDiscount = 0;
+  for (LineItem lineItem in lineItems) {
+    for (DiscountAllocations discount in lineItem.discountAllocations) {
+      totalDiscount += discount.allocatedAmount?.amount ?? 0;
+    }
+  }
+  return totalDiscount;
 }

@@ -3,10 +3,11 @@
 import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {
-  const Failure([List properties = const <dynamic>[]]);
+  final String message;
+  const Failure({this.message = ''});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [message];
 }
 
 class ServerFailure extends Failure {}
@@ -31,4 +32,9 @@ String mapFailureToErrorMessage(Failure failure) {
     default:
       return UNEXPECTED_FAILURE_MESSAGE;
   }
+}
+
+class DiscountCodeFailure extends Failure {
+  const DiscountCodeFailure({required String message})
+      : super(message: message);
 }

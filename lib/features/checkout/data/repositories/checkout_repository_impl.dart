@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/network/network_info.dart';
 import 'package:ecom_template/features/checkout/data/datasources/checkout_remote_datasource.dart';
+import 'package:ecom_template/features/checkout/data/models/checkout_model.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shopify_flutter/models/src/checkout/line_item/line_item.dart';
 
 import '../../../../core/error/failures.dart';
+
+const DISCOUNT_CODE_FAILURE_MESSAGE = 'Discount code is not valid';
 
 class CheckoutRepositoryImpl implements CheckoutRepository {
   final CheckoutRemoteDataSource dataSource;
@@ -50,6 +53,28 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
       } catch (e) {
         debugPrint(e.toString());
         return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ShopCheckout>> addDiscountCode(
+      {required String checkoutId, required String discountCode}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        ShopCheckoutModel response = await dataSource.addDiscountCode(
+            checkoutId: checkoutId, discountCode: discountCode);
+        ShopCheckout checkout = response.copyWith(
+          discountCodesApplied: [discountCode],
+        );
+        return Right(checkout);
+      } catch (e) {
+        debugPrint(e.toString());
+        return const Left(
+          DiscountCodeFailure(message: DISCOUNT_CODE_FAILURE_MESSAGE),
+        );
       }
     } else {
       return Left(InternetConnectionFailure());

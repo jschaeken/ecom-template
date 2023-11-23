@@ -7,13 +7,14 @@ import 'package:ecom_template/features/checkout/domain/entities/shipping_address
 import 'package:ecom_template/features/checkout/domain/repositories/checkout_repository.dart';
 import 'package:equatable/equatable.dart';
 
-class CreateCheckout extends UseCase<ShopCheckout, ShopCheckoutParams> {
+class CreateCheckout extends UseCase<ShopCheckout, ShopCreateCheckoutParams> {
   final CheckoutRepository repository;
 
   CreateCheckout({required this.repository});
 
   @override
-  Future<Either<Failure, ShopCheckout>> call(ShopCheckoutParams params) async {
+  Future<Either<Failure, ShopCheckout>> call(
+      ShopCreateCheckoutParams params) async {
     final response = await repository.createCheckout(
       lineItems: params.lineItems,
       shippingAddress: params.shippingAddress,
@@ -23,12 +24,13 @@ class CreateCheckout extends UseCase<ShopCheckout, ShopCheckoutParams> {
   }
 }
 
-class ShopCheckoutParams extends Equatable {
+class ShopCreateCheckoutParams extends Equatable {
   final List<ShopLineItem>? lineItems;
   final ShopShippingAddress? shippingAddress;
   final String? email;
 
-  const ShopCheckoutParams({this.lineItems, this.shippingAddress, this.email});
+  const ShopCreateCheckoutParams(
+      {this.lineItems, this.shippingAddress, this.email});
 
   @override
   List<Object?> get props => [lineItems, shippingAddress, email];

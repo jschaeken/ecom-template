@@ -8,6 +8,7 @@ import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_rate.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/add_discount_code.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_line_items.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
@@ -24,25 +25,35 @@ class MockBagItemsToLineItems extends Mock implements BagItemsToLineItems {}
 
 class MockGetCheckoutInfo extends Mock implements GetCheckoutInfo {}
 
+class MockAddDiscountCode extends Mock implements AddDiscountCode {}
+
 void main() {
+  late CheckoutBloc checkoutBloc;
   late MockCreateCheckout mockCreateCheckout;
   late MockGetCheckoutInfo mockGetCheckoutInfo;
-  late CheckoutBloc checkoutBloc;
+  late MockAddDiscountCode mockAddDiscountCode;
   late BagItemsToLineItems bagItemsToLineItems;
 
   setUp(() {
     mockCreateCheckout = MockCreateCheckout();
     bagItemsToLineItems = MockBagItemsToLineItems();
     mockGetCheckoutInfo = MockGetCheckoutInfo();
+    mockAddDiscountCode = MockAddDiscountCode();
     checkoutBloc = CheckoutBloc(
       createCheckout: mockCreateCheckout,
       getCheckoutInfo: mockGetCheckoutInfo,
       bagItemsToLineItems: bagItemsToLineItems,
+      addDiscountCode: mockAddDiscountCode,
     );
   });
 
-  registerFallbackValue(const ShopCheckoutParams());
+  registerFallbackValue(const ShopCreateCheckoutParams());
   registerFallbackValue(const Params(id: 'id'));
+  registerFallbackValue(const ShopCheckoutActionParams(
+    checkoutId: 'id',
+    option: 'discountCode',
+  ));
+
   test('initialState should be CheckoutInitial', () {
     // assert
     expect(checkoutBloc.state, equals(CheckoutInitial()));
@@ -348,7 +359,7 @@ void main() {
         ];
         expectLater(checkoutBloc.stream, emitsInOrder(expected));
         // act
-        checkoutBloc.add(const GetCheckoutInfoEvent(id: 'id'));
+        checkoutBloc.add(const GetCheckoutInfoEvent(checkoutId: 'id'));
       },
     );
 
@@ -365,7 +376,7 @@ void main() {
         ];
         expectLater(checkoutBloc.stream, emitsInOrder(expected));
         // act
-        checkoutBloc.add(const GetCheckoutInfoEvent(id: 'id'));
+        checkoutBloc.add(const GetCheckoutInfoEvent(checkoutId: 'id'));
       },
     );
 
@@ -383,7 +394,58 @@ void main() {
         ];
         expectLater(checkoutBloc.stream, emitsInOrder(expected));
         // act
-        checkoutBloc.add(const GetCheckoutInfoEvent(id: 'id'));
+        checkoutBloc.add(const GetCheckoutInfoEvent(checkoutId: 'id'));
+      },
+    );
+  });
+
+  group('AddDiscountCodeEvent', () {
+    test(
+      'should emit [CheckoutLoading, CheckoutLoaded] when discount is added is gotten successfully',
+      () async {
+        // arrange
+        when(() => mockAddDiscountCode(any()))
+            .thenAnswer((_) async => const Right(tCheckout));
+        // assert later
+        final expected = [
+          CheckoutLoading(),
+          const CheckoutLoaded(checkout: tCheckout),
+        ];
+        expectLater(checkoutBloc.stream, emitsInOrder(expected));
+        // act
+        checkoutBloc.add(const AddDiscountCodeEvent(
+          checkoutId: 'id',
+          discountCode: 'discountCode',
+        ));
+      },
+    );
+
+    test(
+      'should emit [CheckoutLoading, CheckoutError] when getting data fails',
+      () async {
+        // arrange
+        when(() => mockAddDiscountCode(any())).thenAnswer(
+          (_) async => const Left(
+            DiscountCodeFailure(message: 'tMessage'),
+          ),
+        );
+
+        // assert later
+        final expected = [
+          CheckoutLoading(),
+          const CheckoutError(
+            failure: DiscountCodeFailure(message: 'tMessage'),
+          ),
+        ];
+        expectLater(
+          checkoutBloc.stream,
+          emitsInOrder(expected),
+        );
+        // act
+        checkoutBloc.add(const AddDiscountCodeEvent(
+          checkoutId: 'id',
+          discountCode: 'discountCode',
+        ));
       },
     );
   });

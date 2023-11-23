@@ -10,7 +10,7 @@ class ShopDiscountAllocations extends Equatable {
   @override
   List<Object?> get props => [allocatedAmount];
 
-  static ShopDiscountAllocations fromDiscountAllocation(
+  static ShopDiscountAllocations fromDiscountAllocations(
       DiscountAllocations discountAllocation) {
     return ShopDiscountAllocations(
       allocatedAmount: discountAllocation.allocatedAmount != null
@@ -19,7 +19,7 @@ class ShopDiscountAllocations extends Equatable {
     );
   }
 
-  DiscountAllocations toDiscountAllocation() {
+  DiscountAllocations toDiscountAllocations() {
     return DiscountAllocations(
       allocatedAmount:
           allocatedAmount != null ? Price.toPriceV2(allocatedAmount!) : null,

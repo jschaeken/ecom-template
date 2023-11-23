@@ -1,433 +1,451 @@
 import 'package:ecom_template/core/constants.dart';
-import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
-import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
+import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/checkout/presentation/pages/webview_modal.dart';
-import 'package:ecom_template/features/order/domain/entities/order_completion.dart';
+import 'package:ecom_template/features/checkout/presentation/widgets/buttons.dart';
 import 'package:flutter/material.dart';
-import 'package:ecom_template/core/presentation/widgets/buttons.dart'
-    as buttons;
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../widgets/checkout_field.dart';
 
 class CheckoutIncompleteSheet extends StatelessWidget {
-  final Function(OrderCompletion orderCompletion) onOrderPlacementAttempt;
-  final ShopCheckout checkout;
-
   const CheckoutIncompleteSheet({
-    required this.onOrderPlacementAttempt,
-    required this.checkout,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: double.infinity,
-                ),
-                const TextHeadline(text: 'CHECKOUT'),
-                const StandardSpacing(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<CheckoutBloc, CheckoutState>(
+      builder: (context, checkoutState) {
+        return Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: Constants.padding,
-                      child: TextSubHeadline(
-                        text: '${checkout.lineItems.length} Items',
-                      ),
+                    const SizedBox(
+                      width: double.infinity,
                     ),
-                    // Items Image Scroller
-                    SizedBox(
-                      height: 120,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.all(0),
-                        itemCount: checkout.lineItems.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: Constants.innerPadding.copyWith(
-                              left: index != 0
-                                  ? Constants.innerPadding.left
-                                  : Constants.padding.left,
-                            ),
-                            child: (checkout.lineItems[index].variant?.product
-                                            ?.images !=
-                                        null) &&
-                                    (checkout.lineItems[index].variant!.product!
-                                        .images.isNotEmpty)
-                                ? Stack(
-                                    children: [
-                                      Image.network(
-                                        checkout.lineItems[index].variant!
-                                            .product!.images.first.originalSrc,
-                                        width: 100,
-                                        height: 120,
-                                        fit: BoxFit.cover,
+                    const TextHeadline(text: 'CHECKOUT'),
+                    const StandardSpacing(),
+                    // Items
+                    checkoutState is CheckoutLoaded
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: double.infinity,
+                              ),
+                              Padding(
+                                padding: Constants.padding,
+                                child: TextSubHeadline(
+                                  text:
+                                      '${checkoutState.checkout.lineItems.length} Items',
+                                ),
+                              ),
+                              // Items Image Scroller
+                              SizedBox(
+                                height: 120,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.all(0),
+                                  itemCount:
+                                      checkoutState.checkout.lineItems.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: Constants.innerPadding.copyWith(
+                                        left: index != 0
+                                            ? Constants.innerPadding.left
+                                            : Constants.padding.left,
                                       ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: Container(
+                                      child: (checkoutState
+                                                      .checkout
+                                                      .lineItems[index]
+                                                      .variant
+                                                      ?.product
+                                                      ?.images !=
+                                                  null) &&
+                                              (checkoutState
+                                                  .checkout
+                                                  .lineItems[index]
+                                                  .variant!
+                                                  .product!
+                                                  .images
+                                                  .isNotEmpty)
+                                          ? Stack(
+                                              children: [
+                                                Image.network(
+                                                  checkoutState
+                                                      .checkout
+                                                      .lineItems[index]
+                                                      .variant!
+                                                      .product!
+                                                      .images
+                                                      .first
+                                                      .originalSrc,
+                                                  width: 100,
+                                                  height: 120,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                Positioned(
+                                                  top: 0,
+                                                  right: 0,
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: TextBody(
+                                                      text:
+                                                          '${checkoutState.checkout.lineItems[index].quantity}',
+                                                      color: Theme.of(context)
+                                                          .canvasColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : Image.asset(
+                                              'assets/images/placeholder-image.png',
+                                              width: 100,
+                                              height: 120,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              // Details Column
+                            ],
+                          )
+                        : const SizedBox(
+                            height: 120,
+                            child: CircularProgressIndicator(),
+                          ),
+                    if (checkoutState is CheckoutLoaded)
+                      Padding(
+                        padding: Constants.padding,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: Constants.innerPadding
+                                  .copyWith(left: 0, right: 0),
+                              child: const Divider(),
+                            ),
+                            // Email
+                            CheckoutField(
+                              title: 'Email Address',
+                              subtitle: checkoutState.checkout.email ?? '',
+                              onTapped: () {
+                                debugPrint('Email');
+                              },
+                            ),
+                            // Shipping Address
+                            CheckoutField(
+                              title: 'Shipping Address',
+                              subtitle:
+                                  '${checkoutState.checkout.shippingAddress?.address1}, ${checkoutState.checkout.shippingAddress?.city}, ${checkoutState.checkout.shippingAddress?.province}, ${checkoutState.checkout.shippingAddress?.zip}, ${checkoutState.checkout.shippingAddress?.country}',
+                              onTapped: () {
+                                debugPrint('Shipping Address');
+                              },
+                            ),
+                            // Shipping Method
+                            CheckoutField(
+                              title: 'Shipping Method',
+                              subtitle: checkoutState
+                                      .checkout.shippingLine?.first.title ??
+                                  'Free',
+                              onTapped: () {
+                                debugPrint('Shipping Method');
+                              },
+                            ),
+                            // Gift Card or Discount Code
+                            CheckoutField(
+                              title: 'Gift Card or Discount Code',
+                              // show total balance of gift cards applied
+                              subtitle: '',
+                              leading: checkoutState
+                                              .checkout.discountCodesApplied !=
+                                          null &&
+                                      checkoutState.checkout
+                                          .discountCodesApplied!.isNotEmpty
+                                  ? Padding(
+                                      padding: Constants.innerPadding
+                                          .copyWith(left: 0, right: 0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: Constants.borderRadius,
+                                          color: Theme.of(context).cardColor,
+                                        ),
+                                        child: Padding(
                                           padding: const EdgeInsets.all(5),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: TextBody(
-                                            text:
-                                                '${checkout.lineItems[index].quantity}',
-                                            color:
-                                                Theme.of(context).canvasColor,
+                                          child: Row(
+                                            children: [
+                                              TextBody(
+                                                text: checkoutState
+                                                    .checkout
+                                                    .discountCodesApplied!
+                                                    .first,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // onDiscountCodeApplication(
+                                                  //     checkout
+                                                  //         .discountCodesApplied!
+                                                  //         .first);
+                                                },
+                                                child: Icon(
+                                                  Icons.close,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  size: 15,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : Image.asset(
-                                    'assets/images/placeholder-image.png',
-                                    width: 100,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                          );
-                        },
-                      ),
-                    ),
-                    // Details Column
-                    Padding(
-                      padding: Constants.padding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Email
-                          Padding(
-                            padding: Constants.innerPadding
-                                .copyWith(left: 0, right: 0),
-                            child: const Divider(),
-                          ),
-                          const TextSubHeadline(text: 'Email Address'),
-                          TextBody(
-                            text: checkout.email ?? 'Enter Email Address',
-                            color: Theme.of(context).unselectedWidgetColor,
-                          ),
-                          Padding(
-                            padding: Constants.innerPadding
-                                .copyWith(left: 0, right: 0),
-                            child: const Divider(),
-                          ),
-                          // Shipping Address
-                          const TextSubHeadline(text: 'Shipping Address'),
-                          TextBody(
-                            text:
-                                '${checkout.shippingAddress?.address1}, ${checkout.shippingAddress?.city}, ${checkout.shippingAddress?.province}, ${checkout.shippingAddress?.zip}, ${checkout.shippingAddress?.country}',
-                            maxLines: 1,
-                            color: Theme.of(context).unselectedWidgetColor,
-                          ),
-                          Padding(
-                            padding: Constants.innerPadding
-                                .copyWith(left: 0, right: 0),
-                            child: const Divider(),
-                          ),
+                                    )
+                                  : null,
+                              onTapped: () async {
+                                final resp =
+                                    await _showAddDiscountDiscountDialogue(
+                                        context);
+                                if (resp != null) {
+                                  // onDiscountCodeApplication(resp);
+                                }
+                              },
+                            ),
 
-                          // Shipping Method
-                          GestureDetector(
-                            onTap: () {
-                              debugPrint('Shipping Method');
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            // Padding(
+                            //   padding:
+                            //       Constants.innerPadding.copyWith(left: 0, right: 0),
+                            //   child: const Divider(),
+                            // ),
+                          ],
+                        ),
+                      ),
+
+                    // SubTotal, Shipping, Taxes, Total
+                    if (checkoutState is CheckoutLoaded)
+                      Padding(
+                        padding: Constants.padding.copyWith(top: 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: Constants.innerPadding
+                                  .copyWith(left: 0, right: 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const SizedBox(
-                                    width: double.infinity,
-                                  ),
-                                  const TextSubHeadline(
-                                      text: 'Shipping Method'),
                                   TextBody(
-                                    text:
-                                        '${checkout.shippingLine?.first.title}',
+                                      text: 'Subtotal',
+                                      color: Theme.of(context)
+                                          .unselectedWidgetColor),
+                                  TextBody(
+                                    text: checkoutState.checkout.subtotalPrice
+                                        .formattedPrice(),
                                     color:
                                         Theme.of(context).unselectedWidgetColor,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-
-                          Padding(
-                            padding: Constants.innerPadding
-                                .copyWith(left: 0, right: 0),
-                            child: const Divider(),
-                          ),
-
-                          // Gift Card or Discount Code
-                          GestureDetector(
-                            onTap: () {
-                              debugPrint('Gift Card or Discount Code');
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            Padding(
+                              padding: Constants.innerPadding
+                                  .copyWith(left: 0, right: 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const SizedBox(
-                                    width: double.infinity,
-                                  ),
-                                  const TextSubHeadline(
-                                      text: 'Gift Card or Discount Code'),
                                   TextBody(
-                                    text:
-                                        'TODO: Implement Gift Card or Discount Code',
+                                      text: 'Shipping',
+                                      color: Theme.of(context)
+                                          .unselectedWidgetColor),
+                                  TextBody(
+                                    text: checkoutState
+                                            .checkout.shippingLine?.first.price
+                                            .formattedPrice() ??
+                                        'Free',
                                     color:
                                         Theme.of(context).unselectedWidgetColor,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-
-                          Padding(
-                            padding: Constants.innerPadding
-                                .copyWith(left: 0, right: 0),
-                            child: const Divider(),
-                          ),
-
-                          // SubTotal, Shipping, Taxes, Total
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: Constants.innerPadding
-                                    .copyWith(left: 0, right: 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextBody(
-                                        text: 'Subtotal',
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor),
-                                    TextBody(
-                                      text: checkout.subtotalPrice
-                                          .formattedPrice(),
+                            Padding(
+                              padding: Constants.innerPadding
+                                  .copyWith(left: 0, right: 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextBody(
+                                      text: 'Taxes',
                                       color: Theme.of(context)
-                                          .unselectedWidgetColor,
-                                    ),
-                                  ],
-                                ),
+                                          .unselectedWidgetColor),
+                                  TextBody(
+                                    text: checkoutState.checkout.totalTax
+                                        .formattedPrice(),
+                                    color:
+                                        Theme.of(context).unselectedWidgetColor,
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: Constants.innerPadding
-                                    .copyWith(left: 0, right: 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextBody(
-                                        text: 'Shipping',
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor),
-                                    TextBody(
-                                      text: checkout.shippingLine?.first.price
-                                              .formattedPrice() ??
-                                          'Free',
-                                      color: Theme.of(context)
-                                          .unselectedWidgetColor,
-                                    ),
-                                  ],
-                                ),
+                            ),
+                            Padding(
+                              padding: Constants.innerPadding
+                                  .copyWith(left: 0, right: 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const TextHeadline(text: 'Total'),
+                                  TextHeadline(
+                                    text: checkoutState.checkout.totalPrice
+                                        .formattedPrice(),
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: Constants.innerPadding
-                                    .copyWith(left: 0, right: 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextBody(
-                                        text: 'Taxes',
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor),
-                                    TextBody(
-                                      text: checkout.totalTax.formattedPrice(),
-                                      color: Theme.of(context)
-                                          .unselectedWidgetColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: Constants.innerPadding
-                                    .copyWith(left: 0, right: 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const TextHeadline(text: 'Total'),
-                                    TextHeadline(
-                                      text:
-                                          checkout.totalPrice.formattedPrice(),
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                            ),
+                          ],
+                        ),
+                      )
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        Column(
-          children: [
-            // Apple Pay / Google Pay
-            ApplePayButton(
-              onTap: () {
-                debugPrint('Apple Pay Demo Completed Order');
-                onOrderPlacementAttempt(
-                  OrderCompletion(
-                    status: OrderCompletionStatus.completed,
-                    checkoutId: checkout.id,
-                    orderId: 'demoOrderId',
+            if (checkoutState is CheckoutLoaded)
+              // Payment Buttons
+              Column(
+                children: [
+                  // Apple Pay / Google Pay
+                  ApplePayButton(
+                    onTap: () {
+                      debugPrint('Apple Pay Demo Completed Order');
+                      // onOrderPlacementAttempt(
+                      //   OrderCompletion(
+                      //     status: OrderCompletionStatus.completed,
+                      //     checkoutId: checkoutState.checkout.id,
+                      //     orderId: 'demoOrderId',
+                      //   ),
+                      // );
+                    },
                   ),
-                );
-              },
-            ),
 
-            const StandardSpacing(
-              multiplier: 1,
-            ),
+                  const StandardSpacing(
+                    multiplier: 1,
+                  ),
 
-            // Continue to Web Payment
-            checkout.webUrl != null
-                ? ContinueToPaymentButton(onTap: () async {
-                    bool? didCompletePayment = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return WebViewPage(
-                            url: checkout.webUrl!,
-                            title: 'Payment',
+                  // Continue to Web Payment
+                  checkoutState.checkout.webUrl != null
+                      ? ContinueToPaymentButton(onTap: () async {
+                          bool? didCompletePayment = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return WebViewPage(
+                                  url: checkoutState.checkout.webUrl!,
+                                  title: 'Payment',
+                                );
+                              },
+                            ),
                           );
-                        },
-                      ),
-                    );
-                    if (didCompletePayment != null && didCompletePayment) {
-                      debugPrint('did complete payment');
-                      if (context.mounted) {
-                        onOrderPlacementAttempt(
-                          OrderCompletion(
-                            status: OrderCompletionStatus.completed,
-                            checkoutId: checkout.id,
-                            orderId: checkout.order!.id,
-                          ),
-                        );
-                      }
-                    } else {
-                      if (context.mounted) {
-                        onOrderPlacementAttempt(
-                          OrderCompletion(
-                            status: OrderCompletionStatus.notCompleted,
-                            checkoutId: checkout.id,
-                            orderId: null,
-                          ),
-                        );
-                      }
-                    }
-                  })
-                : const SizedBox.shrink(),
-            const StandardSpacing(
-              multiplier: 3,
-            ),
+                          if (didCompletePayment != null &&
+                              didCompletePayment) {
+                            debugPrint('did complete payment');
+                            if (context.mounted) {
+                              // onOrderPlacementAttempt(
+                              //   OrderCompletion(
+                              //     status: OrderCompletionStatus.completed,
+                              //     checkoutId: checkoutState.checkout.id,
+                              //     orderId: checkoutState.checkout.order!.id,
+                              //   ),
+                              // );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              // onOrderPlacementAttempt(
+                              //   OrderCompletion(
+                              //     status: OrderCompletionStatus.notCompleted,
+                              //     checkoutId: checkoutState.checkout.id,
+                              //     orderId: null,
+                              //   ),
+                              // );
+                            }
+                          }
+                        })
+                      : const SizedBox.shrink(),
+                  const StandardSpacing(
+                    multiplier: 3,
+                  ),
+                ],
+              ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
 
-class ContinueToPaymentButton extends StatelessWidget {
-  const ContinueToPaymentButton({
-    required this.onTap,
-    super.key,
-  });
+Future<String?> _showAddDiscountDiscountDialogue(BuildContext context) async {
+  FocusNode focus = FocusNode();
+  TextEditingController controller = TextEditingController();
 
-  final Function() onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: Constants.padding.copyWith(top: 0, bottom: 0),
-      child: buttons.CtaButton(
-        height: 50,
-        width: double.infinity,
-        color: Theme.of(context).indicatorColor,
-        onTap: onTap,
-        child: Row(
+  return await showDialog(
+    context: context,
+    builder: (context) {
+      focus.requestFocus();
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextHeadline(
-              text: 'Continue To Payment',
-              color: Theme.of(context).canvasColor,
+            TextField(
+              cursorColor: Theme.of(context).primaryColor,
+              focusNode: focus,
+              controller: controller,
+              decoration: InputDecoration(
+                fillColor: Theme.of(context).canvasColor,
+                hoverColor: Theme.of(context).unselectedWidgetColor,
+                hintText: 'Enter Discount Code',
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ApplePayButton extends StatelessWidget {
-  const ApplePayButton({
-    required this.onTap,
-    super.key,
-  });
-
-  final Function() onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: Constants.padding.copyWith(top: 0, bottom: 0),
-      child: buttons.CtaButton(
-        height: 50,
-        width: double.infinity,
-        color: Theme.of(context).primaryColor,
-        onTap: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomIcon(
-              Icons.apple,
-              color: Theme.of(context).canvasColor,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            TextHeadline(
-              text: 'Pay',
-              color: Theme.of(context).canvasColor,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const TextBody(text: 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, controller.text);
+            },
+            child: const TextBody(text: 'Apply', fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+    },
+  );
 }

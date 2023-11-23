@@ -18,6 +18,7 @@ import 'package:ecom_template/features/bag/presentation/bloc/options_selection/o
 import 'package:ecom_template/features/checkout/data/datasources/checkout_remote_datasource.dart';
 import 'package:ecom_template/features/checkout/data/repositories/checkout_repository_impl.dart';
 import 'package:ecom_template/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/add_discount_code.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_line_items.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
@@ -181,12 +182,14 @@ Future<void> init() async {
   // Use Cases
   sl.registerLazySingleton(() => CreateCheckout(repository: sl()));
   sl.registerLazySingleton(() => GetCheckoutInfo(repository: sl()));
+  sl.registerLazySingleton(() => AddDiscountCode(repository: sl()));
   sl.registerLazySingleton(() => BagItemsToLineItems());
   // Blocs
   sl.registerFactory(() => CheckoutBloc(
         createCheckout: sl(),
         getCheckoutInfo: sl(),
         bagItemsToLineItems: sl(),
+        addDiscountCode: sl(),
       ));
 
   /// Core ///

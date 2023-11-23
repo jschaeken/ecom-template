@@ -61,7 +61,7 @@ void main() {
 
       // act
       final result = await usecase(
-        const ShopCheckoutParams(
+        const ShopCreateCheckoutParams(
           lineItems: [
             ShopLineItem(
               title: 'title',

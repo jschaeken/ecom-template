@@ -15,6 +15,13 @@ abstract class CheckoutRemoteDataSource {
   /// Gets the checkout info from the shopify_flutter package
   /// Calls the shopify_flutter package
   Future<ShopCheckoutModel> getCheckoutInfo({required String checkoutId});
+
+  /// Adds a discount code to the checkout
+  /// Calls the shopify_flutter package
+  Future<ShopCheckoutModel> addDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  });
 }
 
 class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
@@ -37,6 +44,18 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
   Future<ShopCheckoutModel> getCheckoutInfo(
       {required String checkoutId}) async {
     final response = await shopifyCheckout.getCheckoutInfoQuery(checkoutId);
+    return ShopCheckoutModel.fromShopifyCheckout(response);
+  }
+
+  @override
+  Future<ShopCheckoutModel> addDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  }) async {
+    final response = await shopifyCheckout.checkoutDiscountCodeApply(
+      checkoutId,
+      discountCode,
+    );
     return ShopCheckoutModel.fromShopifyCheckout(response);
   }
 }

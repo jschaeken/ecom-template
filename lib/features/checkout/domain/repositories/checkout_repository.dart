@@ -15,6 +15,11 @@ abstract class CheckoutRepository {
     required String checkoutId,
   });
 
+  Future<Either<Failure, ShopCheckout>> addDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  });
+
   // Future<ShopCheckout> addLineItemsToCheckout(
   //     {required String checkoutId, required List<ShopLineItem> lineItems});
 

@@ -348,4 +348,34 @@ void main() {
       );
     },
   );
+
+  group(
+    'addDiscountCode',
+    () {
+      const testCheckoutId = 'checkoutId';
+      const testDiscountCode = 'discountCode';
+
+      test(
+        'should return a ShopCheckoutModel when the call to shopify_flutter of checkoutDiscountCodeApplyis successful with the discount code params',
+        () async {
+          // arrange
+          when(() => mockShopifyCheckout.checkoutDiscountCodeApply(
+                any(),
+                any(),
+              )).thenAnswer((_) async => testCheckout);
+          // act
+          final result = await dataSourceImpl.addDiscountCode(
+            checkoutId: testCheckoutId,
+            discountCode: testDiscountCode,
+          );
+          // assert
+          expect(result, equals(testShopCheckoutModel));
+          verify(() => mockShopifyCheckout.checkoutDiscountCodeApply(
+                testCheckoutId,
+                testDiscountCode,
+              ));
+        },
+      );
+    },
+  );
 }
