@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ecom_template/features/checkout/data/models/checkout_model.dart';
 import 'package:shopify_flutter/models/src/checkout/line_item/line_item.dart';
 import 'package:shopify_flutter/models/src/shopify_user/address/address.dart';
@@ -19,6 +21,13 @@ abstract class CheckoutRemoteDataSource {
   /// Adds a discount code to the checkout
   /// Calls the shopify_flutter package
   Future<ShopCheckoutModel> addDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  });
+
+  /// Removes a discount code from the checkout
+  /// Calls the shopify_flutter package
+  Future<void> removeDiscountCode({
     required String checkoutId,
     required String discountCode,
   });
@@ -44,6 +53,7 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
   Future<ShopCheckoutModel> getCheckoutInfo(
       {required String checkoutId}) async {
     final response = await shopifyCheckout.getCheckoutInfoQuery(checkoutId);
+    log('checkoutInfo: $response');
     return ShopCheckoutModel.fromShopifyCheckout(response);
   }
 
@@ -57,5 +67,16 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
       discountCode,
     );
     return ShopCheckoutModel.fromShopifyCheckout(response);
+  }
+
+  @override
+  Future<void> removeDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  }) async {
+    await shopifyCheckout.checkoutDiscountCodeRemove(
+      checkoutId,
+    );
+    return;
   }
 }

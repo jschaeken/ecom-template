@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:ecom_template/features/checkout/domain/entities/checkout_user_error.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {
@@ -34,7 +35,7 @@ String mapFailureToErrorMessage(Failure failure) {
   }
 }
 
-class DiscountCodeFailure extends Failure {
-  const DiscountCodeFailure({required String message})
-      : super(message: message);
+class CheckoutUserFailure extends Failure {
+  final List<CheckoutUserError> userErrors;
+  const CheckoutUserFailure({required this.userErrors});
 }

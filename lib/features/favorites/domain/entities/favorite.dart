@@ -13,3 +13,12 @@ class Favorite extends Equatable {
   @override
   List<Object?> get props => [parentProdId];
 }
+
+class Favorites extends Equatable {
+  final List<Favorite> favorites;
+
+  const Favorites({this.favorites = const []});
+
+  @override
+  List<Object?> get props => [favorites];
+}

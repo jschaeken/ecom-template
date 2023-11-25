@@ -1,8 +1,7 @@
 // ignore_for_file: constant_identifier_names
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-const BOX_NAME = 'bag';
 
 abstract class BagItemsLocalDataSource {
   /// Gets the cached List<[BagItemData]> from the local storage
@@ -95,7 +94,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
 
   Future<Box<BagItemData>> _getOpenBox() async {
     late final Box<BagItemData> hiveBox;
-    hiveBox = await interface.openBox<BagItemData>(BOX_NAME);
+    hiveBox = await interface.openBox<BagItemData>(Constants.BAG_BOX_NAME);
     return hiveBox;
   }
 }

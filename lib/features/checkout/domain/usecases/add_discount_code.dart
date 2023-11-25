@@ -15,18 +15,18 @@ class AddDiscountCode extends UseCase<ShopCheckout, ShopCheckoutActionParams> {
       ShopCheckoutActionParams params) async {
     return await repository.addDiscountCode(
       checkoutId: params.checkoutId,
-      discountCode: params.option,
+      discountCode: params.option ?? '',
     );
   }
 }
 
 class ShopCheckoutActionParams extends Equatable {
   final String checkoutId;
-  final String option;
+  final String? option;
 
   const ShopCheckoutActionParams({
     required this.checkoutId,
-    required this.option,
+    this.option,
   });
 
   @override

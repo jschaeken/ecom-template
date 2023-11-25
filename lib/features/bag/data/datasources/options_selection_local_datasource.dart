@@ -1,9 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-const BOX_NAME = 'options_selection';
 
 abstract class OptionsSelectionDataSource {
   Future<OptionsSelections?> getSavedSelectedOptions(
@@ -45,7 +44,8 @@ class OptionsSelectionDataSourceImpl implements OptionsSelectionDataSource {
 
   Future<Box<OptionsSelections>> _getOpenBox() async {
     late final Box<OptionsSelections> hiveBox;
-    hiveBox = await interface.openBox<OptionsSelections>(BOX_NAME);
+    hiveBox =
+        await interface.openBox<OptionsSelections>(Constants.OPTIONS_BOX_NAME);
     return hiveBox;
   }
 }

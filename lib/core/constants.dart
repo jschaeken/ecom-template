@@ -23,4 +23,12 @@ class Constants {
   ];
 
   static String placeholderImagePath = 'assets/images/placeholder-image.png';
+
+  static String OPTIONS_BOX_NAME = 'options_selection';
+
+  static String BAG_BOX_NAME = 'bag_items';
+
+  static String FAVORITES_BOX_NAME = 'favorites';
+
+  static String ORDERS_BOX_NAME = 'orders';
 }

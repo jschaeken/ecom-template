@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FavoritesPage extends StatelessWidget {
-  final String title;
+  final String pageTitle;
 
-  const FavoritesPage({required this.title, super.key});
+  const FavoritesPage({required this.pageTitle, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class FavoritesPage extends StatelessWidget {
       body: Column(
         children: [
           HeaderRow(
-            pageTitle: title,
+            pageTitle: pageTitle,
             accountInitials: 'JS',
           ),
           BlocBuilder<FavoritesBloc, FavoritesState>(
@@ -40,32 +40,32 @@ class FavoritesPage extends StatelessWidget {
               else if (favoritesState is FavoritesLoaded) {
                 return Expanded(
                   child: ListView.builder(
-                    itemCount: favoritesState.favorites.length,
+                    itemCount: favoritesState.favorites.favorites.length,
                     itemBuilder: (context, index) {
-                      final favoriteProduct = favoritesState.favorites[index];
+                      final favoriteProduct =
+                          favoritesState.favorites.favorites[index];
                       return Dismissible(
-                        key: Key(favoriteProduct.id.toString()),
+                        key: Key(favoriteProduct.parentProdId.toString()),
                         onDismissed: (direction) {
                           BlocProvider.of<FavoritesBloc>(context).add(
-                            RemoveFavoriteEvent(
-                              favorite:
-                                  Favorite(parentProdId: favoriteProduct.id),
+                            ToggleFavoriteEvent(
+                              productId: favoriteProduct.parentProdId,
                             ),
                           );
                         },
                         child: SavedProductListTile(
-                          title: favoriteProduct.title,
+                          title: favoriteProduct.parentProdId,
                           onTap: () {
                             Navigator.of(context).push(CupertinoPageRoute(
                               builder: (context) => ProductPage(
-                                id: favoriteProduct.id,
+                                id: favoriteProduct.parentProdId,
                               ),
                             ));
                           },
-                          price: favoriteProduct.productVariants.first.price,
-                          imageUrl: favoriteProduct.images.isNotEmpty
-                              ? favoriteProduct.images[0].originalSrc
-                              : null,
+                          // price: favoriteProduct.productVariants.first.price,
+                          // imageUrl: favoriteProduct.images.isNotEmpty
+                          //     ? favoriteProduct.images[0].originalSrc
+                          //     : null,
                         ),
                       );
                     },

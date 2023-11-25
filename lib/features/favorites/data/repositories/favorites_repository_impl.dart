@@ -40,4 +40,14 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
       return Left(CacheFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, Favorite?>> getFavoriteById(String id) async {
+    try {
+      final favorite = await localDataSource.getFavoriteById(id);
+      return Right(favorite);
+    } catch (e) {
+      return Left(CacheFailure());
+    }
+  }
 }

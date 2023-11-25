@@ -1,3 +1,4 @@
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/features/bag/data/datasources/bag_items_local_datasource.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:mocktail/mocktail.dart';
@@ -42,8 +43,8 @@ void main() async {
   group('addBagItem', () {
     test('Should add a bag item to the HiveBox', () async {
       when(() => mockStorageInterface.isBoxOpen(any())).thenAnswer((_) => true);
-      when(() => mockStorageInterface.openBox<BagItemData>(BOX_NAME))
-          .thenAnswer((_) async => mockHiveBox);
+      when(() => mockStorageInterface.openBox<BagItemData>(
+          Constants.OPTIONS_BOX_NAME)).thenAnswer((_) async => mockHiveBox);
       when(() => mockHiveBox.containsKey(any())).thenReturn(false);
       when(() => mockHiveBox.put(
               testBagItemData.productVariantId, testBagItemData))

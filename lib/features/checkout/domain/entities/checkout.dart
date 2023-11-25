@@ -1,5 +1,6 @@
 import 'package:ecom_template/features/checkout/domain/entities/applied_gift_cards.dart';
 import 'package:ecom_template/features/checkout/domain/entities/available_shipping_rates.dart';
+import 'package:ecom_template/features/checkout/domain/entities/checkout_user_error.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_rate.dart';
@@ -34,6 +35,7 @@ class ShopCheckout extends Equatable {
   final String? updatedAt;
   final Price? totalDiscountApplied;
   final List<String>? discountCodesApplied;
+  final List<CheckoutUserError>? userErrors;
 
   const ShopCheckout({
     required this.id,
@@ -48,6 +50,7 @@ class ShopCheckout extends Equatable {
     required this.subtotalPrice,
     required this.requiresShipping,
     required this.lineItems,
+    this.userErrors,
     this.appliedGiftCards = const [],
     this.order,
     this.orderStatusUrl,
@@ -90,5 +93,6 @@ class ShopCheckout extends Equatable {
         updatedAt,
         totalDiscountApplied,
         discountCodesApplied,
+        userErrors,
       ];
 }

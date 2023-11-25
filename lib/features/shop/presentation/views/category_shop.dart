@@ -104,8 +104,8 @@ class _CategoryShopState extends State<CategoryShop> {
                                     favoriteState is FavoritesRemovedLoaded ||
                                     favoriteState is FavoritesLoaded ||
                                     favoriteState is FavoritesEmpty) {
-                                  isFavorite = favoriteState.favorites
-                                      .map((e) => e.id)
+                                  isFavorite = favoriteState.favorites.favorites
+                                      .map((e) => e.parentProdId)
                                       .contains(state.products[index].id);
                                 }
                                 return LargeProductTile(
@@ -125,26 +125,11 @@ class _CategoryShopState extends State<CategoryShop> {
                                     if (isFavorite == null) {
                                       BlocProvider.of<FavoritesBloc>(context)
                                           .add(GetFavoritesEvent());
-                                    } else if (isFavorite) {
-                                      BlocProvider.of<FavoritesBloc>(context)
-                                          .add(
-                                        RemoveFavoriteEvent(
-                                          favorite: Favorite(
-                                            parentProdId:
-                                                state.products[index].id,
-                                          ),
-                                        ),
-                                      );
                                     } else {
                                       BlocProvider.of<FavoritesBloc>(context)
-                                          .add(
-                                        AddFavoriteEvent(
-                                          favorite: Favorite(
-                                            parentProdId:
-                                                state.products[index].id,
-                                          ),
-                                        ),
-                                      );
+                                          .add(ToggleFavoriteEvent(
+                                        productId: state.products[index].id,
+                                      ));
                                     }
                                   },
                                 );

@@ -33,14 +33,14 @@ class CheckoutClosedEvent extends CheckoutEvent {
 }
 
 class CheckoutCompletedEvent extends CheckoutEvent {
-  final String orderId;
+  final String checkoutId;
 
   const CheckoutCompletedEvent({
-    required this.orderId,
+    required this.checkoutId,
   }) : super(bagItems: const []);
 
   @override
-  List<Object> get props => [orderId];
+  List<Object> get props => [checkoutId];
 }
 
 class GetCheckoutInfoEvent extends CheckoutEvent {
@@ -55,14 +55,27 @@ class GetCheckoutInfoEvent extends CheckoutEvent {
 }
 
 class AddDiscountCodeEvent extends CheckoutEvent {
-  final String checkoutId;
+  final ShopCheckout checkout;
   final String discountCode;
 
   const AddDiscountCodeEvent({
-    required this.checkoutId,
+    required this.checkout,
     required this.discountCode,
   }) : super(bagItems: const []);
 
   @override
-  List<Object> get props => [checkoutId, discountCode];
+  List<Object> get props => [checkout, discountCode];
+}
+
+class RemoveDiscountCodeEvent extends CheckoutEvent {
+  final ShopCheckout checkout;
+  final String discountCode;
+
+  const RemoveDiscountCodeEvent({
+    required this.checkout,
+    required this.discountCode,
+  }) : super(bagItems: const []);
+
+  @override
+  List<Object> get props => [checkout, discountCode];
 }

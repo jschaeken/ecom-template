@@ -1,10 +1,11 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-const BOX_NAME = 'favorites';
+const FAVORITES_BOX_NAME = 'favorites';
 
 abstract class FavoritesLocalDataSource {
   Future<List<Favorite>> getFavorites();
@@ -12,6 +13,8 @@ abstract class FavoritesLocalDataSource {
   Future<WriteSuccess> addFavorite(Favorite favorite);
 
   Future<WriteSuccess> removeFavorite(String id);
+
+  Future<Favorite?> getFavoriteById(String id);
 }
 
 class FavoritesLocalDataSourceImpl extends FavoritesLocalDataSource {
@@ -39,10 +42,16 @@ class FavoritesLocalDataSourceImpl extends FavoritesLocalDataSource {
     return const WriteSuccess();
   }
 
+  @override
+  Future<Favorite?> getFavoriteById(String id) async {
+    Box<Favorite> favoritesBox = await _getOpenBox();
+    return favoritesBox.get(id);
+  }
+
   Future<Box<Favorite>> _getOpenBox() async {
     try {
       late final Box<Favorite> hiveBox;
-      hiveBox = await interface.openBox(BOX_NAME);
+      hiveBox = await interface.openBox(Constants.FAVORITES_BOX_NAME);
       return hiveBox;
     } catch (e) {
       throw Exception(e);

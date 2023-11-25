@@ -1,3 +1,4 @@
+import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/features/bag/data/datasources/options_selection_local_datasource.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,10 +29,10 @@ void main() {
         'Option Name 2': 1,
       });
       final mockHiveBox = MockHiveBox();
-      when(() => mockStorageInterface.isBoxOpen(BOX_NAME))
+      when(() => mockStorageInterface.isBoxOpen(Constants.OPTIONS_BOX_NAME))
           .thenAnswer((_) => true);
-      when(() => mockStorageInterface.openBox<OptionsSelections>(BOX_NAME))
-          .thenAnswer((_) async => mockHiveBox);
+      when(() => mockStorageInterface.openBox<OptionsSelections>(
+          Constants.OPTIONS_BOX_NAME)).thenAnswer((_) async => mockHiveBox);
       when(() => mockHiveBox.get(testId)).thenReturn(testOptionsSelections);
 
       final result = await dataSourceImpl.getSavedSelectedOptions(testId);
@@ -50,10 +51,10 @@ void main() {
         'Option Name 2': 1,
       });
       final mockHiveBox = MockHiveBox();
-      when(() => mockStorageInterface.isBoxOpen(BOX_NAME))
+      when(() => mockStorageInterface.isBoxOpen(Constants.OPTIONS_BOX_NAME))
           .thenAnswer((_) => true);
-      when(() => mockStorageInterface.openBox<OptionsSelections>(BOX_NAME))
-          .thenAnswer((_) async => mockHiveBox);
+      when(() => mockStorageInterface.openBox<OptionsSelections>(
+          Constants.OPTIONS_BOX_NAME)).thenAnswer((_) async => mockHiveBox);
       when(() => mockHiveBox.put(testId, testOptionsSelections))
           .thenAnswer((_) async => {});
 

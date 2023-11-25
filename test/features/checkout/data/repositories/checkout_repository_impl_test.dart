@@ -5,6 +5,7 @@ import 'package:ecom_template/features/checkout/data/datasources/checkout_remote
 import 'package:ecom_template/features/checkout/data/models/checkout_model.dart';
 import 'package:ecom_template/features/checkout/data/repositories/checkout_repository_impl.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
+import 'package:ecom_template/features/checkout/domain/entities/checkout_user_error.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/order/domain/entities/discount_allocations.dart';
@@ -381,8 +382,14 @@ void main() {
             result,
             equals(
               const Left(
-                DiscountCodeFailure(
-                  message: DISCOUNT_CODE_FAILURE_MESSAGE,
+                CheckoutUserFailure(
+                  userErrors: [
+                    CheckoutUserError(
+                      message: 'Something went wrong',
+                      code: 'UKNOWN',
+                      fields: [],
+                    )
+                  ],
                 ),
               ),
             ),

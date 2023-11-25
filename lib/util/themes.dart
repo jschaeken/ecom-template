@@ -7,6 +7,7 @@ class CustomTheme {
     primaryColor: Colors.black,
     hintColor: Colors.black,
     cardColor: Colors.grey[300],
+    useMaterial3: false,
     focusColor: Colors.black,
     hoverColor: Colors.grey[300],
     shadowColor: Colors.grey[300],

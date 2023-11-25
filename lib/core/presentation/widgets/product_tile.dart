@@ -76,29 +76,9 @@ class LargeProductTile extends StatelessWidget {
                         child: Padding(
                           padding:
                               Constants.padding.copyWith(top: 10, right: 10),
-                          child: GestureDetector(
-                            onTap: onFavoriteTap,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  shape: BoxShape.circle),
-                              child: Padding(
-                                padding: Constants.padding,
-                                child: isFavorite == null
-                                    ? const SizedBox()
-                                    : (isFavorite ?? false)
-                                        ? const CustomIcon(
-                                            CupertinoIcons.heart_fill,
-                                            color: Colors.red,
-                                          )
-                                        : CustomIcon(
-                                            CupertinoIcons.heart,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                              ),
-                            ),
-                          ),
+                          child: FavoriteButton(
+                              onFavoriteTap: onFavoriteTap,
+                              isFavorite: isFavorite),
                         ),
                       ),
 
@@ -132,6 +112,42 @@ class LargeProductTile extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class FavoriteButton extends StatelessWidget {
+  const FavoriteButton({
+    super.key,
+    required this.onFavoriteTap,
+    required this.isFavorite,
+  });
+
+  final VoidCallback onFavoriteTap;
+  final bool? isFavorite;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onFavoriteTap,
+      child: Container(
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor, shape: BoxShape.circle),
+        child: Padding(
+          padding: Constants.padding,
+          child: isFavorite == null
+              ? const SizedBox()
+              : (isFavorite ?? false)
+                  ? const CustomIcon(
+                      CupertinoIcons.heart_fill,
+                      color: Colors.red,
+                    )
+                  : CustomIcon(
+                      CupertinoIcons.heart,
+                      color: Theme.of(context).primaryColor,
+                    ),
         ),
       ),
     );

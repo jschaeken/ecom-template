@@ -62,7 +62,7 @@ class FavoritesNotiIcon extends StatelessWidget {
         if ((state is FavoritesAddedLoaded ||
                 state is FavoritesRemovedLoaded ||
                 state is FavoritesLoaded) &&
-            state.favorites.isNotEmpty) {
+            state.favorites.favorites.isNotEmpty) {
           return NotiIcon(
             icon: iconData,
             visible: true,

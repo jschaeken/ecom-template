@@ -1,6 +1,7 @@
 import 'package:ecom_template/features/checkout/domain/entities/applied_gift_cards.dart';
 import 'package:ecom_template/features/checkout/domain/entities/available_shipping_rates.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
+import 'package:ecom_template/features/checkout/domain/entities/checkout_user_error.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_rate.dart';
@@ -36,6 +37,7 @@ class ShopCheckoutModel extends ShopCheckout {
     super.updatedAt,
     super.totalDiscountApplied,
     super.discountCodesApplied,
+    super.userErrors,
   });
 
   //copyWith method
@@ -65,6 +67,7 @@ class ShopCheckoutModel extends ShopCheckout {
     String? updatedAt,
     Price? totalDiscountApplied,
     List<String>? discountCodesApplied,
+    List<CheckoutUserError>? userErrors,
   }) {
     return ShopCheckoutModel(
       id: id ?? this.id,
@@ -94,6 +97,7 @@ class ShopCheckoutModel extends ShopCheckout {
       updatedAt: updatedAt ?? this.updatedAt,
       totalDiscountApplied: totalDiscountApplied ?? this.totalDiscountApplied,
       discountCodesApplied: discountCodesApplied ?? this.discountCodesApplied,
+      userErrors: userErrors ?? this.userErrors,
     );
   }
 

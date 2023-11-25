@@ -41,7 +41,6 @@ class BagBloc extends Bloc<BagEvent, BagState> {
     required this.updateBagItem,
     required this.calculateBagTotals,
   }) : super(BagInitial()) {
-    log('BagBloc initialized: ${checkoutBloc.stream}');
     checkoutBloc.stream.listen((checkoutState) async {
       log('CheckoutState listened from bagBloc: $checkoutState');
       switch (checkoutState.runtimeType) {

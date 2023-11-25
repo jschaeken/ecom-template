@@ -1,9 +1,9 @@
 part of 'favorites_bloc.dart';
 
 sealed class FavoritesState extends Equatable {
-  final List<ShopProduct> favorites;
+  final Favorites favorites;
 
-  const FavoritesState({this.favorites = const []});
+  const FavoritesState({this.favorites = const Favorites()});
 
   @override
   List<Object> get props => [];
@@ -15,7 +15,7 @@ final class FavoritesLoading extends FavoritesState {}
 
 final class FavoritesLoaded extends FavoritesState {
   @override
-  final List<ShopProduct> favorites;
+  final Favorites favorites;
 
   const FavoritesLoaded({required this.favorites});
 
@@ -25,7 +25,7 @@ final class FavoritesLoaded extends FavoritesState {
 
 final class FavoritesAddedLoaded extends FavoritesState {
   @override
-  final List<ShopProduct> favorites;
+  final Favorites favorites;
 
   const FavoritesAddedLoaded({required this.favorites});
 
@@ -35,7 +35,7 @@ final class FavoritesAddedLoaded extends FavoritesState {
 
 final class FavoritesRemovedLoaded extends FavoritesState {
   @override
-  final List<ShopProduct> favorites;
+  final Favorites favorites;
 
   const FavoritesRemovedLoaded({required this.favorites});
 
@@ -54,7 +54,7 @@ final class FavoritesError extends FavoritesState {
 
 final class FavoritesEmpty extends FavoritesState {
   @override
-  final List<ShopProduct> favorites;
+  final Favorites favorites;
 
   const FavoritesEmpty({required this.favorites});
 

@@ -174,8 +174,8 @@ class _CollectionViewState extends State<CollectionView> {
                                   favoriteState is FavoritesRemovedLoaded ||
                                   favoriteState is FavoritesLoaded ||
                                   favoriteState is FavoritesEmpty) {
-                                isFavorite = favoriteState.favorites
-                                    .map((e) => e.id)
+                                isFavorite = favoriteState.favorites.favorites
+                                    .map((e) => e.parentProdId)
                                     .contains(state.products[index].id);
                               }
                               return GestureDetector(
@@ -197,24 +197,11 @@ class _CollectionViewState extends State<CollectionView> {
                                   onFavoriteTap: () {
                                     if (isFavorite == null) {
                                       return;
-                                    } else if (isFavorite) {
-                                      BlocProvider.of<FavoritesBloc>(context)
-                                          .add(
-                                        RemoveFavoriteEvent(
-                                          favorite: Favorite(
-                                            parentProdId:
-                                                state.products[index].id,
-                                          ),
-                                        ),
-                                      );
                                     } else {
                                       BlocProvider.of<FavoritesBloc>(context)
                                           .add(
-                                        AddFavoriteEvent(
-                                          favorite: Favorite(
-                                            parentProdId:
-                                                state.products[index].id,
-                                          ),
+                                        ToggleFavoriteEvent(
+                                          productId: state.products[index].id,
                                         ),
                                       );
                                     }
@@ -240,8 +227,8 @@ class _CollectionViewState extends State<CollectionView> {
                                   favoriteState is FavoritesRemovedLoaded ||
                                   favoriteState is FavoritesLoaded ||
                                   favoriteState is FavoritesEmpty) {
-                                isFavorite = favoriteState.favorites
-                                    .map((e) => e.id)
+                                isFavorite = favoriteState.favorites.favorites
+                                    .map((e) => e.parentProdId)
                                     .contains(state.products[index].id);
                               }
                               return GestureDetector(
@@ -266,24 +253,11 @@ class _CollectionViewState extends State<CollectionView> {
                                     onFavoriteTap: () {
                                       if (isFavorite == null) {
                                         return;
-                                      } else if (isFavorite) {
-                                        BlocProvider.of<FavoritesBloc>(context)
-                                            .add(
-                                          RemoveFavoriteEvent(
-                                            favorite: Favorite(
-                                              parentProdId:
-                                                  state.products[index].id,
-                                            ),
-                                          ),
-                                        );
                                       } else {
                                         BlocProvider.of<FavoritesBloc>(context)
                                             .add(
-                                          AddFavoriteEvent(
-                                            favorite: Favorite(
-                                              parentProdId:
-                                                  state.products[index].id,
-                                            ),
+                                          ToggleFavoriteEvent(
+                                            productId: state.products[index].id,
                                           ),
                                         );
                                       }

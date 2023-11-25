@@ -22,11 +22,13 @@ import 'package:ecom_template/features/checkout/domain/usecases/add_discount_cod
 import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_line_items.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
+import 'package:ecom_template/features/checkout/domain/usecases/remove_discount_code.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
 import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:ecom_template/features/favorites/domain/repositories/favorites_repository.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/add_favorite.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/get_favorite_by_id.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
@@ -137,6 +139,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddFavorite(repository: sl()));
   sl.registerLazySingleton(() => RemoveFavorite(repository: sl()));
   sl.registerLazySingleton(() => GetFavorites(repository: sl()));
+  sl.registerLazySingleton(() => GetFavoriteById(repository: sl()));
   // Blocs
   sl.registerFactory(
     () => FavoritesBloc(
@@ -144,6 +147,7 @@ Future<void> init() async {
       removeFavoriteUseCase: sl(),
       getFavoritesUseCase: sl(),
       getProductById: sl(),
+      getFavoriteUseCase: sl(),
     ),
   );
 
@@ -183,6 +187,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CreateCheckout(repository: sl()));
   sl.registerLazySingleton(() => GetCheckoutInfo(repository: sl()));
   sl.registerLazySingleton(() => AddDiscountCode(repository: sl()));
+  sl.registerLazySingleton(() => RemoveDiscountCode(repository: sl()));
   sl.registerLazySingleton(() => BagItemsToLineItems());
   // Blocs
   sl.registerFactory(() => CheckoutBloc(
@@ -190,6 +195,7 @@ Future<void> init() async {
         getCheckoutInfo: sl(),
         bagItemsToLineItems: sl(),
         addDiscountCode: sl(),
+        removeDiscountCode: sl(),
       ));
 
   /// Core ///

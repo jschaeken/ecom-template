@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/error/failures.dart';
+import 'package:ecom_template/core/success/write_success.dart';
 import 'package:ecom_template/features/checkout/domain/entities/checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/line_item.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
@@ -16,6 +17,11 @@ abstract class CheckoutRepository {
   });
 
   Future<Either<Failure, ShopCheckout>> addDiscountCode({
+    required String checkoutId,
+    required String discountCode,
+  });
+
+  Future<Either<Failure, WriteSuccess>> removeDiscountCode({
     required String checkoutId,
     required String discountCode,
   });

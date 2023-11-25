@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
+import 'package:ecom_template/core/presentation/widgets/product_tile.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/core/presentation/widgets/buttons.dart'
     as buttons;
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/image_gallery.dart';
@@ -478,11 +482,7 @@ class ProductPage extends StatelessWidget {
                         ),
                       ),
 
-                      const StandardSpacing(
-                        multiplier: 2,
-                      ),
-
-                      // Quantity Selector
+                      // Quantity Selector and Like Button
                       Padding(
                         padding: Constants.padding,
                         child: Column(
@@ -500,10 +500,6 @@ class ProductPage extends StatelessWidget {
                               if (shopState is ShoppingLoadedById) {
                                 return Row(
                                   children: [
-                                    const TextSubHeadline(
-                                      text: 'Quantity',
-                                    ),
-                                    const Spacer(),
                                     BlocBuilder<OptionsSelectionBloc,
                                             OptionsSelectionState>(
                                         builder: (context, optionState) {
@@ -547,6 +543,48 @@ class ProductPage extends StatelessWidget {
                                           return const SizedBox();
                                       }
                                     }),
+                                    const Spacer(),
+                                    // Favorite Button
+                                    BlocBuilder<FavoritesBloc, FavoritesState>(
+                                      builder: (context, state) {
+                                        switch (state.runtimeType) {
+                                          case FavoritesInitial:
+                                            return const LoadingStateWidget(
+                                              height: 50,
+                                              width: 50,
+                                            );
+                                          case FavoritesLoading:
+                                            return const LoadingStateWidget(
+                                              height: 50,
+                                              width: 50,
+                                            );
+                                          case FavoritesLoaded:
+                                            state as FavoritesLoaded;
+                                            log('is favorite: ${state.favorites.favorites.map((e) => e.parentProdId).toList().contains(shopState.product.id)}');
+                                            return FavoriteButton(
+                                              isFavorite: state
+                                                  .favorites.favorites
+                                                  .map((e) => e.parentProdId)
+                                                  .toList()
+                                                  .contains(
+                                                      shopState.product.id),
+                                              onFavoriteTap: () {
+                                                BlocProvider.of<FavoritesBloc>(
+                                                        context)
+                                                    .add(
+                                                  ToggleFavoriteEvent(
+                                                    productId:
+                                                        shopState.product.id,
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          case FavoritesError:
+                                          default:
+                                            return const SizedBox();
+                                        }
+                                      },
+                                    )
                                   ],
                                 );
                               } else {

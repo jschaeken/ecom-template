@@ -1,5 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages, unused_import, deprecated_member_use
 import 'package:device_preview/device_preview.dart';
+import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/features/bag/data/datasources/options_selection_local_datasource.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:ecom_template/features/bag/presentation/bloc/options_selection/o
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
+import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_selected_option.dart';
@@ -32,7 +35,8 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      // enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );
@@ -100,4 +104,6 @@ Future<void> initialConfig() async {
   Hive.registerAdapter(FavoriteAdapter());
 
   await injection.init();
+
+  Hive.deleteBoxFromDisk(Constants.OPTIONS_BOX_NAME);
 }
