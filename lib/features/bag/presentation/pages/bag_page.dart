@@ -154,8 +154,10 @@ class _BagPageState extends State<BagPage> {
                                             title: const TextBody(
                                                 text: 'Are you sure?'),
                                             content: const TextBody(
-                                                text:
-                                                    'Do you want to remove this item from your bag?'),
+                                              text:
+                                                  'Do you want to remove this item from your bag?',
+                                              maxLines: 10,
+                                            ),
                                             actions: [
                                               TextButton(
                                                   onPressed: () {
@@ -164,6 +166,7 @@ class _BagPageState extends State<BagPage> {
                                                   },
                                                   child: const TextBody(
                                                     text: 'Yes',
+                                                    fontWeight: FontWeight.bold,
                                                   )),
                                             ],
                                           )),

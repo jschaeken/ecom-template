@@ -7,13 +7,22 @@ sealed class FavoritesEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ToggleFavoriteEvent extends FavoritesEvent {
-  final String productId;
+class AddFavoriteEvent extends FavoritesEvent {
+  final Favorite favorite;
 
-  const ToggleFavoriteEvent({required this.productId});
+  const AddFavoriteEvent({required this.favorite});
 
   @override
-  List<Object> get props => [productId];
+  List<Object> get props => [favorite];
 }
 
-class GetFavoritesEvent extends FavoritesEvent {}
+class RemoveFavoriteEvent extends FavoritesEvent {
+  final Favorite favorite;
+
+  const RemoveFavoriteEvent({required this.favorite});
+
+  @override
+  List<Object> get props => [favorite];
+}
+
+class GetAllFavoritesEvent extends FavoritesEvent {}

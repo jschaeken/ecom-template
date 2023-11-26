@@ -38,7 +38,7 @@ class _MainViewState extends State<MainView> {
     ExplorePage(pageTitle: 'EXPLORE'),
     const ShopPage(pageTitle: 'SHOP'),
     const BagPage(pageTitle: 'BAG'),
-    const FavoritesPage(pageTitle: 'FAVORITES'),
+    FavoritesPage(pageTitle: 'FAVORITES'),
     AccountPage(pageTitle: 'ACCOUNT'),
   ];
 

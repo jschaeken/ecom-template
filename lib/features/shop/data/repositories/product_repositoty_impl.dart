@@ -83,4 +83,22 @@ class ProductRepositoryImplementation implements ProductRepository {
       return Left(InternetConnectionFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<ShopProduct>>> getProductsByListIds(
+      List<String> ids) async {
+    if (await networkInfo.isConnected) {
+      List<ShopProduct> products = [];
+      try {
+        for (String id in ids) {
+          products.add(await remoteDataSource.getProductById(id));
+        }
+        return Right(products);
+      } catch (e) {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
 }

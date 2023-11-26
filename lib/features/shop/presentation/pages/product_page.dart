@@ -9,6 +9,7 @@ import 'package:ecom_template/core/presentation/widgets/buttons.dart'
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
@@ -546,8 +547,8 @@ class ProductPage extends StatelessWidget {
                                     const Spacer(),
                                     // Favorite Button
                                     BlocBuilder<FavoritesBloc, FavoritesState>(
-                                      builder: (context, state) {
-                                        switch (state.runtimeType) {
+                                      builder: (context, favState) {
+                                        switch (favState.runtimeType) {
                                           case FavoritesInitial:
                                             return const LoadingStateWidget(
                                               height: 50,
@@ -558,25 +559,44 @@ class ProductPage extends StatelessWidget {
                                               height: 50,
                                               width: 50,
                                             );
-                                          case FavoritesLoaded:
-                                            state as FavoritesLoaded;
-                                            log('is favorite: ${state.favorites.favorites.map((e) => e.parentProdId).toList().contains(shopState.product.id)}');
+                                          case FavoritesLoaded ||
+                                                FavoritesAddedLoaded ||
+                                                FavoritesRemovedLoaded ||
+                                                FavoritesEmpty:
+                                            final isFavorite = favState
+                                                .favorites
+                                                .map((e) => e.parentProdId)
+                                                .toList()
+                                                .contains(shopState.product.id);
+                                            log('is favorite: $isFavorite');
                                             return FavoriteButton(
-                                              isFavorite: state
-                                                  .favorites.favorites
-                                                  .map((e) => e.parentProdId)
-                                                  .toList()
-                                                  .contains(
-                                                      shopState.product.id),
+                                              isFavorite: isFavorite,
                                               onFavoriteTap: () {
-                                                BlocProvider.of<FavoritesBloc>(
-                                                        context)
-                                                    .add(
-                                                  ToggleFavoriteEvent(
-                                                    productId:
-                                                        shopState.product.id,
-                                                  ),
-                                                );
+                                                if (isFavorite) {
+                                                  BlocProvider.of<
+                                                              FavoritesBloc>(
+                                                          context)
+                                                      .add(
+                                                    RemoveFavoriteEvent(
+                                                      favorite: Favorite(
+                                                        parentProdId: shopState
+                                                            .product.id,
+                                                      ),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  BlocProvider.of<
+                                                              FavoritesBloc>(
+                                                          context)
+                                                      .add(
+                                                    AddFavoriteEvent(
+                                                      favorite: Favorite(
+                                                        parentProdId: shopState
+                                                            .product.id,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
                                               },
                                             );
                                           case FavoritesError:

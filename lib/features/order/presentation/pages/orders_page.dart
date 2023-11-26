@@ -7,7 +7,7 @@ class OrdersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
+        centerTitle: true,
         title: const Text('Orders'),
       ),
       body: const Center(

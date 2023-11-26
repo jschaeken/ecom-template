@@ -2,6 +2,7 @@ import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,29 +11,28 @@ class AccountPage extends StatelessWidget {
 
   AccountPage({required this.pageTitle, super.key});
 
-  final List<AccountTileInfo> accountTileInfo = [
-    AccountTileInfo(
+  List<AccountTileInfo> accountTileInfo = [
+    const AccountTileInfo(
       title: 'Orders',
       icon: CupertinoIcons.cube_box,
-      onTap: () {},
+      page: OrdersPage(),
     ),
-    AccountTileInfo(
+    const AccountTileInfo(
       title: 'My Details',
       icon: CupertinoIcons.person,
-      onTap: () {},
+      page: OrdersPage(),
     ),
-    AccountTileInfo(
+    const AccountTileInfo(
       title: 'Addresses',
       icon: CupertinoIcons.house,
-      onTap: () {},
+      page: OrdersPage(),
     ),
-    AccountTileInfo(
+    const AccountTileInfo(
       title: 'Settings',
       icon: CupertinoIcons.settings,
-      onTap: () {},
+      page: OrdersPage(),
     ),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,6 +79,14 @@ class AccountPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return AccountPageTile(
                   accountTileInfo: accountTileInfo[index],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => accountTileInfo[index].page,
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -98,16 +106,18 @@ class AccountPage extends StatelessWidget {
 
 class AccountPageTile extends StatelessWidget {
   final AccountTileInfo accountTileInfo;
+  final Function() onTap;
 
   const AccountPageTile({
     super.key,
     required this.accountTileInfo,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: accountTileInfo.onTap,
+      onTap: onTap,
       child: Card(
         margin: EdgeInsets.symmetric(vertical: Constants.padding.top / 2),
         shape: RoundedRectangleBorder(
@@ -155,11 +165,11 @@ class AccountPageTile extends StatelessWidget {
 class AccountTileInfo {
   final String title;
   final IconData icon;
-  final Function() onTap;
+  final Widget page;
 
   const AccountTileInfo({
     required this.title,
     required this.icon,
-    required this.onTap,
+    required this.page,
   });
 }

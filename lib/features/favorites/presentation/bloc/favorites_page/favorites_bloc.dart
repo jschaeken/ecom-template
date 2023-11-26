@@ -31,39 +31,43 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
   }) : super(FavoritesInitial()) {
     on<FavoritesEvent>((event, emit) async {
       switch (event.runtimeType) {
-        case ToggleFavoriteEvent:
-          event as ToggleFavoriteEvent;
-          final id = event.productId;
-          final result = await getFavoriteUseCase(
-            Params(id: id),
-          );
+        case AddFavoriteEvent:
+          event as AddFavoriteEvent;
+          final result = await addFavoriteUseCase(
+              FavoriteParams(favorite: event.favorite));
           await result.fold(
-            (failure) async {},
-            (favorite) async {
-              log('Favorite: $favorite');
-              if (favorite == null) {
-                final result = await addFavoriteUseCase(
-                  FavoriteParams(favorite: Favorite(parentProdId: id)),
-                );
-                await result.fold((failure) async {
-                  emit(FavoritesError(message: failure.toString()));
-                }, (success) async {
-                  _getUpdatedFavoriteProductsLists(emit);
-                });
+            (failure) async {
+              emit(FavoritesError(message: failure.toString()));
+            },
+            (success) async {
+              final favorites = await _getUpdatedFavoriteProductsLists(emit);
+              if (favorites.isNotEmpty) {
+                emit(FavoritesLoaded(favorites: favorites));
               } else {
-                final result = await removeFavoriteUseCase(
-                  FavoriteParams(favorite: favorite),
-                );
-                await result.fold((failure) async {
-                  emit(FavoritesError(message: failure.toString()));
-                }, (success) async {
-                  _getUpdatedFavoriteProductsLists(emit);
-                });
+                emit(const FavoritesEmpty());
               }
             },
           );
           break;
-        case GetFavoritesEvent:
+        case RemoveFavoriteEvent:
+          event as RemoveFavoriteEvent;
+          final result = await removeFavoriteUseCase(
+              FavoriteParams(favorite: event.favorite));
+          await result.fold(
+            (failure) async {
+              emit(FavoritesError(message: failure.toString()));
+            },
+            (success) async {
+              final favorites = await _getUpdatedFavoriteProductsLists(emit);
+              if (favorites.isNotEmpty) {
+                emit(FavoritesLoaded(favorites: favorites));
+              } else {
+                emit(const FavoritesEmpty());
+              }
+            },
+          );
+          break;
+        case GetAllFavoritesEvent:
           final result = await _getUpdatedFavoriteProductsLists(emit);
           emit(FavoritesLoaded(favorites: result));
           break;
@@ -71,15 +75,13 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
     });
   }
 
-  Future<Favorites> _getUpdatedFavoriteProductsLists(
+  Future<List<Favorite>> _getUpdatedFavoriteProductsLists(
       Emitter<FavoritesState> emit) async {
     final favorites = await getFavoritesUseCase(NoParams());
     return await favorites.fold((failure) async {
-      return const Favorites();
+      return const <Favorite>[];
     }, (favorites) async {
-      return Favorites(
-        favorites: favorites,
-      );
+      return favorites;
     });
   }
 }

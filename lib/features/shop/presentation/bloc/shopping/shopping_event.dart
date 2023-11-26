@@ -28,3 +28,12 @@ final class GetProductsByCollectionIdEvent extends ShoppingEvent {
   @override
   List<Object> get props => [id];
 }
+
+class GetProductsByListIdsEvent extends ShoppingEvent {
+  final List<String> ids;
+
+  const GetProductsByListIdsEvent({required this.ids});
+
+  @override
+  List<Object> get props => [ids];
+}
