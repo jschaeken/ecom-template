@@ -107,6 +107,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
             productVariantTitle: bagItem.title,
             productVariantId: bagItem.id,
             quantity: bagItem.quantity,
+            isOutOfStock: bagItem.quantityAvailable < bagItem.quantity,
           );
           final result = await removeBagItem(bagItemData);
           await result.fold(
@@ -190,6 +191,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
             productVariantTitle: bagItem.title,
             productVariantId: bagItem.id,
             quantity: newQuantity,
+            isOutOfStock: bagItem.quantityAvailable < newQuantity,
           );
           final result = await updateBagItem(bagItemData);
           await result.fold(

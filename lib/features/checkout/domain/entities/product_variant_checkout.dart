@@ -17,6 +17,7 @@ class ShopProductVariantCheckout extends Equatable {
   final int quantityAvailable;
   final ShopProduct? product;
   final bool availableForSale;
+  final bool requiresShipping;
 
   const ShopProductVariantCheckout({
     required this.id,
@@ -30,6 +31,7 @@ class ShopProductVariantCheckout extends Equatable {
     this.quantityAvailable = 0,
     this.product,
     this.availableForSale = false,
+    this.requiresShipping = true,
   });
 
   @override

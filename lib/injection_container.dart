@@ -24,6 +24,7 @@ import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/remove_discount_code.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:ecom_template/features/customer/data/datasources/customer_info_datasource.dart';
 import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
 import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:ecom_template/features/favorites/domain/repositories/favorites_repository.dart';
@@ -32,6 +33,11 @@ import 'package:ecom_template/features/favorites/domain/usecases/get_favorite_by
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
+import 'package:ecom_template/features/order/data/datasources/orders_remote_datasource.dart';
+import 'package:ecom_template/features/order/data/repositories/orders_repositories_impl.dart';
+import 'package:ecom_template/features/order/domain/repositories/orders_repository.dart';
+import 'package:ecom_template/features/order/domain/usecases/get_all_orders.dart';
+import 'package:ecom_template/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:ecom_template/features/shop/data/repositories/product_repositoty_impl.dart';
 import 'package:ecom_template/features/shop/domain/repositories/product_repository.dart';
@@ -200,6 +206,34 @@ Future<void> init() async {
         addDiscountCode: sl(),
         removeDiscountCode: sl(),
       ));
+
+  /// Orders ///
+  // Data Sources
+  sl.registerLazySingleton<OrdersRemoteDataSource>(
+    () => OrdersRemoteDataSourceImpl(shopifyCheckout: sl()),
+  );
+  // Repositories
+  sl.registerLazySingleton<OrdersRepository>(
+    () => OrdersRepositoryImpl(
+      customerInfoDataSource: sl(),
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => GetAllOrders(repository: sl()));
+  // Blocs
+  sl.registerFactory(
+    () => OrdersBloc(
+      getAllOrders: sl(),
+    ),
+  );
+
+  /// Customer ///
+  // Data Sources
+  sl.registerLazySingleton<CustomerInfoDataSource>(
+    () => CustomerInfoDataSourceImpl(interface: sl()),
+  );
 
   /// Core ///
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

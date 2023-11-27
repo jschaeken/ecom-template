@@ -39,3 +39,9 @@ class CheckoutUserFailure extends Failure {
   final List<CheckoutUserError> userErrors;
   const CheckoutUserFailure({required this.userErrors});
 }
+
+class AuthFailure extends Failure {
+  @override
+  final String message;
+  const AuthFailure({this.message = 'You must be logged in to do this'});
+}

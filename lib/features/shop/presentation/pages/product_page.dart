@@ -631,75 +631,131 @@ class ProductPage extends StatelessWidget {
                                 );
                               }
                               if (shopState is ShoppingLoadedById) {
+                                log(shopState.product.productVariants.first
+                                    .quantityAvailable
+                                    .toString());
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     BlocBuilder<OptionsSelectionBloc,
                                             OptionsSelectionState>(
                                         builder: (context, optionState) {
-                                      return buttons.CtaButton(
-                                        onTap: () {
-                                          switch (optionState.runtimeType) {
-                                            case OptionsSelectionInitial:
-                                              return;
-                                            case OptionsSelectionLoadingState:
-                                              return;
-                                            case OptionsSelectionLoadedCompleteState:
-                                              optionState
-                                                  as OptionsSelectionLoadedCompleteState;
-                                              _addToBag(
-                                                bagItemData:
-                                                    optionState.bagItemData,
-                                                context: context,
-                                              );
-                                              return;
-                                            case OptionsSelectionErrorState:
-                                            default:
-                                              return;
-                                          }
-                                        },
-                                        child: const Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            CustomIcon(
-                                              CupertinoIcons.bag_fill,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            TextSubHeadline(
-                                              text: 'Add to Bag',
-                                            ),
-                                          ],
-                                        ),
-                                      );
+                                      switch (optionState.runtimeType) {
+                                        case OptionsSelectionInitial:
+                                          return buttons.CtaButton(
+                                              color: Theme.of(context)
+                                                  .unselectedWidgetColor,
+                                              onTap: () {},
+                                              child: const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  CustomIcon(
+                                                    CupertinoIcons.bag_fill,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  TextSubHeadline(
+                                                    text: 'Add to Bag',
+                                                  ),
+                                                ],
+                                              ));
+                                        case OptionsSelectionLoadingState:
+                                          return const LoadingStateWidget(
+                                            height: 50,
+                                          );
+                                        case OptionsSelectionLoadedCompleteState:
+                                          optionState
+                                              as OptionsSelectionLoadedCompleteState;
+                                          final bool isOutOfStock =
+                                              optionState.isOutOfStock;
+                                          return Column(
+                                            children: [
+                                              buttons.CtaButton(
+                                                disabled: isOutOfStock,
+                                                onTap: () {
+                                                  if (isOutOfStock) {
+                                                    return;
+                                                  } else {
+                                                    _addToBag(
+                                                      bagItemData: optionState
+                                                          .bagItemData,
+                                                      context: context,
+                                                    );
+                                                  }
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const CustomIcon(
+                                                      CupertinoIcons.bag_fill,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    TextSubHeadline(
+                                                      text: isOutOfStock
+                                                          ? 'Out of Stock'
+                                                          : 'Add to Bag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const StandardSpacing(),
+
+                                              // Apple Pay / Google Pay Button
+                                              !isOutOfStock
+                                                  ? buttons.CtaButton(
+                                                      color: Colors.black,
+                                                      onTap: () {},
+                                                      child: const Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          CustomIcon(
+                                                            Icons.apple,
+                                                            color: Colors.white,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 5,
+                                                          ),
+                                                          TextSubHeadline(
+                                                            text: 'Pay',
+                                                            color: Colors.white,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
+                                          );
+                                        case OptionsSelectionErrorState:
+                                          return buttons.CtaButton(
+                                              color: Theme.of(context)
+                                                  .unselectedWidgetColor,
+                                              onTap: () {},
+                                              child: const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  CustomIcon(
+                                                    CupertinoIcons.bag_fill,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  TextSubHeadline(
+                                                    text: 'An error occured',
+                                                  ),
+                                                ],
+                                              ));
+                                        default:
+                                          return const SizedBox();
+                                      }
                                     }),
-
-                                    const StandardSpacing(),
-
-                                    // Apple Pay / Google Pay Button
-                                    buttons.CtaButton(
-                                      color: Colors.black,
-                                      onTap: () {},
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          CustomIcon(
-                                            Icons.apple,
-                                            color: Colors.white,
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          TextSubHeadline(
-                                            text: 'Pay',
-                                            color: Colors.white,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
 
                                     const StandardSpacing(multiplier: 4),
 

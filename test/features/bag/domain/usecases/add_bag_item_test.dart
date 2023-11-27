@@ -22,6 +22,7 @@ void main() {
     quantity: 1,
     productVariantTitle: 'testVariantTitle',
     productVariantId: 'testVariantId',
+    isOutOfStock: false,
   );
 
   test('should add a bag item to the repository', () async {

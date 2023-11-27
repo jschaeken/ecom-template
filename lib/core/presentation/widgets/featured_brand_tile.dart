@@ -1,4 +1,5 @@
 import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/core/presentation/widgets/safe_image.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -18,17 +19,7 @@ class FeaturedBrandTile extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: Constants.borderRadius,
-          child: Image.network(
-            brand[1],
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Image.asset(
-                'assets/images/placeholder-image.png',
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ).animate().fadeIn();
-            },
-          ),
+          child: SafeImage(imageUrl: brand[1]),
         ),
         Container(
           decoration: BoxDecoration(

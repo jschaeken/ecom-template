@@ -124,6 +124,7 @@ void main() {
       productVariantTitle: 'variant title',
       productVariantId: '1',
       quantity: 1,
+      isOutOfStock: false,
     ),
   ];
 

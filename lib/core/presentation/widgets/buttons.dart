@@ -59,6 +59,7 @@ class CtaButton extends StatelessWidget {
     this.color,
     this.width = double.infinity,
     this.height = 43,
+    this.disabled = false,
   });
 
   final Widget child;
@@ -66,6 +67,7 @@ class CtaButton extends StatelessWidget {
   final Color? color;
   final double width;
   final double height;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +75,12 @@ class CtaButton extends StatelessWidget {
       height: height,
       width: width,
       child: Material(
-        color: color ?? Theme.of(context).indicatorColor,
+        color: disabled
+            ? Theme.of(context).unselectedWidgetColor
+            : color ?? Theme.of(context).indicatorColor,
         borderRadius: Constants.borderRadius,
         child: InkWell(
-          onTap: onTap,
+          onTap: disabled ? null : onTap,
           borderRadius: Constants.borderRadius,
           child: Container(
             alignment: Alignment.center,

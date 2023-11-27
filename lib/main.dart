@@ -9,6 +9,7 @@ import 'package:ecom_template/features/bag/presentation/bloc/options_selection/o
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
+import 'package:ecom_template/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
@@ -35,8 +36,7 @@ void main() async {
   await initialConfig();
   runApp(
     DevicePreview(
-      // enabled: !kReleaseMode,
-      enabled: false,
+      enabled: !kReleaseMode,
       builder: (context) => const MyApp(),
     ),
   );
@@ -58,6 +58,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => injection.sl<OptionsSelectionBloc>()),
         BlocProvider(create: (_) => injection.sl<CheckoutBloc>()),
         BlocProvider(create: (_) => injection.sl<SearchingBloc>()),
+        BlocProvider(create: (_) => injection.sl<OrdersBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

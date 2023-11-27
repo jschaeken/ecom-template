@@ -71,6 +71,7 @@ void main() {
       productVariantTitle: 'productVariantTitle',
       quantity: 1,
       productVariantId: 'productVariantId',
+      isOutOfStock: false,
     ));
     registerFallbackValue(NoParams());
   });
@@ -79,6 +80,7 @@ void main() {
     quantity: 1,
     productVariantTitle: 'variantTitle1',
     productVariantId: 'testVariantId',
+    isOutOfStock: false,
   );
 
   final testBagItems = [

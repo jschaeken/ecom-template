@@ -66,6 +66,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       quantity: existingData.quantity + quantity,
       productVariantTitle: existingData.productVariantTitle,
       productVariantId: existingData.productVariantId,
+      isOutOfStock: existingData.isOutOfStock,
     );
     await hiveBox.put(entryId, updated);
     return;
@@ -80,6 +81,7 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
       quantity: quantity,
       productVariantTitle: existingData.productVariantTitle,
       productVariantId: existingData.productVariantId,
+      isOutOfStock: existingData.isOutOfStock,
     );
     await hiveBox.put(entryId, updated);
     return;

@@ -1,7 +1,7 @@
 import 'package:ecom_template/core/constants.dart';
-import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/customer/presentation/pages/settings_page.dart';
 import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class AccountPage extends StatelessWidget {
 
   AccountPage({required this.pageTitle, super.key});
 
-  List<AccountTileInfo> accountTileInfo = [
+  final List<AccountTileInfo> accountTileInfo = [
     const AccountTileInfo(
       title: 'Orders',
       icon: CupertinoIcons.cube_box,
@@ -27,10 +27,10 @@ class AccountPage extends StatelessWidget {
       icon: CupertinoIcons.house,
       page: OrdersPage(),
     ),
-    const AccountTileInfo(
+    AccountTileInfo(
       title: 'Settings',
       icon: CupertinoIcons.settings,
-      page: OrdersPage(),
+      page: SettingsPage(),
     ),
   ];
   @override

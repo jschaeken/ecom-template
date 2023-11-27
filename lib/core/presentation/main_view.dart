@@ -7,7 +7,7 @@ import 'package:ecom_template/core/presentation/checkout_listeners.dart';
 import 'package:ecom_template/core/presentation/page_not_found.dart';
 import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
 import 'package:ecom_template/core/presentation/widgets/noti_icon.dart';
-import 'package:ecom_template/features/account/presentation/pages/account_page.dart';
+import 'package:ecom_template/features/customer/presentation/pages/account_page.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/pages/bag_page.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';

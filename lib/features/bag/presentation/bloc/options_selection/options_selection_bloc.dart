@@ -159,6 +159,7 @@ class OptionsSelectionBloc
           OptionsSelectionLoadedCompleteState(
             bagItemData: bagItemData,
             currentSelections: currentProductSelections!,
+            isOutOfStock: bagItemData.isOutOfStock,
           ),
         );
       },

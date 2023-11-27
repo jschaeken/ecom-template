@@ -21,13 +21,14 @@ class BagItemDataAdapter extends TypeAdapter<BagItemData> {
       quantity: fields[1] as int,
       productVariantId: fields[2] as String,
       productVariantTitle: fields[3] as String,
+      isOutOfStock: fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, BagItemData obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.parentProductId)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class BagItemDataAdapter extends TypeAdapter<BagItemData> {
       ..writeByte(2)
       ..write(obj.productVariantId)
       ..writeByte(3)
-      ..write(obj.productVariantTitle);
+      ..write(obj.productVariantTitle)
+      ..writeByte(4)
+      ..write(obj.isOutOfStock);
   }
 
   @override

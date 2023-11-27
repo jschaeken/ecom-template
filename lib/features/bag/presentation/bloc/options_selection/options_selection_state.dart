@@ -22,10 +22,12 @@ final class OptionsSelectionLoadingState extends OptionsSelectionState {
 
 final class OptionsSelectionLoadedCompleteState extends OptionsSelectionState {
   final BagItemData bagItemData;
+  final bool isOutOfStock;
 
   const OptionsSelectionLoadedCompleteState({
     required this.bagItemData,
     required ProductSelections currentSelections,
+    required this.isOutOfStock,
   }) : super(currentSelections: currentSelections);
 
   @override

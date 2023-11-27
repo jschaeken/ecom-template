@@ -38,6 +38,8 @@ class VerifyOptions {
             productVariantTitle: variant.title,
             productVariantId: variant.id,
             quantity: productSelections.quantity,
+            isOutOfStock:
+                variant.quantityAvailable < productSelections.quantity,
           ),
         );
       }

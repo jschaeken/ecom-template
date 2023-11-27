@@ -25,6 +25,7 @@ void main() async {
     parentProductId: 'testParentId',
     quantity: 1,
     productVariantTitle: 'testVariantTitle',
+    isOutOfStock: false,
   );
 
   group('getAllBagItems', () {
