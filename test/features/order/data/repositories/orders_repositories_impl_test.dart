@@ -7,7 +7,7 @@ import 'package:ecom_template/features/checkout/domain/entities/shipping_address
 import 'package:ecom_template/features/customer/data/datasources/customer_info_datasource.dart';
 import 'package:ecom_template/features/order/data/datasources/orders_remote_datasource.dart';
 import 'package:ecom_template/features/order/data/models/order_model.dart';
-import 'package:ecom_template/features/order/data/repositories/orders_repositories_impl.dart';
+import 'package:ecom_template/features/order/data/repositories/orders_repository_impl.dart';
 import 'package:ecom_template/features/order/domain/entities/line_item_order.dart';
 import 'package:ecom_template/features/order/domain/entities/line_items_order.dart';
 import 'package:ecom_template/features/order/domain/entities/order.dart';

@@ -16,7 +16,7 @@ void main() {
     mockHiveInterface = MockHiveInterface();
     mockHiveBox = MockHiveBox();
     customerInfoDataSourceImpl = CustomerInfoDataSourceImpl(
-      hive: mockHiveInterface,
+      interface: mockHiveInterface,
     );
   });
 

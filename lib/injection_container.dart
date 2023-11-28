@@ -34,7 +34,7 @@ import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.d
 import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/order/data/datasources/orders_remote_datasource.dart';
-import 'package:ecom_template/features/order/data/repositories/orders_repositories_impl.dart';
+import 'package:ecom_template/features/order/data/repositories/orders_repository_impl.dart';
 import 'package:ecom_template/features/order/domain/repositories/orders_repository.dart';
 import 'package:ecom_template/features/order/domain/usecases/get_all_orders.dart';
 import 'package:ecom_template/features/order/presentation/bloc/orders_bloc.dart';

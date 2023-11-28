@@ -20,29 +20,54 @@ class SettingsPage extends StatelessWidget {
         children: [
           Center(
             child: ElevatedButton(
-              onPressed: () {
-                shopifyAuth.signInWithEmailAndPassword(
-                  email: 'essencesoftwaredevelopment@gmail.com',
-                  password: 'Qwerty12!',
-                );
+              onPressed: () async {
+                try {
+                  await shopifyAuth.signInWithEmailAndPassword(
+                    email: 'essencesoftwaredevelopment@gmail.com',
+                    password: 'Qwerty12!',
+                  );
+                } catch (e) {
+                  log(e.toString());
+                }
+                final res = await shopifyAuth.currentCustomerAccessToken;
+                log(res.runtimeType.toString());
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: res != null
+                          ? Text('Saving $res')
+                          : const Text('User not signed in. Please log in'),
+                    ),
+                  );
+                }
+                final box = await Hive.openBox('customer_info');
+                box.put('customer_access_token', res.toString());
               },
               child: const Text('Sign In'),
             ),
           ),
           ElevatedButton(
-              onPressed: () async {
-                final res = await shopifyAuth.currentCustomerAccessToken;
-                log(res.toString());
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Saving ${res.toString()}'),
-                  ),
-                );
-                await Hive.openBox('customer_info');
-                final box = Hive.box('customer_info');
-                box.put('customer_access_token', res.toString());
-              },
-              child: const Text('Get Access Token')),
+            onPressed: () async {
+              final res = await shopifyAuth.currentCustomerAccessToken;
+              log(res.toString());
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Saving ${res.toString()}'),
+                ),
+              );
+              final box = await Hive.openBox('customer_info');
+              box.put('customer_access_token', res.toString());
+            },
+            child: const Text('Get Access Token'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await shopifyAuth.signOutCurrentUser();
+              final box = await Hive.openBox<String>('customer_info');
+              box.delete('customer_access_token');
+            },
+            child: const Text('Sign out'),
+          ),
         ],
       ),
     );

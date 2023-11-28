@@ -3,6 +3,11 @@
 import 'package:ecom_template/features/checkout/domain/entities/checkout_user_error.dart';
 import 'package:equatable/equatable.dart';
 
+const String SERVER_FAILURE_MESSAGE = 'Server Failure';
+const String INTERNET_CONNECTION_FAILURE_MESSAGE =
+    'Internet Connection Failure';
+const String UNEXPECTED_FAILURE_MESSAGE = 'Unexpected Error';
+
 abstract class Failure extends Equatable {
   final String message;
   const Failure({this.message = ''});
@@ -13,16 +18,14 @@ abstract class Failure extends Equatable {
 
 class ServerFailure extends Failure {}
 
-class InternetConnectionFailure extends Failure {}
+class InternetConnectionFailure extends Failure {
+  const InternetConnectionFailure({String message = ''})
+      : super(message: message);
+}
 
 class CacheFailure extends Failure {}
 
 class UnknownFailure extends Failure {}
-
-const String SERVER_FAILURE_MESSAGE = 'Server Failure';
-const String INTERNET_CONNECTION_FAILURE_MESSAGE =
-    'Internet Connection Failure';
-const String UNEXPECTED_FAILURE_MESSAGE = 'Unexpected Error';
 
 String mapFailureToErrorMessage(Failure failure) {
   switch (failure.runtimeType) {

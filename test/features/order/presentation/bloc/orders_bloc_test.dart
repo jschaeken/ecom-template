@@ -3,7 +3,7 @@ import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/checkout/domain/entities/product_variant_checkout.dart';
 import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
-import 'package:ecom_template/features/order/data/repositories/orders_repositories_impl.dart';
+import 'package:ecom_template/features/order/data/repositories/orders_repository_impl.dart';
 import 'package:ecom_template/features/order/domain/entities/line_item_order.dart';
 import 'package:ecom_template/features/order/domain/entities/line_items_order.dart';
 import 'package:ecom_template/features/order/domain/entities/order.dart';
