@@ -7,6 +7,8 @@ import 'package:ecom_template/features/bag/domain/entities/options_selection.dar
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
+import 'package:ecom_template/features/customer/presentation/pages/auth_view.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/order/presentation/bloc/orders_bloc.dart';
@@ -27,7 +29,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shopify_flutter/shopify_config.dart';
 import 'package:ecom_template/injection_container.dart' as injection;
-import 'package:path_provider/path_provider.dart';
 
 import 'core/presentation/main_view.dart';
 import 'core/presentation/state_managment/navigation_provider.dart';
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => injection.sl<CheckoutBloc>()),
         BlocProvider(create: (_) => injection.sl<SearchingBloc>()),
         BlocProvider(create: (_) => injection.sl<OrdersBloc>()),
+        BlocProvider(create: (_) => injection.sl<CustomerAuthBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -69,7 +71,7 @@ class MyApp extends StatelessWidget {
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
-        home: const MainView(),
+        home: AuthView(),
       ),
     );
   }

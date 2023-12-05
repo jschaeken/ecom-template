@@ -15,6 +15,8 @@ import 'package:ecom_template/features/order/domain/entities/successful_fulfilme
 import 'package:ecom_template/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product_image.dart';
+import 'package:ecom_template/features/shop/presentation/widgets/empty_view.dart';
+import 'package:ecom_template/features/shop/presentation/widgets/state_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -375,9 +377,16 @@ class OrdersPage extends StatelessWidget {
                           );
                         case OrdersError:
                           state as OrdersError;
-                          return Center(
-                            child: TextBody(
-                                text: 'Error: ${state.failure.toString()}'),
+                          return IconTextError(failure: state.failure);
+                        case OrdersEmpty:
+                          return Padding(
+                            padding: Constants.padding,
+                            child: const EmptyView(
+                              icon: CupertinoIcons.cube_box,
+                              title: 'No Orders',
+                              subtitle:
+                                  'Orders will appear here once you have placed an order',
+                            ),
                           );
                         default:
                           return const Center(

@@ -27,6 +27,8 @@ class CustomTheme {
         color: Colors.black,
       ),
     ),
+    // ignore: deprecated_member_use
+    errorColor: Colors.red,
     secondaryHeaderColor: Colors.black,
     dialogBackgroundColor: Colors.white,
     unselectedWidgetColor: Colors.grey[600],

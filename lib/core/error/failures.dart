@@ -46,5 +46,9 @@ class CheckoutUserFailure extends Failure {
 class AuthFailure extends Failure {
   @override
   final String message;
-  const AuthFailure({this.message = 'You must be logged in to do this'});
+  final List<String> errors;
+  const AuthFailure({
+    this.message = 'You must be logged in to do this',
+    this.errors = const [],
+  });
 }

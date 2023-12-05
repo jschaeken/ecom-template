@@ -33,6 +33,8 @@ class EmptyView extends StatelessWidget {
           TextBody(
             text: subtitle,
             color: Theme.of(context).unselectedWidgetColor,
+            textAlign: TextAlign.center,
+            maxLines: 3,
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/saved_product_list_tile.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/collections_view/collections_view_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/searching/searching_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/pages/product_page.dart';
@@ -20,7 +21,6 @@ class ExplorePage extends StatelessWidget {
   final String pageTitle;
   final ScrollController scrollController = ScrollController();
   final TextEditingController searchController = TextEditingController();
-  final String accountInitials = 'JS';
   final collectionsBloc = sl<CollectionsViewBloc>();
 
   @override
@@ -53,12 +53,25 @@ class ExplorePage extends StatelessWidget {
                     child: Column(
                       children: [
                         // Header Title and Account
-                        HeaderRow(
-                          pageTitle: pageTitle,
-                          accountInitials: accountInitials,
-                          child: CustomActiveSearchBar(
-                            controller: searchController,
-                          ),
+                        BlocBuilder<CustomerAuthBloc, CustomerAuthState>(
+                          builder: (context, state) {
+                            String? initials;
+                            if (state is CustomerAuthenticated) {
+                              initials = state.user.firstName?[0] ??
+                                  state.user.lastName?[0] ??
+                                  '';
+                              if (initials.length < 2) {
+                                initials = null;
+                              }
+                            }
+                            return HeaderRow(
+                              pageTitle: pageTitle,
+                              accountInitials: initials,
+                              child: CustomActiveSearchBar(
+                                controller: searchController,
+                              ),
+                            );
+                          },
                         ),
                         state.runtimeType == SearchingInactive
                             ? CategoryLoader(collectionsBloc: collectionsBloc)

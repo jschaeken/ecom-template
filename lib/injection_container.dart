@@ -24,7 +24,15 @@ import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/remove_discount_code.dart';
 import 'package:ecom_template/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:ecom_template/features/customer/data/datasources/customer_auth_datasource.dart';
 import 'package:ecom_template/features/customer/data/datasources/customer_info_datasource.dart';
+import 'package:ecom_template/features/customer/data/repositories/customer_auth_repository_impl.dart';
+import 'package:ecom_template/features/customer/domain/repositories/customer_auth_repository.dart';
+import 'package:ecom_template/features/customer/domain/usecases/create_account.dart';
+import 'package:ecom_template/features/customer/domain/usecases/email_and_password_sign_in.dart';
+import 'package:ecom_template/features/customer/domain/usecases/get_auth_state.dart';
+import 'package:ecom_template/features/customer/domain/usecases/sign_out.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:ecom_template/features/favorites/data/datasources/favorites_local_datasource.dart';
 import 'package:ecom_template/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:ecom_template/features/favorites/domain/repositories/favorites_repository.dart';
@@ -229,10 +237,35 @@ Future<void> init() async {
     ),
   );
 
-  /// Customer ///
+  /// Auth ///
   // Data Sources
   sl.registerLazySingleton<CustomerInfoDataSource>(
     () => CustomerInfoDataSourceImpl(interface: sl()),
+  );
+  sl.registerLazySingleton<CustomerAuthDatasource>(
+    () => CustomerAuthDatasourceImpl(
+        shopifyAuth: sl(), customerInfoDataSource: sl()),
+  );
+  // Repositories
+  sl.registerLazySingleton<CustomerAuthRepository>(
+    () => CustomerAuthRepositoryImpl(
+      customerAuthDatasource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => EmailAndPasswordSignIn(repository: sl()));
+  sl.registerLazySingleton(() => GetAuthState(repository: sl()));
+  sl.registerLazySingleton(() => SignOut(repository: sl()));
+  sl.registerLazySingleton(() => CreateAccount(repository: sl()));
+  // Blocs
+  sl.registerFactory(
+    () => CustomerAuthBloc(
+      emailAndPasswordSignIn: sl(),
+      getAuthState: sl(),
+      signOut: sl(),
+      createAccount: sl(),
+    ),
   );
 
   /// Core ///
@@ -242,5 +275,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => InternetConnectionChecker());
   sl.registerLazySingleton(() => ShopifyStore.instance);
   sl.registerLazySingleton(() => ShopifyCheckout.instance);
+  sl.registerLazySingleton(() => ShopifyAuth.instance);
   sl.registerLazySingleton(() => Hive);
 }

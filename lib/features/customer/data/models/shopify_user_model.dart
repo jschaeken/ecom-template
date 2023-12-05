@@ -22,7 +22,7 @@ class ShopShopifyUserModel extends ShopShopifyUser {
   static ShopShopifyUserModel fromShopifyUser(ShopifyUser shopifyUser) {
     return ShopShopifyUserModel(
       addresses: shopifyUser.address?.addressList.map((e) {
-        return Address(
+        return ShopAddress(
           address1: e.address1,
           address2: e.address2,
           city: e.city,

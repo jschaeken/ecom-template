@@ -11,6 +11,8 @@ final class OrdersInitial extends OrdersState {}
 
 final class OrdersLoading extends OrdersState {}
 
+final class OrdersEmpty extends OrdersState {}
+
 final class OrdersLoaded extends OrdersState {
   final List<ShopOrder> orders;
 

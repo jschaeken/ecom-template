@@ -1,11 +1,9 @@
-import 'package:ecom_template/features/checkout/domain/entities/shipping_address.dart';
 import 'package:ecom_template/features/customer/domain/entities/address.dart';
 import 'package:ecom_template/features/customer/domain/entities/last_incomplete_checkout.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shopify_flutter/models/src/shopify_user/address/address.dart';
 
 class ShopShopifyUser extends Equatable {
-  final List<Address>? addresses;
+  final List<ShopAddress>? addresses;
   final String? createdAt;
   final String? displayName;
   final String? email;

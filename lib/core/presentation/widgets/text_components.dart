@@ -51,6 +51,7 @@ class TextHeadline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
+        textAlign: TextAlign.center,
         style: Theme.of(context)
             .textTheme
             .headlineMedium!
@@ -94,6 +95,8 @@ class TextBody extends StatelessWidget {
     this.fontWeight,
     this.decoration,
     this.maxLines,
+    this.margin,
+    this.textAlign,
   });
 
   final String text;
@@ -101,19 +104,25 @@ class TextBody extends StatelessWidget {
   final FontWeight? fontWeight;
   final TextDecoration? decoration;
   final int? maxLines;
+  final EdgeInsetsGeometry? margin;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      maxLines: maxLines,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-            color: color,
-            fontWeight: fontWeight,
-            decoration: decoration,
-            fontSize: 15,
-          ),
+    return Container(
+      margin: margin,
+      child: Text(
+        text,
+        maxLines: maxLines,
+        textAlign: textAlign,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+              color: color,
+              fontWeight: fontWeight,
+              decoration: decoration,
+              fontSize: 15,
+            ),
+      ),
     );
   }
 }

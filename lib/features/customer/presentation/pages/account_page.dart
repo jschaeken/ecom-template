@@ -1,10 +1,12 @@
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:ecom_template/features/customer/presentation/pages/settings_page.dart';
 import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountPage extends StatelessWidget {
   final String pageTitle;
@@ -27,7 +29,7 @@ class AccountPage extends StatelessWidget {
       icon: CupertinoIcons.house,
       page: OrdersPage(),
     ),
-    AccountTileInfo(
+    const AccountTileInfo(
       title: 'Settings',
       icon: CupertinoIcons.settings,
       page: SettingsPage(),
@@ -63,7 +65,15 @@ class AccountPage extends StatelessWidget {
                 const StandardSpacing(
                   multiplier: 1,
                 ),
-                const TextHeadline(text: 'Hello, {Name}!'),
+                BlocBuilder<CustomerAuthBloc, CustomerAuthState>(
+                  builder: (context, state) {
+                    if (state is CustomerAuthenticated) {
+                      return TextHeadline(
+                          text: 'Hello, ${state.user.firstName}!');
+                    }
+                    return const TextHeadline(text: 'Hey stranger!');
+                  },
+                ),
               ],
             )),
 

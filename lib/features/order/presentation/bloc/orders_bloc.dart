@@ -28,10 +28,14 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
   Future<void> _handleGetAllOrders(Emitter<OrdersState> emit) async {
     emit(OrdersLoading());
     final failureOrOrders = await getAllOrders(NoParams());
-    failureOrOrders.fold(
-      (failure) => emit(OrdersError(failure: failure)),
-      (orders) => emit(OrdersLoaded(orders: orders)),
-    );
+    failureOrOrders.fold((failure) => emit(OrdersError(failure: failure)),
+        (orders) {
+      if (orders.isEmpty) {
+        emit(OrdersEmpty());
+        return;
+      }
+      emit(OrdersLoaded(orders: orders));
+    });
     return;
   }
 }

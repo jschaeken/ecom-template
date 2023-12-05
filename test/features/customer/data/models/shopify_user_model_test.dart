@@ -1,4 +1,5 @@
 import 'package:ecom_template/features/customer/data/models/shopify_user_model.dart';
+import 'package:ecom_template/features/customer/domain/entities/address.dart';
 import 'package:ecom_template/features/customer/domain/entities/last_incomplete_checkout.dart';
 import 'package:ecom_template/features/customer/domain/entities/shopify_user.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,9 +10,9 @@ import 'package:shopify_flutter/models/src/shopify_user/last_incomplete_checkout
 import 'package:shopify_flutter/models/src/shopify_user/shopify_user.dart';
 
 void main() {
-  ShopShopifyUserModel shopShopifyUserModel = ShopShopifyUserModel(
+  ShopShopifyUserModel shopShopifyUserModel = const ShopShopifyUserModel(
       addresses: [
-        Address(
+        ShopAddress(
           address1: 'address1',
           address2: 'address2',
           city: 'city',
@@ -37,8 +38,8 @@ void main() {
       id: 'id',
       lastName: 'lastName',
       phone: 'phone',
-      tags: const ['tags'],
-      lastIncompleteCheckout: const ShopLastIncompleteCheckout(
+      tags: ['tags'],
+      lastIncompleteCheckout: ShopLastIncompleteCheckout(
         completedAt: 'completedAt',
         createdAt: 'createdAt',
         currencyCode: 'currencyCode',

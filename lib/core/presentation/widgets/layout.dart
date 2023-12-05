@@ -17,7 +17,7 @@ class HeaderRow extends StatelessWidget {
   });
 
   final String pageTitle;
-  final String accountInitials;
+  final String? accountInitials;
   final Widget? child;
   final bool shadow;
   final bool centerTitle;
@@ -55,7 +55,7 @@ class HeaderRow extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: Theme.of(context).primaryColor,
                         child: TextBody(
-                          text: accountInitials,
+                          text: accountInitials ?? '',
                           color: Theme.of(context).canvasColor,
                         ),
                       ),
