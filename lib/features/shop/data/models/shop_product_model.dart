@@ -141,7 +141,7 @@ class ShopProductModel extends ShopProduct {
       productType: product.productType,
       vendor: product.vendor,
       tags: product.tags,
-      options: shopifyOptionsToShopProductOptions(product.option),
+      options: shopifyOptionsToShopProductOptions(product.options),
       images: shopifyImagesToShopProductImages(product.images),
       productVariants: shopifyProductVariantsToShopProductProductVariants(
         product.productVariants,
@@ -239,7 +239,7 @@ class ShopProductModel extends ShopProduct {
       productType: productType,
       vendor: vendor,
       tags: tags,
-      option: shopProductOptionsToShopifyOptions(options),
+      options: shopProductOptionsToShopifyOptions(options),
       images: shopProductImagesToShopifyImages(images),
       productVariants: shopProductProductVariantsToShopifyProductVariants(
         productVariants,

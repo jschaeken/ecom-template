@@ -39,7 +39,7 @@ dependencies:
   get_it: ^7.6.4
   equatable: ^2.0.5
   dartz: ^0.10.1
-  connectivity: ^3.0.6
+  # connectivity: ^3.0.6
   http: ^0.13.6
   shared_preferences: ^2.2.2
   build_runner: ^2.4.6
