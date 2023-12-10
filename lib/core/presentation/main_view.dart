@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:ecom_template/core/config.dart';
+import 'package:ecom_template/core/presentation/bag_listeners.dart';
 import 'package:ecom_template/core/presentation/global_haptic_feedback.dart';
 import 'package:ecom_template/core/presentation/checkout_listeners.dart';
 import 'package:ecom_template/core/presentation/page_not_found.dart';
@@ -29,9 +30,10 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  final List<TabBarItem> tabBarItems = Config.tabBarItems;
+  final List<TabBarItems> tabBarItems = TabBarItems.values;
   late List<GlobalKey<NavigatorState>> keys;
   StreamSubscription<BagState>? bagHapticStreamSubscription;
+  StreamSubscription<BagState>? bagPopUpStreamSubscription;
   StreamSubscription<CheckoutState>? checkoutStreamSubscription;
 
   final List<Widget> tabBarPages = [
@@ -50,6 +52,12 @@ class _MainViewState extends State<MainView> {
       keys: keys,
       pageNavigationProvider: context.read<PageNavigationProvider>(),
       stream: BlocProvider.of<BagBloc>(context).stream,
+    );
+    bagPopUpStreamSubscription = setBagListerForPopUp(
+      keys: keys,
+      pageNavigationProvider: context.read<PageNavigationProvider>(),
+      stream: BlocProvider.of<BagBloc>(context).stream,
+      context: context,
     );
     checkoutStreamSubscription = setCheckoutListerOrderCompletePopUp(
       stream: BlocProvider.of<CheckoutBloc>(context).stream,
@@ -84,15 +92,16 @@ class _MainViewState extends State<MainView> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            items: tabBarItems.map((item) {
+            items: tabBarItems.map((tabBarItem) {
               return BottomNavigationBarItem(
-                icon: item.title == 'Bag'
-                    ? BagNotiIcon(iconData: item.icon[0])
-                    : item.title == 'Favorites'
-                        ? FavoritesNotiIcon(iconData: item.icon[0])
-                        : Icon(item.icon[0]),
-                activeIcon: Icon(item.icon[1]),
-                label: item.title,
+                icon: tabBarItem.name == 'Bag'
+                    ? BagNotiIcon(iconData: tabBarItem.iconPairs.active)
+                    : tabBarItem.name == 'Favorites'
+                        ? FavoritesNotiIcon(
+                            iconData: tabBarItem.iconPairs.active)
+                        : Icon(tabBarItem.iconPairs.inactive),
+                activeIcon: Icon(tabBarItem.iconPairs.active),
+                label: tabBarItem.name,
               );
             }).toList(),
             currentIndex: context.watch<PageNavigationProvider>().currentIndex,

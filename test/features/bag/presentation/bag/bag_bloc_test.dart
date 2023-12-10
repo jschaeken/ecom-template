@@ -35,7 +35,7 @@ class MockOptionsSelectionBloc extends Mock implements OptionsSelectionBloc {}
 class MockCalculateBagTotals extends Mock implements CalculateBagTotals {}
 
 void main() {
-  late BagBloc bloc;
+  late BagBloc bagBloc;
   late MockAddBagItem mockAddBagItem;
   late MockGetAllBagItems mockGetAllBagItems;
   late MockRemoveBagItem mockRemoveBagItem;
@@ -57,7 +57,7 @@ void main() {
         Stream<CheckoutState>.fromIterable(
             [const CheckoutCompleted(orderId: 'testOrderId')]));
 
-    bloc = BagBloc(
+    bagBloc = BagBloc(
       addBagItem: mockAddBagItem,
       removeBagItem: mockRemoveBagItem,
       getAllBagItems: mockGetAllBagItems,
@@ -108,7 +108,7 @@ void main() {
 
   test('Initial state should be BagInitial', () {
     // assert
-    expect(bloc.state, equals(BagInitial()));
+    expect(bagBloc.state, equals(BagInitial()));
   });
 
   group('Add product to bag', () {
@@ -120,15 +120,17 @@ void main() {
           .thenAnswer((_) async => const Right(WriteSuccess()));
       when(() => mockGetAllBagItems(NoParams()))
           .thenAnswer((_) async => Right(testBagItems));
+      when(() => mockCalculateBagTotals(any()))
+          .thenAnswer((_) async => const Right(testBagTotals));
 
       // assert later
       final expected = [
         BagLoadedAddedState(bagItems: testBagItems, bagTotals: testBagTotals),
       ];
-      expectLater(bloc.stream, emitsInOrder(expected));
+      expectLater(bagBloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(const AddBagItemEvent(bagItemData: tItem));
+      bagBloc.add(const AddBagItemEvent(bagItemData: tItem));
     });
 
     test('should emit [BagLoadingState, BagErrorState] when getting data fails',
@@ -145,10 +147,10 @@ void main() {
       final expected = [
         BagErrorState(failure: cacheFailure),
       ];
-      expectLater(bloc.stream, emitsInOrder(expected));
+      expectLater(bagBloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(const AddBagItemEvent(bagItemData: tItem));
+      bagBloc.add(const AddBagItemEvent(bagItemData: tItem));
     });
   });
 
@@ -169,10 +171,10 @@ void main() {
         BagLoadedRemovedState(bagItems: testBagItems, bagTotals: testBagTotals),
       ];
 
-      expectLater(bloc.stream, emitsInOrder(expected));
+      expectLater(bagBloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
+      bagBloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
 
     test(
@@ -190,14 +192,14 @@ void main() {
       final expected = [
         BagErrorState(failure: cacheFailure),
       ];
-      expectLater(bloc.stream, emitsInOrder(expected));
+      expectLater(bagBloc.stream, emitsInOrder(expected));
 
       // act
-      bloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
+      bagBloc.add(RemoveBagItemEvent(bagItem: testBagItems[0]));
     });
   });
 
-  group('Listen to checkout bloc', () {
+  group('Clear bag', () {
     test(
       'should clear bag items when checkout bloc listened to emits a CheckoutCompleted event',
       () async {
@@ -211,7 +213,10 @@ void main() {
         final expected = [
           BagEmptyState(),
         ];
-        expectLater(bloc.stream, emitsInOrder(expected));
+        expectLater(bagBloc.stream, emitsInOrder(expected));
+
+        // act
+        bagBloc.add(ClearBagEvent());
       },
     );
   });

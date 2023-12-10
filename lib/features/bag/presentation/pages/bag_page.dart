@@ -160,14 +160,15 @@ class _BagPageState extends State<BagPage> {
                                             ),
                                             actions: [
                                               TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(true);
-                                                  },
-                                                  child: const TextBody(
-                                                    text: 'Yes',
-                                                    fontWeight: FontWeight.bold,
-                                                  )),
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(true);
+                                                },
+                                                child: const TextBody(
+                                                  text: 'Yes',
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                             ],
                                           )),
                                   key: Key(state.bagItems[index].id),
@@ -178,10 +179,13 @@ class _BagPageState extends State<BagPage> {
                                     ),
                                   ),
                                   child: SavedProductListTile(
+                                    isOutOfStock:
+                                        state.bagItems[index].isOutOfStock,
                                     title: state.bagItems[index].title,
                                     onTap: () => navigateToProductPage(
-                                        state.bagItems[index].parentProductId,
-                                        context),
+                                      state.bagItems[index].parentProductId,
+                                      context,
+                                    ),
                                     margin: true,
                                     imageUrl: state
                                         .bagItems[index].image?.originalSrc,
@@ -355,19 +359,12 @@ class _BagPageState extends State<BagPage> {
                     );
                   },
                   onComplete: (complete) async {
-                    // if (complete) {
-                    //   BlocProvider.of<CheckoutBloc>(context).add(
-                    //     CheckoutCompletedEvent(
-                    //       checkoutId: state.checkout.id,
-                    //     ),
-                    //   );
-                    // }
+                    if (!complete) {
+                      return;
+                    }
+                    BlocProvider.of<BagBloc>(context).add(ClearBagEvent());
                     BlocProvider.of<CheckoutBloc>(context).add(
-                      const CheckoutCompletedEvent(
-                          checkoutId:
-                              "gid://shopify/Checkout/d72677fc8f073989eb143f3d81b3d6b9?key=00adb6970f6fad06669fab15f5a118d5"),
-                    );
-                    //TODO: Implement this
+                        CheckoutCompletedEvent(checkoutId: state.checkout.id));
                   },
                 ).animate().fadeIn();
               } else {

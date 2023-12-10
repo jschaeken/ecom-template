@@ -21,6 +21,7 @@ class CheckoutSheetWeb extends StatefulWidget {
 
 class _CheckoutSheetWebState extends State<CheckoutSheetWeb> {
   late WebViewController controller;
+  int loadProgress = 0;
   late Future<bool> webViewReady;
 
   @override
@@ -36,6 +37,11 @@ class _CheckoutSheetWebState extends State<CheckoutSheetWeb> {
       await controller.setBackgroundColor(const Color(0x00000000));
       await controller.setNavigationDelegate(
         NavigationDelegate(
+          onProgress: (progress) {
+            setState(() {
+              loadProgress = progress;
+            });
+          },
           onUrlChange: (url) {
             log(url.url.toString());
             if ((url.url ?? '').contains('thank-you')) {
@@ -82,24 +88,35 @@ class _CheckoutSheetWebState extends State<CheckoutSheetWeb> {
               log('weburl: ${checkoutState.checkout.webUrl}');
               return Center(
                 child: Platform.isAndroid || Platform.isIOS
-                    ? Builder(
-                        builder: (context) {
-                          return FutureBuilder(
-                              future: webViewReady,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return WebViewWidget(
-                                    controller: controller,
-                                  );
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  );
-                                }
-                              });
-                        },
+                    ? Column(
+                        children: [
+                          LinearProgressIndicator(
+                            value: loadProgress / 100,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          Expanded(
+                            child: Builder(
+                              builder: (context) {
+                                return FutureBuilder(
+                                    future: webViewReady,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return WebViewWidget(
+                                          controller: controller,
+                                        );
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        );
+                                      }
+                                    });
+                              },
+                            ),
+                          ),
+                        ],
                       )
                     : const Center(
                         child: TextBody(

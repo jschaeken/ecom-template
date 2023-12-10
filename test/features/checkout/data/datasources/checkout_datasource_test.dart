@@ -189,6 +189,7 @@ void main() {
     shopifyPaymentsAccountId: 'shopifyPaymentsAccountId',
     updatedAt: 'updatedAt',
     webUrl: 'webUrl',
+    discountCodesApplied: null,
   );
 
   final Checkout testCheckout = Checkout(

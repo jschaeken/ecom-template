@@ -27,7 +27,7 @@ void main() {
     availableForSale: true,
     createdAt: '',
     metafields: [],
-    option: [],
+    options: [],
     productType: '',
     productVariants: [],
     publishedAt: '',

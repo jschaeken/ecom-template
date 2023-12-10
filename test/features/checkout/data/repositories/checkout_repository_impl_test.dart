@@ -12,6 +12,7 @@ import 'package:ecom_template/features/order/domain/entities/discount_allocation
 import 'package:ecom_template/features/shop/domain/entities/price.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shopify_flutter/mixins/src/shopfiy_error.dart';
 
 class MockCheckoutDataSource extends Mock implements CheckoutRemoteDataSource {}
 
@@ -173,7 +174,7 @@ void main() {
           email: null,
         );
         // assert
-        expect(result, equals(Left(InternetConnectionFailure())));
+        expect(result, equals(const Left(InternetConnectionFailure())));
         verifyZeroInteractions(mockCheckoutDataSource);
       });
     });
@@ -249,7 +250,7 @@ void main() {
           );
 
           // assert
-          expect(result, equals(Left(InternetConnectionFailure())));
+          expect(result, equals(const Left(InternetConnectionFailure())));
           verifyZeroInteractions(mockCheckoutDataSource);
         },
       );
@@ -280,6 +281,7 @@ void main() {
       taxesIncluded: true,
       taxExempt: true,
       requiresShipping: true,
+      discountCodesApplied: ['discountCode'],
       lineItems: [
         ShopLineItem(
           title: 'title',
@@ -329,7 +331,7 @@ void main() {
           );
 
           // assert
-          expect(result, equals(Left(InternetConnectionFailure())));
+          expect(result, equals(const Left(InternetConnectionFailure())));
           verifyZeroInteractions(mockCheckoutDataSource);
         },
       );
@@ -365,13 +367,19 @@ void main() {
       });
 
       test(
-        'should return a ServerFailure when the call to the data source is unsuccessful',
+        'should return a CheckoutUserFailure when the call to the data source throws a ShopifyException',
         () async {
           // arrange
           when(() => mockCheckoutDataSource.addDiscountCode(
                 checkoutId: any(named: 'checkoutId'),
                 discountCode: any(named: 'discountCode'),
-              )).thenThrow(Exception());
+              )).thenThrow(
+            const ShopifyException(
+              'key',
+              'error',
+              errors: ['message 1'],
+            ),
+          );
           // act
           final result = await repository.addDiscountCode(
             checkoutId: testId,
@@ -385,13 +393,38 @@ void main() {
                 CheckoutUserFailure(
                   userErrors: [
                     CheckoutUserError(
-                      message: 'Something went wrong',
-                      code: 'UKNOWN',
+                      message: 'message 1',
+                      code: '',
                       fields: [],
                     )
                   ],
                 ),
               ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'should return a ServerFailure when the call to the data source throws a generic or unchecked exception',
+        () async {
+          // arrange
+          when(() => mockCheckoutDataSource.addDiscountCode(
+                checkoutId: any(named: 'checkoutId'),
+                discountCode: any(named: 'discountCode'),
+              )).thenThrow(
+            Exception(),
+          );
+          // act
+          final result = await repository.addDiscountCode(
+            checkoutId: testId,
+            discountCode: testDiscountCode,
+          );
+          // assert
+          expect(
+            result,
+            equals(
+              Left(ServerFailure()),
             ),
           );
         },

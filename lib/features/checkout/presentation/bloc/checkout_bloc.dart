@@ -122,7 +122,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
                 ),
               );
             } else {
-              emit(CheckoutError(failure: ServerFailure()));
+              emit(CheckoutError(failure: failure));
             }
           }, (shopCheckout) {
             emit(

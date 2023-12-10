@@ -117,7 +117,7 @@ void main() {
         productType: 'Test Type',
         vendor: 'Test Vendor',
         tags: ['tag1', 'tag2'],
-        option: [
+        options: [
           Option(
             id: '1',
             name: 'Test Option',

@@ -9,6 +9,7 @@ import 'package:ecom_template/core/presentation/widgets/buttons.dart'
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/bag/bag_bloc.dart';
 import 'package:ecom_template/features/bag/presentation/bloc/options_selection/options_selection_bloc.dart';
+import 'package:ecom_template/features/checkout/presentation/widgets/buttons.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
@@ -707,27 +708,8 @@ class ProductPage extends StatelessWidget {
 
                                               // Apple Pay / Google Pay Button
                                               !isOutOfStock
-                                                  ? buttons.CtaButton(
-                                                      color: Colors.black,
+                                                  ? ApplePayButton(
                                                       onTap: () {},
-                                                      child: const Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          CustomIcon(
-                                                            Icons.apple,
-                                                            color: Colors.white,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 5,
-                                                          ),
-                                                          TextSubHeadline(
-                                                            text: 'Pay',
-                                                            color: Colors.white,
-                                                          ),
-                                                        ],
-                                                      ),
                                                     )
                                                   : const SizedBox(),
                                             ],

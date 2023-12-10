@@ -1,4 +1,5 @@
 import 'package:ecom_template/features/checkout/presentation/widgets/checkout_sheet_web.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class WebCheckoutPage extends StatelessWidget {
@@ -26,11 +27,14 @@ class WebCheckoutPage extends StatelessWidget {
         ),
         actions: [
           // Debug complete order
-          IconButton(
-            onPressed: () {
-              onComplete(true);
-            },
-            icon: const Icon(Icons.check),
+          Visibility(
+            visible: !kReleaseMode,
+            child: IconButton(
+              onPressed: () {
+                onComplete(true);
+              },
+              icon: const Icon(Icons.check),
+            ),
           ),
         ],
       ),

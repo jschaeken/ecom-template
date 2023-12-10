@@ -139,20 +139,24 @@ class ShopCheckoutModel extends ShopCheckout {
       note: checkout.note,
       webUrl: checkout.webUrl,
       updatedAt: checkout.updatedAt,
-      totalDiscountApplied: Price(
-        amount: _calculateTotalDiscountAmount(checkout.lineItems),
-        currencyCode: checkout.currencyCode,
+      totalDiscountApplied: _calculateTotalDiscountApplied(
+        checkout.lineItems,
+        checkout.currencyCode,
       ),
     );
   }
 }
 
-double _calculateTotalDiscountAmount(List<LineItem> lineItems) {
+Price? _calculateTotalDiscountApplied(
+    List<LineItem> lineItems, String currencyCode) {
   double totalDiscount = 0;
   for (LineItem lineItem in lineItems) {
     for (DiscountAllocations discount in lineItem.discountAllocations) {
       totalDiscount += discount.allocatedAmount?.amount ?? 0;
     }
   }
-  return totalDiscount;
+  if (totalDiscount == 0) {
+    return null;
+  }
+  return Price(amount: totalDiscount, currencyCode: currencyCode);
 }

@@ -43,7 +43,7 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(InternetConnectionFailure());
+      return const Left(InternetConnectionFailure());
     }
   }
 
@@ -67,7 +67,7 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(InternetConnectionFailure());
+      return const Left(InternetConnectionFailure());
     }
   }
 
@@ -92,9 +92,9 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
             debugPrint(error?.runtimeType.toString() ?? 'Unknown runtimetype');
             userErrors.add(
               CheckoutUserError(
-                code: error['code'] ?? '',
-                fields: error['field'] ?? '',
-                message: error['message'] ?? '',
+                code: '1',
+                fields: const [],
+                message: error ?? 'Unknown error',
               ),
             );
           }
@@ -106,7 +106,7 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(InternetConnectionFailure());
+      return const Left(InternetConnectionFailure());
     }
   }
 
@@ -123,7 +123,7 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
         return Left(ServerFailure());
       }
     } else {
-      return Left(InternetConnectionFailure());
+      return const Left(InternetConnectionFailure());
     }
   }
 }

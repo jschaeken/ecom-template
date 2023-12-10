@@ -76,6 +76,9 @@ class BagItem extends ShopProductProductVariant {
   @HiveField(16)
   final String uniqueKey;
 
+  @HiveField(17)
+  final bool isOutOfStock;
+
   const BagItem({
     required this.title,
     required this.id,
@@ -94,6 +97,7 @@ class BagItem extends ShopProductProductVariant {
     required this.quantity,
     required this.parentProductId,
     this.uniqueKey = 'none',
+    this.isOutOfStock = false,
   }) : super(
           price: price,
           title: title,
@@ -130,6 +134,7 @@ class BagItem extends ShopProductProductVariant {
         quantity,
         parentProductId,
         uniqueKey,
+        isOutOfStock,
       ];
 
   static BagItem fromShopProductVariant({
@@ -155,6 +160,7 @@ class BagItem extends ShopProductProductVariant {
       unitPriceMeasurement: productVariant.unitPriceMeasurement,
       quantity: quantity,
       parentProductId: parentProductId,
+      isOutOfStock: productVariant.quantityAvailable < quantity,
     );
   }
 

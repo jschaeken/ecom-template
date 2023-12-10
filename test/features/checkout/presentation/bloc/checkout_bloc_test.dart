@@ -429,16 +429,17 @@ void main() {
     test(
       'should emit [CheckoutLoading, CheckoutError] when getting data fails',
       () async {
+        final tFailure = ServerFailure();
         // arrange
         when(() => mockAddDiscountCode(any())).thenAnswer(
-          (_) async => const Left(CheckoutUserFailure(userErrors: [])),
+          (_) async => Left(tFailure),
         );
 
         // assert later
         final expected = [
           CheckoutLoading(),
-          const CheckoutError(
-            failure: CheckoutUserFailure(userErrors: []),
+          CheckoutError(
+            failure: tFailure,
           )
         ];
         expectLater(
@@ -446,10 +447,10 @@ void main() {
           emitsInOrder(expected),
         );
         // act
-        checkoutBloc.add(const AddDiscountCodeEvent(
-          checkout: tCheckout,
-          discountCode: 'discountCode',
-        ));
+        checkoutBloc.add(
+          const AddDiscountCodeEvent(
+              checkout: tCheckout, discountCode: 'discountCode'),
+        );
       },
     );
   });

@@ -86,6 +86,7 @@ class AccountPage extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               itemCount: accountTileInfo.length,
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return AccountPageTile(
                   accountTileInfo: accountTileInfo[index],

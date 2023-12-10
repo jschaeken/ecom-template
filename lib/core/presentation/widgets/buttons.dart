@@ -58,7 +58,7 @@ class CtaButton extends StatelessWidget {
     required this.onTap,
     this.color,
     this.width = double.infinity,
-    this.height = 43,
+    this.height = 50,
     this.disabled = false,
   });
 

@@ -1,5 +1,6 @@
 import 'package:ecom_template/core/error/exceptions.dart';
 import 'package:ecom_template/features/customer/data/datasources/customer_auth_datasource.dart';
+import 'package:ecom_template/features/customer/data/datasources/customer_info_datasource.dart';
 import 'package:ecom_template/features/customer/data/models/shopify_user_model.dart';
 import 'package:ecom_template/features/customer/domain/entities/address.dart';
 import 'package:ecom_template/features/customer/domain/entities/last_incomplete_checkout.dart';
@@ -15,12 +16,18 @@ import 'package:shopify_flutter/shopify/src/shopify_auth.dart';
 
 class MockShopifyAuth extends Mock implements ShopifyAuth {}
 
+class MockCustomerInfoDataSourceImpl extends Mock
+    implements CustomerInfoDataSource {}
+
 void main() {
   late MockShopifyAuth mockShopifyAuth;
-  late CustomerAuthDatasourceImpl customerAuthDataSourceImpl;
+  late CustomerAuthDatasource customerAuthDataSourceImpl;
+  late MockCustomerInfoDataSourceImpl mockCustomerInfoDataSourceImpl;
   setUp(() {
     mockShopifyAuth = MockShopifyAuth();
+    mockCustomerInfoDataSourceImpl = MockCustomerInfoDataSourceImpl();
     customerAuthDataSourceImpl = CustomerAuthDatasourceImpl(
+      customerInfoDataSource: mockCustomerInfoDataSourceImpl,
       shopifyAuth: mockShopifyAuth,
     );
   });
@@ -124,6 +131,10 @@ void main() {
             email: testEmail,
             password: testPassword,
           )).thenAnswer((_) async => shopifyUser);
+      when(() => mockShopifyAuth.currentCustomerAccessToken)
+          .thenAnswer((invocation) => Future.value('token'));
+      when(() => mockCustomerInfoDataSourceImpl.setCustomerAccessToken(
+          token: any(named: 'token'))).thenAnswer((_) async {});
       // act
       final result = await customerAuthDataSourceImpl
           .signInWithEmailAndPassword(email: testEmail, password: testPassword);

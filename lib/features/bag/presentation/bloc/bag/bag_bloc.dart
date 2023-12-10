@@ -41,16 +41,16 @@ class BagBloc extends Bloc<BagEvent, BagState> {
     required this.updateBagItem,
     required this.calculateBagTotals,
   }) : super(BagInitial()) {
-    checkoutBloc.stream.listen((checkoutState) async {
-      log('CheckoutState listened from bagBloc: $checkoutState');
-      switch (checkoutState.runtimeType) {
-        case CheckoutCompleted:
-          debugPrint('CHECKOUT STATE COMPLETED: $checkoutState');
-          log('CheckoutState listened from bagBloc: $checkoutState');
-          // add(ClearBagEvent());
-          break;
-      }
-    });
+    // checkoutBloc.stream.listen((checkoutState) async {
+    //   log('CheckoutState listened from bagBloc: $checkoutState');
+    //   switch (checkoutState.runtimeType) {
+    //     case CheckoutCompleted:
+    //       debugPrint('CHECKOUT STATE COMPLETED: $checkoutState');
+    //       log('CheckoutState listened from bagBloc: $checkoutState');
+    //       // add(ClearBagEvent());
+    //       break;
+    //   }
+    // });
 
     on<BagEvent>((event, emit) async {
       switch (event.runtimeType) {
@@ -101,6 +101,9 @@ class BagBloc extends Bloc<BagEvent, BagState> {
           debugPrint('bagItemData: $bagItemData');
           break;
         case RemoveBagItemEvent:
+          ///////////////////////////////
+          //  Removing Item from Bag  //
+          //////////////////////////////
           final bagItem = (event as RemoveBagItemEvent).bagItem;
           final bagItemData = BagItemData(
             parentProductId: bagItem.parentProductId,

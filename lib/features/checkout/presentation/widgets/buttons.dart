@@ -46,29 +46,26 @@ class ApplePayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: Constants.padding.copyWith(top: 0, bottom: 0),
-      child: buttons.CtaButton(
-        height: 50,
-        width: double.infinity,
-        color: Theme.of(context).primaryColor,
-        onTap: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomIcon(
-              Icons.apple,
-              color: Theme.of(context).canvasColor,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            TextHeadline(
-              text: 'Pay',
-              color: Theme.of(context).canvasColor,
-            ),
-          ],
-        ),
+    return buttons.CtaButton(
+      height: 50,
+      width: double.infinity,
+      color: Theme.of(context).primaryColor,
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomIcon(
+            Icons.apple,
+            color: Theme.of(context).canvasColor,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          TextHeadline(
+            text: 'Pay',
+            color: Theme.of(context).canvasColor,
+          ),
+        ],
       ),
     );
   }
