@@ -11,7 +11,7 @@ abstract class BagRepository {
 
   Future<Either<Failure, WriteSuccess>> addBagItem(BagItemData bagItemData);
 
-  Future<Either<Failure, WriteSuccess>> removeBagItem(BagItemData bagItemData);
+  Future<Either<Failure, WriteSuccess>> removeBagItem(int bagItemIndex);
 
   Future<Either<Failure, WriteSuccess>> updateBagItem(BagItemData bagItemData);
 

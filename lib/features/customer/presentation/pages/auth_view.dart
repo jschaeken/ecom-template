@@ -46,6 +46,7 @@ class AuthView extends StatelessWidget {
               customerAuthState as CustomerUnauthenticatedLogin;
               return LoginPage(
                 errors: customerAuthState.errors,
+                isLoading: false,
               );
             case CustomerAuthError:
               customerAuthState as CustomerAuthError;

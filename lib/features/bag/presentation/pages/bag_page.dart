@@ -174,9 +174,7 @@ class _BagPageState extends State<BagPage> {
                                   key: Key(state.bagItems[index].id),
                                   onDismissed: (direction) =>
                                       BlocProvider.of<BagBloc>(context).add(
-                                    RemoveBagItemEvent(
-                                      bagItem: state.bagItems[index],
-                                    ),
+                                    RemoveBagItemEvent(bagItemIndex: index),
                                   ),
                                   child: SavedProductListTile(
                                     isOutOfStock:

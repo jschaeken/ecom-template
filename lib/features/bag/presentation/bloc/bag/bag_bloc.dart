@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:ecom_template/core/error/failures.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/bag_item_data_to_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/clear_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
@@ -31,6 +32,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
   CalculateBagTotals calculateBagTotals;
   CheckoutBloc checkoutBloc;
   StreamSubscription<CheckoutState>? checkoutSubscription;
+  BagItemDataToBagItem bagItemDataToBagItem;
 
   BagBloc({
     required this.addBagItem,
@@ -40,6 +42,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
     required this.checkoutBloc,
     required this.updateBagItem,
     required this.calculateBagTotals,
+    required this.bagItemDataToBagItem,
   }) : super(BagInitial()) {
     // checkoutBloc.stream.listen((checkoutState) async {
     //   log('CheckoutState listened from bagBloc: $checkoutState');
@@ -65,7 +68,8 @@ class BagBloc extends Bloc<BagEvent, BagState> {
               emit(BagErrorState(failure: failure));
             },
             (success) async {
-              final bagItems = await getAllBagItems(NoParams());
+              final Either<Failure, List<BagItem>> bagItems =
+                  await getAllBagItems(NoParams());
               await bagItems.fold(
                 (failure) {
                   emit(BagErrorState(failure: failure));
@@ -74,22 +78,36 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                   if (bagItems.isEmpty) {
                     emit(BagEmptyState());
                   } else {
-                    final totals = await calculateBagTotals(bagItems);
-                    totals.fold(
+                    Either<Failure, BagItem> lastAddedItem =
+                        await bagItemDataToBagItem(BagItemDataParams(
+                      bagItemData: bagItemData,
+                      id: bagItemData.productVariantId,
+                    ));
+                    await lastAddedItem.fold(
                       (failure) {
-                        emit(
-                          BagLoadedAddedState(
-                            bagItems: bagItems,
-                            bagTotals: const BagTotals(),
-                          ),
-                        );
+                        emit(BagErrorState(failure: failure));
                       },
-                      (totals) {
-                        emit(
-                          BagLoadedAddedState(
-                            bagItems: bagItems,
-                            bagTotals: totals,
-                          ),
+                      (lastAddedItem) async {
+                        final totals = await calculateBagTotals(bagItems);
+                        totals.fold(
+                          (failure) {
+                            emit(
+                              BagLoadedAddedState(
+                                bagItems: bagItems,
+                                bagTotals: const BagTotals(),
+                                lastAddedItem: lastAddedItem,
+                              ),
+                            );
+                          },
+                          (totals) {
+                            emit(
+                              BagLoadedAddedState(
+                                bagItems: bagItems,
+                                bagTotals: totals,
+                                lastAddedItem: lastAddedItem,
+                              ),
+                            );
+                          },
                         );
                       },
                     );
@@ -104,15 +122,10 @@ class BagBloc extends Bloc<BagEvent, BagState> {
           ///////////////////////////////
           //  Removing Item from Bag  //
           //////////////////////////////
-          final bagItem = (event as RemoveBagItemEvent).bagItem;
-          final bagItemData = BagItemData(
-            parentProductId: bagItem.parentProductId,
-            productVariantTitle: bagItem.title,
-            productVariantId: bagItem.id,
-            quantity: bagItem.quantity,
-            isOutOfStock: bagItem.quantityAvailable < bagItem.quantity,
-          );
-          final result = await removeBagItem(bagItemData);
+          final bagItemIndex = (event as RemoveBagItemEvent).bagItemIndex;
+          RemBagItemParams params =
+              RemBagItemParams(bagItemIndex: bagItemIndex);
+          final result = await removeBagItem(params);
           await result.fold(
             (failure) {
               emit(BagErrorState(failure: failure));
@@ -167,7 +180,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                 totals.fold(
                   (failure) {
                     emit(
-                      BagLoadedAddedState(
+                      BagLoadedState(
                         bagItems: bagItems,
                         bagTotals: const BagTotals(),
                       ),
@@ -175,7 +188,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                   },
                   (totals) {
                     emit(
-                      BagLoadedAddedState(
+                      BagLoadedState(
                         bagItems: bagItems,
                         bagTotals: totals,
                       ),
@@ -215,7 +228,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                     totals.fold(
                       (failure) {
                         emit(
-                          BagLoadedAddedState(
+                          BagLoadedState(
                             bagItems: bagItems,
                             bagTotals: const BagTotals(),
                           ),
@@ -223,7 +236,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                       },
                       (totals) {
                         emit(
-                          BagLoadedAddedState(
+                          BagLoadedState(
                             bagItems: bagItems,
                             bagTotals: totals,
                           ),
@@ -256,7 +269,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                     totals.fold(
                       (failure) {
                         emit(
-                          BagLoadedAddedState(
+                          BagLoadedState(
                             bagItems: bagItems,
                             bagTotals: const BagTotals(),
                           ),
@@ -264,7 +277,7 @@ class BagBloc extends Bloc<BagEvent, BagState> {
                       },
                       (totals) {
                         emit(
-                          BagLoadedAddedState(
+                          BagLoadedState(
                             bagItems: bagItems,
                             bagTotals: totals,
                           ),

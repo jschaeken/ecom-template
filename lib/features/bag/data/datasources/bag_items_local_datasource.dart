@@ -11,7 +11,7 @@ abstract class BagItemsLocalDataSource {
   Future<void> addBagItemData(BagItemData bagItem);
 
   /// Removes a [BagItemData] from the local storage
-  Future<void> removeBagItemData(String id);
+  Future<void> removeBagItemData(int index);
 
   /// Adds a [BagItemData] in the local storage with the same uniqueKey and sums the new quantity to the existing quantity
   Future<void> addBagItemDataQuantity(String entryId, int quantity);
@@ -49,12 +49,9 @@ class BagItemsLocalDataSourceImpl implements BagItemsLocalDataSource {
   }
 
   @override
-  Future<void> removeBagItemData(String id) async {
+  Future<void> removeBagItemData(int index) async {
     final hiveBox = await _getOpenBox();
-    if (hiveBox.containsKey(id)) {
-      await hiveBox.delete(id);
-      return;
-    }
+    return await hiveBox.deleteAt(index);
   }
 
   @override

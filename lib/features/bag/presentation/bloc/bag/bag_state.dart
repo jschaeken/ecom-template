@@ -32,7 +32,12 @@ final class BagLoadedAddedState extends BagState {
   @override
   final BagTotals bagTotals;
 
-  const BagLoadedAddedState({required this.bagItems, required this.bagTotals});
+  final BagItem lastAddedItem;
+
+  const BagLoadedAddedState(
+      {required this.bagItems,
+      required this.bagTotals,
+      required this.lastAddedItem});
 
   @override
   List<Object> get props => [bagItems, bagTotals];

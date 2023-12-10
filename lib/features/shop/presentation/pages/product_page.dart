@@ -12,6 +12,7 @@ import 'package:ecom_template/features/bag/presentation/bloc/options_selection/o
 import 'package:ecom_template/features/checkout/presentation/widgets/buttons.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
+import 'package:ecom_template/features/favorites/presentation/widgets/stateful_favorites_button.dart';
 import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/shopping/shopping_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/widgets/image_gallery.dart';
@@ -99,7 +100,7 @@ class ProductPage extends StatelessWidget {
               return const InitialStateWidget();
             }
             if (state is ShoppingLoading) {
-              return const TextBody(text: 'Loading...');
+              return const TextHeadline(text: 'Loading...');
             }
             if (state is ShoppingLoadedById) {
               return TextHeadline(text: state.product.title);
@@ -118,6 +119,35 @@ class ProductPage extends StatelessWidget {
             size: 22,
           ),
         ),
+        actions: [
+          BlocBuilder<ShoppingBloc, ShoppingState>(
+            builder: (context, state) {
+              if (state is ShoppingInitial) {
+                return const SizedBox();
+              }
+              if (state is ShoppingLoading) {
+                return const SizedBox();
+              }
+              if (state is ShoppingLoadedById) {
+                return Row(
+                  children: [
+                    StatefulFavoriteButton(
+                      productId: state.product.id,
+                    ),
+                    const StandardSpacing(
+                      horizontalAxis: true,
+                      multiplier: 0.5,
+                    ),
+                  ],
+                );
+              } else if (state is ShoppingError) {
+                return const SizedBox();
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -477,9 +507,6 @@ class ProductPage extends StatelessWidget {
                             }),
 
                             const StandardSpacing(),
-
-                            // Size Selector and favorite button
-                            // TODO: Add favorite button
                           ],
                         ),
                       ),
@@ -500,9 +527,10 @@ class ProductPage extends StatelessWidget {
                                 );
                               }
                               if (shopState is ShoppingLoadedById) {
-                                return Row(
+                                return const Row(
                                   children: [
-                                    BlocBuilder<OptionsSelectionBloc,
+                                    // Quantity Selector
+                                    /* BlocBuilder<OptionsSelectionBloc,
                                             OptionsSelectionState>(
                                         builder: (context, optionState) {
                                       switch (optionState.runtimeType) {
@@ -545,67 +573,8 @@ class ProductPage extends StatelessWidget {
                                           return const SizedBox();
                                       }
                                     }),
-                                    const Spacer(),
-                                    // Favorite Button
-                                    BlocBuilder<FavoritesBloc, FavoritesState>(
-                                      builder: (context, favState) {
-                                        switch (favState.runtimeType) {
-                                          case FavoritesInitial:
-                                            return const LoadingStateWidget(
-                                              height: 50,
-                                              width: 50,
-                                            );
-                                          case FavoritesLoading:
-                                            return const LoadingStateWidget(
-                                              height: 50,
-                                              width: 50,
-                                            );
-                                          case FavoritesLoaded ||
-                                                FavoritesAddedLoaded ||
-                                                FavoritesRemovedLoaded ||
-                                                FavoritesEmpty:
-                                            final isFavorite = favState
-                                                .favorites
-                                                .map((e) => e.parentProdId)
-                                                .toList()
-                                                .contains(shopState.product.id);
-                                            log('is favorite: $isFavorite');
-                                            return FavoriteButton(
-                                              isFavorite: isFavorite,
-                                              onFavoriteTap: () {
-                                                if (isFavorite) {
-                                                  BlocProvider.of<
-                                                              FavoritesBloc>(
-                                                          context)
-                                                      .add(
-                                                    RemoveFavoriteEvent(
-                                                      favorite: Favorite(
-                                                        parentProdId: shopState
-                                                            .product.id,
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  BlocProvider.of<
-                                                              FavoritesBloc>(
-                                                          context)
-                                                      .add(
-                                                    AddFavoriteEvent(
-                                                      favorite: Favorite(
-                                                        parentProdId: shopState
-                                                            .product.id,
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            );
-                                          case FavoritesError:
-                                          default:
-                                            return const SizedBox();
-                                        }
-                                      },
-                                    )
+                                    */
+                                    Spacer(),
                                   ],
                                 );
                               } else {

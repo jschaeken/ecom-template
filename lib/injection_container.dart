@@ -4,6 +4,7 @@ import 'package:ecom_template/features/bag/data/datasources/options_selection_lo
 import 'package:ecom_template/features/bag/data/repositories/bag_repository_impl.dart';
 import 'package:ecom_template/features/bag/domain/repositories/bag_repository.dart';
 import 'package:ecom_template/features/bag/domain/usecases/add_bag_item.dart';
+import 'package:ecom_template/features/bag/domain/usecases/bag_item_data_to_bag_item.dart';
 import 'package:ecom_template/features/bag/domain/usecases/calculate_bag_totals.dart';
 import 'package:ecom_template/features/bag/domain/usecases/clear_bag_items.dart';
 import 'package:ecom_template/features/bag/domain/usecases/get_all_bag_items.dart';
@@ -119,6 +120,7 @@ Future<void> init() async {
       bagItemsDataSource: sl(),
       optionsSelectionDataSource: sl(),
       productRemoteDataSource: sl(),
+      bagItemDataToBagItem: sl(),
     ),
   );
   // Use Cases
@@ -128,6 +130,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateBagItem(repository: sl()));
   sl.registerLazySingleton(() => ClearBagItems(repository: sl()));
   sl.registerLazySingleton(() => CalculateBagTotals());
+  sl.registerLazySingleton(() => BagItemDataToBagItem(repository: sl()));
   // Blocs
   sl.registerLazySingleton(
     () => BagBloc(
@@ -138,6 +141,7 @@ Future<void> init() async {
       clearBagItems: sl(),
       updateBagItem: sl(),
       calculateBagTotals: sl(),
+      bagItemDataToBagItem: sl(),
     ),
   );
 

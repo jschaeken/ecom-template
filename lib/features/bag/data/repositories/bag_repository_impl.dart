@@ -8,19 +8,20 @@ import 'package:ecom_template/features/bag/domain/entities/bag_item.dart';
 import 'package:ecom_template/features/bag/domain/entities/bag_item_data.dart';
 import 'package:ecom_template/features/bag/domain/entities/options_selection.dart';
 import 'package:ecom_template/features/bag/domain/repositories/bag_repository.dart';
+import 'package:ecom_template/features/bag/domain/usecases/bag_item_data_to_bag_item.dart';
 import 'package:ecom_template/features/shop/data/datasources/product_remote_datasource.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
-import 'package:flutter/foundation.dart';
 
 class BagRepositoryImpl implements BagRepository {
   final BagItemsLocalDataSource bagItemsDataSource;
   final OptionsSelectionDataSource optionsSelectionDataSource;
   final ProductRemoteDataSource productRemoteDataSource;
+  final BagItemDataToBagItem bagItemDataToBagItem;
 
   BagRepositoryImpl(
       {required this.bagItemsDataSource,
       required this.optionsSelectionDataSource,
-      required this.productRemoteDataSource});
+      required this.productRemoteDataSource,
+      required this.bagItemDataToBagItem});
 
   @override
   Future<Either<Failure, List<BagItem>>> getBagItems() async {
@@ -34,31 +35,12 @@ class BagRepositoryImpl implements BagRepository {
       }
       List<BagItem> bagItems = [];
       for (BagItemData bagItemData in cacheResponse) {
-        // Get product from remote
-        ShopProduct? product;
-        try {
-          product = await productRemoteDataSource
-              .getProductById(bagItemData.parentProductId);
-        } catch (e) {
-          throw ServerException();
-        }
-        // Get the saved product variant from the ShopProduct
-        try {
-          ShopProductProductVariant selectedVariant = product.productVariants
-              .firstWhere(
-                  (element) => element.id == bagItemData.productVariantId);
-          bagItems.add(
-            BagItem.fromShopProductVariant(
-              parentProductTitle: product.title,
-              productVariant: selectedVariant,
-              quantity: bagItemData.quantity,
-              parentProductId: bagItemData.parentProductId,
-            ),
-          );
-        } catch (e) {
-          debugPrint(e.toString());
-          continue;
-        }
+        final result = await bagItemDataToBagItem(BagItemDataParams(
+            bagItemData: bagItemData, id: bagItemData.productVariantId));
+        result.fold(
+          (l) {},
+          (bagItem) => bagItems.add(bagItem),
+        );
       }
       return Right(bagItems);
     } on CacheException {
@@ -83,10 +65,9 @@ class BagRepositoryImpl implements BagRepository {
   }
 
   @override
-  Future<Either<Failure, WriteSuccess>> removeBagItem(
-      BagItemData bagItemData) async {
+  Future<Either<Failure, WriteSuccess>> removeBagItem(int bagItemIndex) async {
     try {
-      await bagItemsDataSource.removeBagItemData(bagItemData.productVariantId);
+      await bagItemsDataSource.removeBagItemData(bagItemIndex);
       return const Right(WriteSuccess());
     } catch (e) {
       return Left(CacheFailure());

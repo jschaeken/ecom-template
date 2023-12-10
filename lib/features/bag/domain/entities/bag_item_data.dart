@@ -20,12 +20,16 @@ class BagItemData extends Equatable {
   @HiveField(4)
   final bool isOutOfStock;
 
+  @HiveField(5)
+  final String? bagKey;
+
   const BagItemData({
     required this.parentProductId,
     required this.quantity,
     required this.productVariantId,
     required this.productVariantTitle,
     required this.isOutOfStock,
+    this.bagKey,
   });
 
   @override
@@ -35,5 +39,6 @@ class BagItemData extends Equatable {
         productVariantId,
         productVariantTitle,
         isOutOfStock,
+        bagKey ?? '',
       ];
 }

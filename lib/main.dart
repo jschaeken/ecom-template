@@ -109,4 +109,5 @@ Future<void> initialConfig() async {
   await injection.init();
 
   Hive.deleteBoxFromDisk(Constants.OPTIONS_BOX_NAME);
+  // Hive.deleteBoxFromDisk(Constants.BAG_BOX_NAME);
 }

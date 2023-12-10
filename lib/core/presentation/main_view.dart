@@ -58,6 +58,7 @@ class _MainViewState extends State<MainView> {
       pageNavigationProvider: context.read<PageNavigationProvider>(),
       stream: BlocProvider.of<BagBloc>(context).stream,
       context: context,
+      checkoutBloc: BlocProvider.of<CheckoutBloc>(context),
     );
     checkoutStreamSubscription = setCheckoutListerOrderCompletePopUp(
       stream: BlocProvider.of<CheckoutBloc>(context).stream,

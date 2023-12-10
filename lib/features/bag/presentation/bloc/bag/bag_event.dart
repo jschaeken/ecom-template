@@ -17,12 +17,12 @@ class AddBagItemEvent extends BagEvent {
 }
 
 class RemoveBagItemEvent extends BagEvent {
-  final BagItem bagItem;
+  final int bagItemIndex;
 
-  const RemoveBagItemEvent({required this.bagItem});
+  const RemoveBagItemEvent({required this.bagItemIndex});
 
   @override
-  List<Object> get props => [bagItem];
+  List<Object> get props => [bagItemIndex];
 }
 
 class ClearBagEvent extends BagEvent {}
