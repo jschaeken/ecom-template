@@ -58,3 +58,7 @@ class CreateAccountEvent extends CustomerAuthEvent {
         acceptsMarketing,
       ];
 }
+
+class ContinueAsGuestEvent extends CustomerAuthEvent {}
+
+class GuestSignInEvent extends CustomerAuthEvent {}

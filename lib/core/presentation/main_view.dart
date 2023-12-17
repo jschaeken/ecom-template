@@ -96,10 +96,10 @@ class _MainViewState extends State<MainView> {
             items: tabBarItems.map((tabBarItem) {
               return BottomNavigationBarItem(
                 icon: tabBarItem.name == 'Bag'
-                    ? BagNotiIcon(iconData: tabBarItem.iconPairs.active)
+                    ? BagNotiIcon(iconData: tabBarItem.iconPairs.inactive)
                     : tabBarItem.name == 'Favorites'
                         ? FavoritesNotiIcon(
-                            iconData: tabBarItem.iconPairs.active)
+                            iconData: tabBarItem.iconPairs.inactive)
                         : Icon(tabBarItem.iconPairs.inactive),
                 activeIcon: Icon(tabBarItem.iconPairs.active),
                 label: tabBarItem.name,

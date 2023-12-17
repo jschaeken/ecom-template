@@ -50,4 +50,14 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
       return Left(CacheFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, WriteSuccess>> removeAllFavorites() async {
+    try {
+      await localDataSource.removeAllFavorites();
+      return const Right(WriteSuccess());
+    } catch (e) {
+      return Left(CacheFailure());
+    }
+  }
 }

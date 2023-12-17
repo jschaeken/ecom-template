@@ -177,39 +177,39 @@ class _CategoryShopState extends State<CategoryShop> {
             ),
 
             // Featured Brands Grid View Title
-            Padding(
-              padding: Constants.padding,
-              child: TextHeadline(text: 'Featured ${widget.id} Brands'),
-            ),
+            // Padding(
+            //   padding: Constants.padding,
+            //   child: TextHeadline(text: 'Featured ${widget.id} Brands'),
+            // ),
 
             // Featured Brands Grid View
-            BlocBuilder<ShoppingBloc, ShoppingState>(builder: (context, state) {
-              if (state is ShoppingLoaded) {
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: Constants.padding.copyWith(top: 0),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.7,
-                    crossAxisSpacing: Constants.padding.right.abs(),
-                    mainAxisSpacing: Constants.padding.bottom.abs(),
-                  ),
-                  itemCount: featuredBrandImages.length,
-                  itemBuilder: (context, index) {
-                    return FeaturedBrandTile(brand: featuredBrandImages[index]);
-                  },
-                );
-              } else if (state is ShoppingLoading) {
-                return const SizedBox();
-              } else if (state is ShoppingError) {
-                return const SizedBox();
-              } else if (state is ShoppingInitial) {
-                return const SizedBox();
-              } else {
-                return const SizedBox();
-              }
-            }),
+            // BlocBuilder<ShoppingBloc, ShoppingState>(builder: (context, state) {
+            //   if (state is ShoppingLoaded) {
+            //     return GridView.builder(
+            //       shrinkWrap: true,
+            //       physics: const NeverScrollableScrollPhysics(),
+            //       padding: Constants.padding.copyWith(top: 0),
+            //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //         crossAxisCount: 2,
+            //         childAspectRatio: 1.7,
+            //         crossAxisSpacing: Constants.padding.right.abs(),
+            //         mainAxisSpacing: Constants.padding.bottom.abs(),
+            //       ),
+            //       itemCount: featuredBrandImages.length,
+            //       itemBuilder: (context, index) {
+            //         return FeaturedBrandTile(brand: featuredBrandImages[index]);
+            //       },
+            //     );
+            //   } else if (state is ShoppingLoading) {
+            //     return const SizedBox();
+            //   } else if (state is ShoppingError) {
+            //     return const SizedBox();
+            //   } else if (state is ShoppingInitial) {
+            //     return const SizedBox();
+            //   } else {
+            //     return const SizedBox();
+            //   }
+            // }),
 
             //List of Product Categories Title
             Padding(

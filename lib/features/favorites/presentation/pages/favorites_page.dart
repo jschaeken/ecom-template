@@ -27,7 +27,6 @@ class FavoritesPage extends StatelessWidget {
         children: [
           HeaderRow(
             pageTitle: pageTitle,
-            accountInitials: 'JS',
           ),
           BlocBuilder<FavoritesBloc, FavoritesState>(
             builder: (context, favoritesState) {

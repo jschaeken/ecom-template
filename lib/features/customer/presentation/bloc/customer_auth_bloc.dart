@@ -96,6 +96,9 @@ class CustomerAuthBloc extends Bloc<CustomerAuthEvent, CustomerAuthState> {
         case PushLoginStateEvent:
           emit(const CustomerUnauthenticatedLogin());
           break;
+        case ContinueAsGuestEvent:
+          emit(CustomerGuestAuthenticated());
+          break;
       }
     });
   }

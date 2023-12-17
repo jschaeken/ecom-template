@@ -27,17 +27,6 @@ StreamSubscription<BagState>? setBagListerForPopUp({
             checkoutBloc.add(
               AddToCheckoutEvent(
                 bagItems: event.bagItems,
-                email: 'none',
-                shippingAddress: const ShopShippingAddress(
-                  id: null,
-                  address1: null,
-                  city: null,
-                  country: null,
-                  zip: null,
-                  firstName: null,
-                  lastName: null,
-                  name: null,
-                ),
               ),
             );
           },

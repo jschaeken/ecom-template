@@ -1,23 +1,25 @@
+import 'package:ecom_template/core/config.dart';
 import 'package:ecom_template/core/constants.dart';
+import 'package:ecom_template/core/presentation/state_managment/navigation_provider.dart';
 import 'package:ecom_template/core/presentation/widgets/icon_components.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:ecom_template/features/shop/presentation/bloc/searching/searching_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_launcher_icons/config/config.dart';
 
 class HeaderRow extends StatelessWidget {
   const HeaderRow({
     super.key,
     required this.pageTitle,
-    required this.accountInitials,
     this.child,
     this.shadow = true,
     this.centerTitle = false,
   });
 
   final String pageTitle;
-  final String? accountInitials;
   final Widget? child;
   final bool shadow;
   final bool centerTitle;
@@ -52,12 +54,41 @@ class HeaderRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       TextHeadline(text: pageTitle),
-                      CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        child: TextBody(
-                          text: accountInitials ?? '',
-                          color: Theme.of(context).canvasColor,
-                        ),
+                      BlocBuilder<CustomerAuthBloc, CustomerAuthState>(
+                        builder: (context, state) {
+                          if (state is CustomerAuthenticated) {
+                            final initials = {
+                              state.user.firstName?.substring(0, 1) ?? '',
+                              state.user.lastName?.substring(0, 1) ?? ''
+                            }.join();
+                            return GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<PageNavigationProvider>()
+                                    .changeIndex(TabBarItems.account.idx);
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                child: TextBody(
+                                  text: initials,
+                                  color: Theme.of(context).canvasColor,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return GestureDetector(
+                              onTap: () {
+                                BlocProvider.of<CustomerAuthBloc>(context)
+                                    .add(GuestSignInEvent());
+                              },
+                              child: CircleAvatar(
+                                backgroundColor:
+                                    Theme.of(context).unselectedWidgetColor,
+                                child: const Icon(CupertinoIcons.person),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),

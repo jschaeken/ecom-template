@@ -1,3 +1,4 @@
+import 'package:ecom_template/features/customer/domain/entities/address.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopify_flutter/models/src/checkout/mailing_address/mailing_address.dart';
 import 'package:shopify_flutter/models/src/order/shipping_address/shipping_address.dart';
@@ -147,6 +148,28 @@ class ShopShippingAddress extends Equatable {
       phone: shippingAddress?.phone,
       province: shippingAddress?.province,
       provinceCode: shippingAddress?.provinceCode,
+    );
+  }
+
+  static fromShopAddress(ShopAddress address) {
+    return ShopShippingAddress(
+      id: address.id,
+      address1: address.address1,
+      city: address.city,
+      country: address.country,
+      zip: address.zip,
+      lastName: address.lastName,
+      name: address.name,
+      firstName: address.firstName,
+      address2: address.address2,
+      company: address.company,
+      countryCodeV2: address.countryCode,
+      formattedArea: address.formattedArea,
+      latitude: double.tryParse(address.latitude ?? '-'),
+      longitude: double.tryParse(address.longitude ?? '-'),
+      phone: address.phone,
+      province: address.province,
+      provinceCode: address.provinceCode,
     );
   }
 }

@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:ecom_template/core/usecases/usecase.dart';
 import 'package:ecom_template/features/favorites/domain/entities/favorite.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/add_favorite.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorite_by_id.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/remove_all_favorites.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/shared.dart';
-import 'package:ecom_template/features/shop/domain/entities/shop_product.dart';
 import 'package:ecom_template/features/shop/domain/usecases/get_concrete_product_by_id.dart';
 import 'package:equatable/equatable.dart';
 
@@ -21,6 +19,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
   final GetFavoriteById getFavoriteUseCase;
   final GetFavorites getFavoritesUseCase;
   final GetProductById getProductById;
+  final RemoveAllFavorites removeAllFavorites;
 
   FavoritesBloc({
     required this.addFavoriteUseCase,
@@ -28,6 +27,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
     required this.getFavoritesUseCase,
     required this.getProductById,
     required this.getFavoriteUseCase,
+    required this.removeAllFavorites,
   }) : super(FavoritesInitial()) {
     on<FavoritesEvent>((event, emit) async {
       switch (event.runtimeType) {
@@ -70,6 +70,10 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
         case GetAllFavoritesEvent:
           final result = await _getUpdatedFavoriteProductsLists(emit);
           emit(FavoritesLoaded(favorites: result));
+          break;
+        case ClearFavoritesEvent:
+          await removeAllFavorites(NoParams());
+          emit(const FavoritesEmpty());
           break;
       }
     });

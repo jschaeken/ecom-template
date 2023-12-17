@@ -26,3 +26,5 @@ class RemoveFavoriteEvent extends FavoritesEvent {
 }
 
 class GetAllFavoritesEvent extends FavoritesEvent {}
+
+class ClearFavoritesEvent extends FavoritesEvent {}

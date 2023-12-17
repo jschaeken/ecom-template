@@ -11,6 +11,8 @@ final class CustomerAuthInitial extends CustomerAuthState {}
 
 final class CustomerAuthLoading extends CustomerAuthState {}
 
+final class CustomerGuestAuthenticated extends CustomerAuthState {}
+
 final class CustomerAuthenticated extends CustomerAuthState {
   final ShopShopifyUser user;
 

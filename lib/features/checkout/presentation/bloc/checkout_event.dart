@@ -12,14 +12,8 @@ sealed class CheckoutEvent extends Equatable {
 }
 
 class AddToCheckoutEvent extends CheckoutEvent {
-  final String email;
-  final ShopShippingAddress shippingAddress;
-
-  const AddToCheckoutEvent({
-    required List<BagItem> bagItems,
-    required this.email,
-    required this.shippingAddress,
-  }) : super(bagItems: bagItems);
+  const AddToCheckoutEvent({required List<BagItem> bagItems})
+      : super(bagItems: bagItems);
 
   @override
   List<Object> get props => [bagItems];

@@ -40,6 +40,7 @@ import 'package:ecom_template/features/favorites/domain/repositories/favorites_r
 import 'package:ecom_template/features/favorites/domain/usecases/add_favorite.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorite_by_id.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/get_favorites.dart';
+import 'package:ecom_template/features/favorites/domain/usecases/remove_all_favorites.dart';
 import 'package:ecom_template/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:ecom_template/features/favorites/presentation/bloc/favorites_page/favorites_bloc.dart';
 import 'package:ecom_template/features/order/data/datasources/orders_remote_datasource.dart';
@@ -161,6 +162,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveFavorite(repository: sl()));
   sl.registerLazySingleton(() => GetFavorites(repository: sl()));
   sl.registerLazySingleton(() => GetFavoriteById(repository: sl()));
+  sl.registerLazySingleton(() => RemoveAllFavorites(repository: sl()));
   // Blocs
   sl.registerFactory(
     () => FavoritesBloc(
@@ -169,6 +171,7 @@ Future<void> init() async {
       getFavoritesUseCase: sl(),
       getProductById: sl(),
       getFavoriteUseCase: sl(),
+      removeAllFavorites: sl(),
     ),
   );
 
@@ -217,6 +220,7 @@ Future<void> init() async {
         bagItemsToLineItems: sl(),
         addDiscountCode: sl(),
         removeDiscountCode: sl(),
+        customerAuthBloc: sl(),
       ));
 
   /// Orders ///

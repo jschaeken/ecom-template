@@ -2,6 +2,7 @@
 
 import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/buttons.dart';
+import 'package:ecom_template/core/presentation/widgets/custom_textfield.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/safe_image.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
@@ -113,6 +114,20 @@ class LoginPage extends StatelessWidget {
                     color: Theme.of(context).canvasColor,
                   ),
                 ),
+
+                const StandardSpacing(multiplier: 2),
+                // Continue as Guest Button
+                GestureDetector(
+                    onTap: () {
+                      BlocProvider.of<CustomerAuthBloc>(context)
+                          .add(ContinueAsGuestEvent());
+                    },
+                    child: Padding(
+                      padding: Constants.padding,
+                      child: const TextSubHeadline(
+                          text: 'Continue as Guest',
+                          decoration: TextDecoration.underline),
+                    )),
               ],
             ),
           ),
@@ -127,55 +142,6 @@ class LoginPage extends StatelessWidget {
             ),
         ],
       ),
-    );
-  }
-}
-
-class CustomTextfield extends StatelessWidget {
-  final String text;
-  final TextEditingController controller;
-  final TextInputType? keyboardType;
-  final String? errorText;
-  final bool obscureText;
-
-  const CustomTextfield({
-    super.key,
-    required this.text,
-    required this.controller,
-    this.keyboardType,
-    this.errorText,
-    this.obscureText = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      obscureText: obscureText,
-      cursorColor: Theme.of(context).primaryColor,
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: text,
-        errorText: errorText,
-        labelStyle: TextStyle(
-          color: Theme.of(context).primaryColor,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Theme.of(context).unselectedWidgetColor),
-        ),
-        errorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 2.0),
-        ),
-        focusedErrorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1.0),
-        ),
-      ),
-      keyboardType: TextInputType.text,
     );
   }
 }

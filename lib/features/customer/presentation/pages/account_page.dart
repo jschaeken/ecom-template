@@ -2,6 +2,7 @@ import 'package:ecom_template/core/constants.dart';
 import 'package:ecom_template/core/presentation/widgets/layout.dart';
 import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
+import 'package:ecom_template/features/customer/presentation/pages/details_page.dart';
 import 'package:ecom_template/features/customer/presentation/pages/settings_page.dart';
 import 'package:ecom_template/features/order/presentation/pages/orders_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,12 +23,7 @@ class AccountPage extends StatelessWidget {
     const AccountTileInfo(
       title: 'My Details',
       icon: CupertinoIcons.person,
-      page: OrdersPage(),
-    ),
-    const AccountTileInfo(
-      title: 'Addresses',
-      icon: CupertinoIcons.house,
-      page: OrdersPage(),
+      page: DetailsPage(),
     ),
     const AccountTileInfo(
       title: 'Settings',
@@ -48,9 +44,7 @@ class AccountPage extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-
             // Profile Picture and Greeting //
-
             Center(
                 child: Column(
               children: [

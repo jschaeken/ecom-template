@@ -7,7 +7,6 @@ import 'package:ecom_template/core/presentation/widgets/text_components.dart';
 import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:ecom_template/features/customer/presentation/pages/base_page.dart';
 import 'package:ecom_template/features/customer/presentation/pages/login_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -36,6 +35,8 @@ class AuthView extends StatelessWidget {
                 ),
               );
             case CustomerAuthenticated:
+              return const MainView();
+            case CustomerGuestAuthenticated:
               return const MainView();
             case CustomerUnauthenticatedCreateAccount:
               customerAuthState as CustomerUnauthenticatedCreateAccount;

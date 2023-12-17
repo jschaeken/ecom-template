@@ -15,6 +15,8 @@ abstract class FavoritesLocalDataSource {
   Future<WriteSuccess> removeFavorite(String id);
 
   Future<Favorite?> getFavoriteById(String id);
+
+  Future<WriteSuccess> removeAllFavorites();
 }
 
 class FavoritesLocalDataSourceImpl extends FavoritesLocalDataSource {
@@ -46,6 +48,13 @@ class FavoritesLocalDataSourceImpl extends FavoritesLocalDataSource {
   Future<Favorite?> getFavoriteById(String id) async {
     Box<Favorite> favoritesBox = await _getOpenBox();
     return favoritesBox.get(id);
+  }
+
+  @override
+  Future<WriteSuccess> removeAllFavorites() async {
+    Box<Favorite> favoritesBox = await _getOpenBox();
+    await favoritesBox.clear();
+    return const WriteSuccess();
   }
 
   Future<Box<Favorite>> _getOpenBox() async {

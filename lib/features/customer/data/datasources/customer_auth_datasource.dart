@@ -50,7 +50,7 @@ class CustomerAuthDatasourceImpl implements CustomerAuthDatasource {
             'An unknown error occured while signing in',
       );
     } catch (e, s) {
-      log(e.runtimeType.toString());
+      log('e.runtimeType: ${e.runtimeType}');
       log(s.toString());
       throw AuthException(
         message: 'An error occured while signing in: ${e.toString()}',

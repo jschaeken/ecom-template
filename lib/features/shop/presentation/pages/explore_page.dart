@@ -66,7 +66,6 @@ class ExplorePage extends StatelessWidget {
                             }
                             return HeaderRow(
                               pageTitle: pageTitle,
-                              accountInitials: initials,
                               child: CustomActiveSearchBar(
                                 controller: searchController,
                               ),
@@ -79,43 +78,7 @@ class ExplorePage extends StatelessWidget {
                                 builder: (context) {
                                   switch (state.runtimeType) {
                                     case SearchingInitial:
-                                      return ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: 20,
-                                          physics:
-                                              const AlwaysScrollableScrollPhysics(),
-                                          padding: EdgeInsets.zero,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: Constants.padding
-                                                  .copyWith(bottom: 0),
-                                              child: Card(
-                                                margin: EdgeInsets.zero,
-                                                child: Padding(
-                                                  padding:
-                                                      Constants.innerPadding,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                          'Search History Item ${index + 1}'),
-                                                      IconButton(
-                                                        onPressed: () {},
-                                                        icon: Icon(
-                                                          Icons.clear,
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .unselectedWidgetColor,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          });
+                                      return const SizedBox();
                                     case SearchLoading:
                                       return ListView.builder(
                                           shrinkWrap: true,

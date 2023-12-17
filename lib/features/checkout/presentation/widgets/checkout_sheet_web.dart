@@ -37,11 +37,7 @@ class _CheckoutSheetWebState extends State<CheckoutSheetWeb> {
       await controller.setBackgroundColor(const Color(0x00000000));
       await controller.setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (progress) {
-            setState(() {
-              loadProgress = progress;
-            });
-          },
+          onProgress: (progress) {},
           onUrlChange: (url) {
             log(url.url.toString());
             if ((url.url ?? '').contains('thank-you')) {
@@ -85,15 +81,10 @@ class _CheckoutSheetWebState extends State<CheckoutSheetWeb> {
               );
             case CheckoutLoaded:
               checkoutState as CheckoutLoaded;
-              log('weburl: ${checkoutState.checkout.webUrl}');
               return Center(
                 child: Platform.isAndroid || Platform.isIOS
                     ? Column(
                         children: [
-                          LinearProgressIndicator(
-                            value: loadProgress / 100,
-                            color: Theme.of(context).primaryColor,
-                          ),
                           Expanded(
                             child: Builder(
                               builder: (context) {

@@ -11,4 +11,6 @@ abstract class FavoritesRepository {
   Future<Either<Failure, WriteSuccess>> removeFavorite(Favorite favorite);
 
   Future<Either<Failure, Favorite?>> getFavoriteById(String id);
+
+  Future<Either<Failure, WriteSuccess>> removeAllFavorites();
 }

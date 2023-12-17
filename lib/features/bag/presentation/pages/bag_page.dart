@@ -89,7 +89,6 @@ class _BagPageState extends State<BagPage> {
             children: [
               HeaderRow(
                 pageTitle: widget.pageTitle,
-                accountInitials: 'JS',
                 centerTitle: true,
               ),
               Expanded(
@@ -117,7 +116,7 @@ class _BagPageState extends State<BagPage> {
                     } else if (state is BagLoadedState ||
                         state is BagLoadedAddedState ||
                         state is BagLoadedRemovedState) {
-                      log(state.bagItems.first.id);
+                      log('state.bagItems.first.id: ${state.bagItems.first.id}');
                       return SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         child: Column(
@@ -293,23 +292,6 @@ class _BagPageState extends State<BagPage> {
                                 checkoutBloc.add(
                                   AddToCheckoutEvent(
                                     bagItems: bagState.bagItems,
-                                    email: 'schaekenj@gmail.com',
-                                    shippingAddress: const ShopShippingAddress(
-                                      address1: '34 Glencairn Lawn',
-                                      address2: 'The Gallops',
-                                      city: 'Dublin',
-                                      country: 'Ireland',
-                                      firstName: 'Jacques',
-                                      lastName: 'Schaeken',
-                                      id: 'gid://shopify/ShippingAddress/123456789',
-                                      name: 'Jacques Schaeken',
-                                      zip: 'D18K0H3',
-                                      company: 'Jacques Schaeken',
-                                      countryCodeV2: 'IE',
-                                      phone: '0871234567',
-                                      province: 'Dublin',
-                                      provinceCode: 'D18K0H3',
-                                    ),
                                   ),
                                 );
                               },

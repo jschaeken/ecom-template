@@ -39,7 +39,6 @@ class _ShopPageState extends State<ShopPage>
                 children: [
                   HeaderRow(
                     pageTitle: pageTitle,
-                    accountInitials: accountInitials,
                     shadow: false,
                     child: CustomActiveSearchBar(
                       controller: searchController,

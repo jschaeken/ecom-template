@@ -13,6 +13,7 @@ import 'package:ecom_template/features/checkout/domain/usecases/bag_items_to_lin
 import 'package:ecom_template/features/checkout/domain/usecases/create_checkout.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/get_checkout_info.dart';
 import 'package:ecom_template/features/checkout/domain/usecases/remove_discount_code.dart';
+import 'package:ecom_template/features/customer/presentation/bloc/customer_auth_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -25,6 +26,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final GetCheckoutInfo getCheckoutInfo;
   final AddDiscountCode addDiscountCode;
   final RemoveDiscountCode removeDiscountCode;
+  final CustomerAuthBloc customerAuthBloc;
   bool hasCheckout = false;
 
   CheckoutBloc({
@@ -33,6 +35,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     required this.getCheckoutInfo,
     required this.addDiscountCode,
     required this.removeDiscountCode,
+    required this.customerAuthBloc,
   }) : super(CheckoutInitial()) {
     on<CheckoutEvent>((event, emit) async {
       switch (event.runtimeType) {
@@ -41,25 +44,39 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           emit(CheckoutLoading());
           final lineItems = await bagItemsToLineItems(bagItems: event.bagItems);
           debugPrint(lineItems.length.toString());
-          final checkout = await createCheckout(
-            ShopCreateCheckoutParams(
-              lineItems: lineItems,
-              email: event.email,
-              shippingAddress: event.shippingAddress,
-            ),
-          );
-          checkout.fold((failure) {
-            if (failure is CheckoutUserFailure) {
-            } else {
-              emit(CheckoutError(
-                failure: ServerFailure(),
-              ));
+          final userOrFailure = await customerAuthBloc.getAuthState(NoParams());
+          await userOrFailure.fold((l) async {
+            emit(const CheckoutError(failure: AuthFailure()));
+          }, (user) async {
+            if (user == null ||
+                user.email == null ||
+                user.addresses == null ||
+                user.addresses!.isEmpty) {
+              emit(const CheckoutError(failure: AuthFailure()));
+              return;
             }
-          }, (shopCheckout) {
-            for (var element in shopCheckout.lineItems) {
-              debugPrint(element.variantId.toString());
-            }
-            emit(CheckoutLoaded(checkout: shopCheckout));
+            final checkout = await createCheckout(
+              ShopCreateCheckoutParams(
+                lineItems: lineItems,
+                email: user.email,
+                shippingAddress: ShopShippingAddress.fromShopAddress(
+                  user.addresses!.first,
+                ),
+              ),
+            );
+            checkout.fold((failure) {
+              if (failure is CheckoutUserFailure) {
+              } else {
+                emit(CheckoutError(
+                  failure: ServerFailure(),
+                ));
+              }
+            }, (shopCheckout) {
+              for (var element in shopCheckout.lineItems) {
+                debugPrint(element.variantId.toString());
+              }
+              emit(CheckoutLoaded(checkout: shopCheckout));
+            });
           });
           break;
         case CheckoutCompletedEvent:

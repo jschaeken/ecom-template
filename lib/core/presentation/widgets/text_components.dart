@@ -66,21 +66,24 @@ class TextSubHeadline extends StatelessWidget {
     this.color,
     this.fontWeight = FontWeight.bold,
     this.maxLines,
+    this.decoration,
   });
 
   final String text;
   final Color? color;
   final FontWeight? fontWeight;
   final int? maxLines;
+  final TextDecoration? decoration;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context)
-          .textTheme
-          .headlineMedium!
-          .copyWith(color: color, fontWeight: fontWeight, fontSize: 15),
+      style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+          color: color,
+          fontWeight: fontWeight,
+          fontSize: 15,
+          decoration: decoration),
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
     );
